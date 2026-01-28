@@ -160,9 +160,9 @@ Výchozí účty (z `.env`):
 #### Řešení skrz `rebase`
 
 ```bash
-> git checkout blog/articles-filters
+> git checkout fix/default-permissions
 > git fetch origin
-> git rebase origin/main
+> git rebase origin/master
 ```
 
 Pokud jsou, vyřešit konflikty otevřením příslušných souborů a editací kódu přímo v IDE.
@@ -186,10 +186,18 @@ Pokud jsou, vyřešit konflikty otevřením příslušných souborů a editací 
 #### Číštění lokální Git historii
 
 ```bash
-> git checkout main
+> git checkout master
 > git fetch origin
-> git pull origin main
+> git pull origin master
 > git branch -D fix/default-permissions
+```
+
+### ❓ Zahození celé větve, pro kterou již existuje MR v `remote`
+
+```bash
+> git checkout master
+> git branch -D fix/default-permissions
+> git push origin --delete fix/default-permissions
 ```
 
 ---
