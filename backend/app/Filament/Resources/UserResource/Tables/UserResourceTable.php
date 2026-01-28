@@ -7,6 +7,7 @@ use App\Filament\Resources\UserResource\UserResource;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Table;
 
 class UserResourceTable
@@ -20,7 +21,9 @@ class UserResourceTable
                 TextColumn::make('id')
                     ->label('#')
                     ->sortable(),
-                TextColumn::make('name')
+                ViewColumn::make('name')
+                    ->label('Name')
+                    ->view('filament.tables.columns.user-name')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
