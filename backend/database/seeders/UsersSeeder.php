@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Enums\UserRoleEnum;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -26,6 +27,13 @@ class UsersSeeder extends Seeder
             'guard_name' => 'web',
         ]);
 
+        if (Artisan::has('shield:generate')) {
+            Artisan::call('shield:generate', ['--all' => true, '--quiet' => true]);
+        } elseif (Artisan::has('filament-shield:generate')) {
+            Artisan::call('filament-shield:generate', ['--all' => true, '--quiet' => true]);
+        }
+
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
         $permissions = Permission::query()->get();
         $superAdminRole->syncPermissions($permissions);
         $adminRole->syncPermissions(
