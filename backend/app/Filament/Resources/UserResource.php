@@ -78,9 +78,6 @@ class UserResource extends Resource
                     ->label('Created')
                     ->dateTime()
                     ->sortable(),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
             ]);
     }
 
