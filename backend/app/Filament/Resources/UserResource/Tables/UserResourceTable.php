@@ -32,17 +32,17 @@ class UserResourceTable
                     ->toggleable(),
                 TextColumn::make('phone')
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 TextColumn::make('roles.name')
                     ->label('Roles')
                     ->badge()
                     ->separator(', ')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
             ]);
     }
 }
