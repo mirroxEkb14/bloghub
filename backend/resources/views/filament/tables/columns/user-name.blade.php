@@ -3,15 +3,15 @@
     $initial = $name !== '' ? mb_strtoupper(mb_substr($name, 0, 1)) : '?';
 @endphp
 
-<div class="flex items-center gap-3">
-    <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-800 text-sm font-semibold text-amber-400">
+<div style="display: flex; align-items: center; gap: 0.75rem;">
+    <div style="display: flex; height: 36px; width: 36px; align-items: center; justify-content: center; border-radius: 10px; background-color: #1f2937; font-size: 0.875rem; font-weight: 600; color: #f59e0b;">
         {{ $initial }}
     </div>
-    <div class="min-w-0">
-        <div class="truncate text-sm font-medium text-gray-100">
+    <div style="min-width: 0;">
+        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.875rem; font-weight: 600; color: #f9fafb;">
             {{ $name }}
         </div>
-        <div class="truncate text-xs text-gray-500">
+        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; color: #9ca3af;">
             {{ $record->username }}
         </div>
     </div>
