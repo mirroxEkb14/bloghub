@@ -3,10 +3,17 @@
 namespace App\Filament\Pages;
 
 use BackedEnum;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\ToggleButtons;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
 use Filament\Pages\Page;
 
-class Profile extends Page
+class Profile extends Page implements HasForms
 {
+    use InteractsWithForms;
+
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user';
 
     protected static ?int $navigationSort = 1;
@@ -14,20 +21,44 @@ class Profile extends Page
     protected string $view = 'filament.pages.profile';
 
     public string $locale = 'en';
-
-    public string $selectedLocale = 'en';
+    public ?array $data = [];
 
     public function mount(): void
     {
         $this->locale = session('admin_locale', app()->getLocale());
-        $this->selectedLocale = $this->locale;
+        $this->form->fill([
+            'selectedLocale' => $this->locale,
+        ]);
     }
 
     public function saveLocale(): void
     {
-        $this->setLocale($this->selectedLocale);
-        $this->locale = $this->selectedLocale;
+        $state = $this->form->getState();
+        $selectedLocale = $state['selectedLocale'] ?? 'en';
+
+        $this->setLocale($selectedLocale);
+        $this->locale = $selectedLocale;
         $this->redirect(static::getUrl(), navigate: false);
+    }
+
+    public function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Section::make(__('admin.profile.language'))
+                    ->description(__('admin.profile.language_help'))
+                    ->schema([
+                        ToggleButtons::make('selectedLocale')
+                            ->label(false)
+                            ->options([
+                                'en' => __('admin.languages.en'),
+                                'cs' => __('admin.languages.cs'),
+                            ])
+                            ->inline()
+                            ->required(),
+                    ]),
+            ])
+            ->statePath('data');
     }
 
     public static function getNavigationLabel(): string
