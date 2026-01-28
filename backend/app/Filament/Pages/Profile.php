@@ -2,11 +2,12 @@
 
 namespace App\Filament\Pages;
 
+use BackedEnum;
 use Filament\Pages\Page;
 
 class Profile extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-user';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user';
 
     protected static ?int $navigationSort = 1;
 
