@@ -22,7 +22,7 @@ class UserResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Role Panel';
 
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {
