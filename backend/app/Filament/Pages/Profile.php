@@ -31,8 +31,11 @@ class Profile extends Page
 
     public function mount(): void
     {
+        $locale = auth()->user()?->locale ?? config('app.locale');
+        $locale = $locale === 'cz' ? 'cs' : $locale;
+
         $this->form->fill([
-            'locale' => auth()->user()?->locale ?? config('app.locale'),
+            'locale' => $locale,
         ]);
     }
 
@@ -44,7 +47,7 @@ class Profile extends Page
                     ->label(__('filament.profile.language_label'))
                     ->options([
                         'en' => __('filament.profile.language_options.en'),
-                        'cz' => __('filament.profile.language_options.cz'),
+                        'cs' => __('filament.profile.language_options.cs'),
                     ])
                     ->required(),
             ])
@@ -61,7 +64,7 @@ class Profile extends Page
         }
 
         $user->forceFill([
-            'locale' => $data['locale'],
+            'locale' => $data['locale'] === 'cz' ? 'cs' : $data['locale'],
         ])->save();
 
         Notification::make()

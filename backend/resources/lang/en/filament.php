@@ -6,7 +6,7 @@ return [
         'language_label' => 'Language',
         'language_options' => [
             'en' => 'English',
-            'cz' => 'Czech',
+            'cs' => 'Czech',
         ],
         'save' => 'Save',
         'saved' => 'Profile updated.',
