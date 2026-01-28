@@ -29,6 +29,9 @@ class AdminPanelProvider extends PanelProvider
         if (method_exists($shieldPlugin, 'navigationGroup')) {
             $shieldPlugin->navigationGroup('Role Panel');
         }
+        if (method_exists($shieldPlugin, 'navigationSort')) {
+            $shieldPlugin->navigationSort(1);
+        }
 
         return $panel
             ->default()
