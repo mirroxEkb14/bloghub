@@ -8,7 +8,7 @@ Projekt je rozdělen na backend (**Laravel** + **Filament**) a frontend (**React
 
 ## 🎥 Demo
 
-> A short demonstration of the app in action:
+> Krátká demonstrace aplikace:
 
 [![Demo video](https://img.youtube.com/vi/VIDEO_URL/0.jpg)](https://youtu.be/VIDEO_URL)
 
