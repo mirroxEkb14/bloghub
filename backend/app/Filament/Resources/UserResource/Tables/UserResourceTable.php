@@ -19,49 +19,53 @@ class UserResourceTable
             ->defaultSort('id')
             ->columns([
                 TextColumn::make('id')
-                    ->label('#')
+                    ->label(__('admin.table.id'))
                     ->sortable(),
                 ViewColumn::make('name')
-                    ->label('Name')
+                    ->label(__('admin.table.name'))
                     ->view('filament.tables.columns.user-name')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('username')
+                    ->label(__('admin.table.username'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('email')
+                    ->label(__('admin.table.email'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('phone')
+                    ->label(__('admin.table.phone'))
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('roles.name')
-                    ->label('Roles')
+                    ->label(__('admin.table.roles'))
                     ->badge()
                     ->separator(', ')
                     ->toggleable(),
                 TextColumn::make('created_at')
-                    ->label('Created')
+                    ->label(__('admin.table.created'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([
                 Action::make('view')
-                    ->label('View')
+                    ->label(__('admin.actions.view'))
                     ->icon('heroicon-o-eye')
                     ->color('gray')
                     ->url(fn (User $record): string => UserResource::getUrl('view', ['record' => $record])),
                 Action::make('edit')
-                    ->label('Edit')
+                    ->label(__('admin.actions.edit'))
                     ->icon('heroicon-o-pencil-square')
                     ->url(fn (User $record): string => UserResource::getUrl('edit', ['record' => $record])),
             ])
             ->bulkActions([
-                DeleteBulkAction::make(),
+                DeleteBulkAction::make()
+                    ->label(__('admin.actions.delete_selected')),
             ]);
     }
 }

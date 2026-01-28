@@ -16,15 +16,15 @@ class ListUsers extends ListRecords
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make('All')
+            'all' => Tab::make(__('admin.tabs.all'))
                 ->badge(User::count()),
-            'super_admins' => Tab::make('Super Admins')
+            'super_admins' => Tab::make(__('admin.tabs.super_admins'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->role(UserRoleEnum::SUPER_ADMIN->value))
                 ->badge(User::role(UserRoleEnum::SUPER_ADMIN->value)->count()),
-            'admins' => Tab::make('Admins')
+            'admins' => Tab::make(__('admin.tabs.admins'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->role(UserRoleEnum::ADMIN->value))
                 ->badge(User::role(UserRoleEnum::ADMIN->value)->count()),
-            'others' => Tab::make('Others')
+            'others' => Tab::make(__('admin.tabs.others'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereDoesntHave('roles'))
                 ->badge(User::whereDoesntHave('roles')->count()),
         ];

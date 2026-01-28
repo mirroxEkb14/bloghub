@@ -20,9 +20,29 @@ class UserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Role Panel';
+    protected static string|UnitEnum|null $navigationGroup = null;
 
     protected static ?int $navigationSort = 2;
+
+    public static function getNavigationLabel(): string
+    {
+        return __('admin.navigation.users');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin.navigation.role_panel');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('admin.navigation.user');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.navigation.users');
+    }
 
     public static function form(Schema $schema): Schema
     {

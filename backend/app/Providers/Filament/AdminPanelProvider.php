@@ -7,12 +7,13 @@ use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
+use App\Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
+use App\Http\Middleware\SetAdminLocale;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -27,7 +28,7 @@ class AdminPanelProvider extends PanelProvider
         $shieldPlugin = FilamentShieldPlugin::make();
 
         if (method_exists($shieldPlugin, 'navigationGroup')) {
-            $shieldPlugin->navigationGroup('Role Panel');
+            $shieldPlugin->navigationGroup(__('admin.navigation.role_panel'));
         }
         if (method_exists($shieldPlugin, 'navigationSort')) {
             $shieldPlugin->navigationSort(1);
@@ -56,6 +57,7 @@ class AdminPanelProvider extends PanelProvider
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,
                 AuthenticateSession::class,
+                SetAdminLocale::class,
                 ShareErrorsFromSession::class,
                 VerifyCsrfToken::class,
                 SubstituteBindings::class,

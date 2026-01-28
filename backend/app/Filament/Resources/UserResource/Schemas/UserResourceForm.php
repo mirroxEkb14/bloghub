@@ -12,17 +12,20 @@ class UserResourceForm
         return $schema
             ->schema([
                 TextInput::make('name')
+                    ->label(__('admin.fields.name'))
                     ->required()
                     ->maxLength(255)
                     ->disabled()
                     ->dehydrated(false),
                 TextInput::make('username')
+                    ->label(__('admin.fields.username'))
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true)
                     ->disabled()
                     ->dehydrated(false),
                 TextInput::make('email')
+                    ->label(__('admin.fields.email'))
                     ->required()
                     ->email()
                     ->maxLength(255)
@@ -30,11 +33,13 @@ class UserResourceForm
                     ->disabled()
                     ->dehydrated(false),
                 TextInput::make('phone')
+                    ->label(__('admin.fields.phone'))
                     ->tel()
                     ->maxLength(255)
                     ->disabled()
                     ->dehydrated(false),
                 TextInput::make('password')
+                    ->label(__('admin.fields.password'))
                     ->password()
                     ->dehydrated(fn ($state): bool => filled($state))
                     ->required(fn (string $operation): bool => $operation === 'create')
