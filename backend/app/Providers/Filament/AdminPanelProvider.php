@@ -24,6 +24,12 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        $shieldPlugin = FilamentShieldPlugin::make();
+
+        if (method_exists($shieldPlugin, 'navigationGroup')) {
+            $shieldPlugin->navigationGroup('Role Panel');
+        }
+
         return $panel
             ->default()
             ->id('admin')
@@ -54,7 +60,7 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->plugins([
-                FilamentShieldPlugin::make(),
+                $shieldPlugin,
             ])
             ->authMiddleware([
                 Authenticate::class,
