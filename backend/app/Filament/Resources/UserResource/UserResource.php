@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Filament\Resources\UserResource;
+
+use App\Filament\Resources\UserResource\Pages\EditUser;
+use App\Filament\Resources\UserResource\Pages\ListUsers;
+use App\Filament\Resources\UserResource\Pages\ViewUser;
+use App\Filament\Resources\UserResource\Schemas\UserResourceForm;
+use App\Filament\Resources\UserResource\Tables\UserResourceTable;
+use App\Models\User;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables\Table;
+use BackedEnum;
+use UnitEnum;
+
+class UserResource extends Resource
+{
+    protected static ?string $model = User::class;
+
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
+
+    protected static string|UnitEnum|null $navigationGroup = 'Role Panel';
+
+    public static function form(Schema $schema): Schema
+    {
+        return UserResourceForm::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return UserResourceTable::configure($table);
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListUsers::route('/'),
+            'view' => ViewUser::route('/{record}'),
+            'edit' => EditUser::route('/{record}/edit'),
+        ];
+    }
+}
