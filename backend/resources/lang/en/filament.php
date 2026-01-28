@@ -11,6 +11,9 @@ return [
         'save' => 'Save',
         'saved' => 'Profile updated.',
     ],
+    'roles' => [
+        'navigation_group' => 'Role Panel',
+    ],
     'users' => [
         'navigation_label' => 'Users',
         'table' => [

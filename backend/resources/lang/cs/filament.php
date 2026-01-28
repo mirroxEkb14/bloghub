@@ -11,6 +11,9 @@ return [
         'save' => 'Uložit',
         'saved' => 'Profil byl aktualizován.',
     ],
+    'roles' => [
+        'navigation_group' => 'Panel Rolí',
+    ],
     'users' => [
         'navigation_label' => 'Uživatelé',
         'table' => [

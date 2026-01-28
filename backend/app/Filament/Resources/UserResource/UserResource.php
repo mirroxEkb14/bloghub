@@ -19,7 +19,6 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
-
     protected static ?int $navigationSort = 2;
 
     public static function getNavigationLabel(): string
@@ -29,7 +28,7 @@ class UserResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('filament-shield::filament-shield.navigation_group');
+        return __('filament.roles.navigation_group');
     }
 
     public static function form(Schema $schema): Schema
