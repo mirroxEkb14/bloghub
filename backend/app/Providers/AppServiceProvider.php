@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Permission\Models\Role;
 
@@ -15,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        DeleteAction::configureUsing(static function (DeleteAction $action): void {
+        $configureDeleteAction = static function ($action): void {
             $action
                 ->disabled(static function ($record): bool {
                     return $record instanceof Role && $record->users()->exists();
@@ -27,6 +26,14 @@ class AppServiceProvider extends ServiceProvider
 
                     return null;
                 });
-        });
+        };
+
+        if (class_exists(\Filament\Tables\Actions\DeleteAction::class)) {
+            \Filament\Tables\Actions\DeleteAction::configureUsing($configureDeleteAction);
+        }
+
+        if (class_exists(\Filament\Actions\DeleteAction::class)) {
+            \Filament\Actions\DeleteAction::configureUsing($configureDeleteAction);
+        }
     }
 }
