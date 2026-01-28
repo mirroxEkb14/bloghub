@@ -200,6 +200,13 @@ Pokud jsou, vyřešit konflikty otevřením příslušných souborů a editací 
 > git push origin --delete fix/default-permissions
 ```
 
+### ❓ Zahození veškerých změn na lokále a up-to-date s `remote`
+
+```bash
+> git fetch origin
+> git reset --hard origin/master
+```
+
 ---
 
 ## 📬 Kontakty
