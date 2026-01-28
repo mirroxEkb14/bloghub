@@ -47,7 +47,7 @@ class UserResourceTable
                     ->label('Created')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([
                 Action::make('view')
