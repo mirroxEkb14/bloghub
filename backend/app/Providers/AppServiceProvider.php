@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Filament\Support\RoleDeleteGuard;
+use Filament\Actions\DeleteAction as ActionsDeleteAction;
+use Filament\Tables\Actions\DeleteAction as TablesDeleteAction;
 use Illuminate\Support\ServiceProvider;
-use Spatie\Permission\Models\Role;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,26 +16,16 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $configureDeleteAction = static function ($action): void {
-            $action
-                ->disabled(static function ($record): bool {
-                    return $record instanceof Role && $record->users()->exists();
-                })
-                ->tooltip(static function ($record): ?string {
-                    if ($record instanceof Role && $record->users()->exists()) {
-                        return 'This role cannot be deleted because it is assigned to at least one user.';
-                    }
-
-                    return null;
-                });
-        };
-
-        if (class_exists(\Filament\Tables\Actions\DeleteAction::class)) {
-            \Filament\Tables\Actions\DeleteAction::configureUsing($configureDeleteAction);
+        if (class_exists(TablesDeleteAction::class)) {
+            TablesDeleteAction::configureUsing(static function ($action): void {
+                RoleDeleteGuard::configure($action);
+            });
         }
 
-        if (class_exists(\Filament\Actions\DeleteAction::class)) {
-            \Filament\Actions\DeleteAction::configureUsing($configureDeleteAction);
+        if (class_exists(ActionsDeleteAction::class)) {
+            ActionsDeleteAction::configureUsing(static function ($action): void {
+                RoleDeleteGuard::configure($action);
+            });
         }
     }
 }
