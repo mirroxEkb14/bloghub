@@ -6,6 +6,7 @@ use App\Enums\UserRoleEnum;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -24,6 +25,12 @@ class UsersSeeder extends Seeder
             'name' => UserRoleEnum::ADMIN->value,
             'guard_name' => 'web',
         ]);
+
+        $permissions = Permission::query()->get();
+        $superAdminRole->syncPermissions($permissions);
+        $adminRole->syncPermissions(
+            $permissions->reject(fn (Permission $permission) => str_ends_with($permission->name, ':Role'))
+        );
 
         $superEmail = env('SEED_SUPER_ADMIN_EMAIL', 'super@local.test');
         $superUsername = env('SEED_SUPER_ADMIN_USERNAME', 'superadmin');
