@@ -11,6 +11,7 @@ return [
     'profile' => [
         'language' => 'Admin panel language',
         'language_help' => 'Choose the language used throughout the admin panel.',
+        'save_language' => 'Save language',
     ],
     'languages' => [
         'en' => 'English',

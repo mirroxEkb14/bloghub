@@ -15,14 +15,18 @@ class Profile extends Page
 
     public string $locale = 'en';
 
+    public string $selectedLocale = 'en';
+
     public function mount(): void
     {
         $this->locale = session('admin_locale', app()->getLocale());
+        $this->selectedLocale = $this->locale;
     }
 
-    public function updatedLocale(string $locale): void
+    public function saveLocale(): void
     {
-        $this->setLocale($locale);
+        $this->setLocale($this->selectedLocale);
+        $this->locale = $this->selectedLocale;
     }
 
     public static function getNavigationLabel(): string

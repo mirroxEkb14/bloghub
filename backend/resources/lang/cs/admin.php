@@ -11,6 +11,7 @@ return [
     'profile' => [
         'language' => 'Jazyk administračního panelu',
         'language_help' => 'Zvolte jazyk používaný v administračním panelu.',
+        'save_language' => 'Uložit jazyk',
     ],
     'languages' => [
         'en' => 'Angličtina',
