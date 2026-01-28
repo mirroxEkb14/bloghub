@@ -4,7 +4,6 @@ namespace App\Filament\Resources\UserResource\Tables;
 
 use App\Models\User;
 use App\Filament\Resources\UserResource\UserResource;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -45,9 +44,6 @@ class UserResourceTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
-            ])
-            ->bulkActions([
-                DeleteBulkAction::make(),
             ]);
     }
 }
