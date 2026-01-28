@@ -58,17 +58,17 @@ class UsersSeeder extends Seeder
             $adminRole->syncPermissions($allPermissions->diff($roleManagementPermissions));
         }
 
-        $superEmail = env('SEED_SUPER_ADMIN_EMAIL', 'super@local.test');
-        $superUsername = env('SEED_SUPER_ADMIN_USERNAME', 'superadmin');
-        $superPassword = env('SEED_SUPER_ADMIN_PASSWORD', 'ChangeMe123!');
+        $superEmail = config('seed.super_admin.email');
+        $superUsername = config('seed.super_admin.username');
+        $superPassword = config('seed.super_admin.password');
 
-        $adminEmail = env('SEED_ADMIN_EMAIL', 'admin@local.test');
-        $adminUsername = env('SEED_ADMIN_USERNAME', 'admin');
-        $adminPassword = env('SEED_ADMIN_PASSWORD', 'ChangeMe123!');
+        $adminEmail = config('seed.admin.email');
+        $adminUsername = config('seed.admin.username');
+        $adminPassword = config('seed.admin.password');
 
-        $userEmail = env('SEED_USER_EMAIL', 'user@local.test');
-        $userUsername = env('SEED_USER_USERNAME', 'user');
-        $userPassword = env('SEED_USER_PASSWORD', 'ChangeMe123!');
+        $userEmail = config('seed.user.email');
+        $userUsername = config('seed.user.username');
+        $userPassword = config('seed.user.password');
 
         $super = User::firstOrCreate(
             ['email' => $superEmail],
