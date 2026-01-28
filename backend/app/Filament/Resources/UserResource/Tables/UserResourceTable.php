@@ -22,41 +22,44 @@ class UserResourceTable
                     ->label('#')
                     ->sortable(),
                 ViewColumn::make('name')
-                    ->label('Name')
+                    ->label(__('filament.users.table.columns.name'))
                     ->view('filament.tables.columns.user-name')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('username')
+                    ->label(__('filament.users.table.columns.username'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('email')
+                    ->label(__('filament.users.table.columns.email'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('phone')
+                    ->label(__('filament.users.table.columns.phone'))
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('roles.name')
-                    ->label('Roles')
+                    ->label(__('filament.users.table.columns.roles'))
                     ->badge()
                     ->separator(', ')
                     ->toggleable(),
                 TextColumn::make('created_at')
-                    ->label('Created')
+                    ->label(__('filament.users.table.columns.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([
                 Action::make('view')
-                    ->label('View')
+                    ->label(__('filament.users.table.actions.view'))
                     ->icon('heroicon-o-eye')
                     ->color('gray')
                     ->url(fn (User $record): string => UserResource::getUrl('view', ['record' => $record])),
                 Action::make('edit')
-                    ->label('Edit')
+                    ->label(__('filament.users.table.actions.edit'))
                     ->icon('heroicon-o-pencil-square')
                     ->url(fn (User $record): string => UserResource::getUrl('edit', ['record' => $record])),
             ])

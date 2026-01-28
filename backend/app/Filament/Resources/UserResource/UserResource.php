@@ -24,6 +24,16 @@ class UserResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.users.navigation_label');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('filament.users.navigation_group');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return UserResourceForm::configure($schema);
