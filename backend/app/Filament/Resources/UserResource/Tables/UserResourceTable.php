@@ -14,7 +14,6 @@ class UserResourceTable
         return $table
             ->recordUrl(fn (User $record): string => UserResource::getUrl('view', ['record' => $record]))
             ->defaultSort('id')
-            ->reorderable('sort_order')
             ->columns([
                 TextColumn::make('id')
                     ->label('#')
