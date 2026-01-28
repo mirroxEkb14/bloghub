@@ -27,6 +27,9 @@ class AdminPanelProvider extends PanelProvider
     {
         $shieldPlugin = FilamentShieldPlugin::make();
 
+        if (method_exists($shieldPlugin, 'navigationGroup')) {
+            $shieldPlugin->navigationGroup(__('filament-shield::filament-shield.navigation_group'));
+        }
         if (method_exists($shieldPlugin, 'navigationSort')) {
             $shieldPlugin->navigationSort(1);
         }
