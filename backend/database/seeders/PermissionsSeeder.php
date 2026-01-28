@@ -25,10 +25,37 @@ class PermissionsSeeder extends Seeder
             'guard_name' => 'web',
         ]);
 
-        $this->call([
-            RolePermissionsSeeder::class,
-            UserPermissionsSeeder::class,
-        ]);
+        $permissionNames = [
+            'ViewAny:Role',
+            'View:Role',
+            'Create:Role',
+            'Update:Role',
+            'Delete:Role',
+            'Restore:Role',
+            'ForceDelete:Role',
+            'ForceDeleteAny:Role',
+            'RestoreAny:Role',
+            'Replicate:Role',
+            'Reorder:Role',
+            'ViewAny:User',
+            'View:User',
+            'Create:User',
+            'Update:User',
+            'Delete:User',
+            'Restore:User',
+            'ForceDelete:User',
+            'ForceDeleteAny:User',
+            'RestoreAny:User',
+            'Replicate:User',
+            'Reorder:User',
+        ];
+
+        foreach ($permissionNames as $permissionName) {
+            Permission::firstOrCreate([
+                'name' => $permissionName,
+                'guard_name' => 'web',
+            ]);
+        }
 
         $allPermissions = Permission::query()->get();
 
