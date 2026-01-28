@@ -27,7 +27,7 @@ class Profile extends Page
     {
         $this->setLocale($this->selectedLocale);
         $this->locale = $this->selectedLocale;
-        $this->redirect(static::getUrl(), navigate: true);
+        $this->redirect(static::getUrl(), navigate: false);
     }
 
     public static function getNavigationLabel(): string

@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Closure;
+use Filament\Facades\Filament;
 use Illuminate\Http\Request;
 
 class SetAdminLocale
@@ -16,6 +18,16 @@ class SetAdminLocale
 
         if (is_string($locale)) {
             app()->setLocale($locale);
+        }
+
+        $panel = Filament::getCurrentPanel();
+
+        if ($panel) {
+            foreach ($panel->getPlugins() as $plugin) {
+                if ($plugin instanceof FilamentShieldPlugin && method_exists($plugin, 'navigationGroup')) {
+                    $plugin->navigationGroup(__('admin.navigation.role_panel'));
+                }
+            }
         }
 
         return $next($request);
