@@ -3,12 +3,12 @@
 namespace App\Filament\Pages;
 
 use BackedEnum;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
 use Filament\Pages\Page;
+use Filament\Forms\Components\ToggleButtons;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
 class Profile extends Page implements HasForms
 {
@@ -41,9 +41,9 @@ class Profile extends Page implements HasForms
         $this->redirect(static::getUrl(), navigate: false);
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 Section::make(__('admin.profile.language'))
                     ->description(__('admin.profile.language_help'))
