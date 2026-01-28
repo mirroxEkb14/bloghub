@@ -4,6 +4,7 @@ namespace App\Filament\Resources\UserResource\Tables;
 
 use App\Models\User;
 use App\Filament\Resources\UserResource\UserResource;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -13,6 +14,7 @@ class UserResourceTable
     {
         return $table
             ->defaultSort('id')
+            ->reorderable('sort_order')
             ->recordUrl(fn (User $record): string => UserResource::getUrl('view', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')
@@ -43,6 +45,9 @@ class UserResourceTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
+            ])
+            ->bulkActions([
+                DeleteBulkAction::make(),
             ]);
     }
 }
