@@ -6,17 +6,12 @@ use App\Enums\UserRoleEnum;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\PermissionRegistrar;
 
 class UsersSeeder extends Seeder
 {
     public function run(): void
     {
-        app(PermissionRegistrar::class)->forgetCachedPermissions();
-
         $superAdminRole = Role::firstOrCreate([
             'name' => UserRoleEnum::SUPER_ADMIN->value,
             'guard_name' => 'web',
@@ -26,37 +21,6 @@ class UsersSeeder extends Seeder
             'name' => UserRoleEnum::ADMIN->value,
             'guard_name' => 'web',
         ]);
-
-        $rolePermissionNames = [
-            'ViewAny:Role',
-            'View:Role',
-            'Create:Role',
-            'Update:Role',
-            'Delete:Role',
-            'Restore:Role',
-            'ForceDelete:Role',
-            'ForceDeleteAny:Role',
-            'RestoreAny:Role',
-            'Replicate:Role',
-            'Reorder:Role',
-        ];
-
-        foreach ($rolePermissionNames as $permissionName) {
-            Permission::firstOrCreate([
-                'name' => $permissionName,
-                'guard_name' => 'web',
-            ]);
-        }
-
-        $allPermissions = Permission::query()->get();
-        if ($allPermissions->isNotEmpty()) {
-            $roleManagementPermissions = $allPermissions->filter(
-                static fn (Permission $permission): bool => Str::endsWith($permission->name, ':Role')
-            );
-
-            $superAdminRole->syncPermissions($allPermissions);
-            $adminRole->syncPermissions($allPermissions->diff($roleManagementPermissions));
-        }
 
         $superEmail = config('seed.super_admin.email');
         $superUsername = config('seed.super_admin.username');
