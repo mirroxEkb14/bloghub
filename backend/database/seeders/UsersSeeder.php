@@ -27,6 +27,27 @@ class UsersSeeder extends Seeder
             'guard_name' => 'web',
         ]);
 
+        $rolePermissionNames = [
+            'ViewAny:Role',
+            'View:Role',
+            'Create:Role',
+            'Update:Role',
+            'Delete:Role',
+            'Restore:Role',
+            'ForceDelete:Role',
+            'ForceDeleteAny:Role',
+            'RestoreAny:Role',
+            'Replicate:Role',
+            'Reorder:Role',
+        ];
+
+        foreach ($rolePermissionNames as $permissionName) {
+            Permission::firstOrCreate([
+                'name' => $permissionName,
+                'guard_name' => 'web',
+            ]);
+        }
+
         $allPermissions = Permission::query()->get();
         if ($allPermissions->isNotEmpty()) {
             $roleManagementPermissions = $allPermissions->filter(
