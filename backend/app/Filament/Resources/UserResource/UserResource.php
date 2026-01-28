@@ -29,7 +29,7 @@ class UserResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('filament.navigation_groups.role_panel');
+        return __('filament-shield::filament-shield.navigation_group');
     }
 
     public static function form(Schema $schema): Schema
