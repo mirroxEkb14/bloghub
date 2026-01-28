@@ -9,7 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->unsignedInteger('sort_order')->default(0)->index();
+            if (!Schema::hasColumn('users', 'sort_order')) {
+                $table->unsignedInteger('sort_order')->default(0)->index();
+            }
         });
     }
 
