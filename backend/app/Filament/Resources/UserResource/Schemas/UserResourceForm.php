@@ -13,24 +13,34 @@ class UserResourceForm
             ->schema([
                 TextInput::make('name')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->disabled()
+                    ->dehydrated(false),
                 TextInput::make('username')
                     ->required()
                     ->maxLength(255)
-                    ->unique(ignoreRecord: true),
+                    ->unique(ignoreRecord: true)
+                    ->disabled()
+                    ->dehydrated(false),
                 TextInput::make('email')
                     ->required()
                     ->email()
                     ->maxLength(255)
-                    ->unique(ignoreRecord: true),
+                    ->unique(ignoreRecord: true)
+                    ->disabled()
+                    ->dehydrated(false),
                 TextInput::make('phone')
                     ->tel()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->disabled()
+                    ->dehydrated(false),
                 TextInput::make('password')
                     ->password()
                     ->dehydrated(fn ($state): bool => filled($state))
                     ->required(fn (string $operation): bool => $operation === 'create')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->disabled()
+                    ->dehydrated(false),
             ]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\UserResource\Tables;
 
 use App\Models\User;
 use App\Filament\Resources\UserResource\UserResource;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -44,6 +45,17 @@ class UserResourceTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
+            ])
+            ->actions([
+                Action::make('view')
+                    ->label('View')
+                    ->icon('heroicon-o-eye')
+                    ->color('gray')
+                    ->url(fn (User $record): string => UserResource::getUrl('view', ['record' => $record])),
+                Action::make('edit')
+                    ->label('Edit')
+                    ->icon('heroicon-o-pencil-square')
+                    ->url(fn (User $record): string => UserResource::getUrl('edit', ['record' => $record])),
             ])
             ->bulkActions([
                 DeleteBulkAction::make(),
