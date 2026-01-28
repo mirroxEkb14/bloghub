@@ -10,7 +10,6 @@ return [
         ],
         'save' => 'Save',
         'saved' => 'Profile updated.',
-        'missing_locale_column' => 'Locale column is missing. Please run database migrations.',
     ],
     'users' => [
         'navigation_label' => 'Users',

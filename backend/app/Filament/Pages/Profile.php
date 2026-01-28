@@ -8,7 +8,6 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\Schema as SchemaFacade;
 
 class Profile extends Page
 {
@@ -58,15 +57,6 @@ class Profile extends Page
         $user = auth()->user();
 
         if (! $user) {
-            return;
-        }
-
-        if (! SchemaFacade::hasColumn('users', 'locale')) {
-            Notification::make()
-                ->title(__('filament.profile.missing_locale_column'))
-                ->danger()
-                ->send();
-
             return;
         }
 

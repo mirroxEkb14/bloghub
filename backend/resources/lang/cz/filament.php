@@ -10,7 +10,6 @@ return [
         ],
         'save' => 'Uložit',
         'saved' => 'Profil byl aktualizován.',
-        'missing_locale_column' => 'Sloupec locale chybí. Spusťte prosím databázové migrace.',
     ],
     'users' => [
         'navigation_label' => 'Uživatelé',
