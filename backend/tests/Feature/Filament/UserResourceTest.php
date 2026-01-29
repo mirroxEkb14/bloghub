@@ -52,6 +52,48 @@ class UserResourceTest extends TestCase
         ]);
     }
 
+    #[DataProvider('invalidPasswordProvider')]
+    public function test_admin_cannot_create_user_with_invalid_password(string $password): void
+    {
+        $admin = $this->createAdminUser();
+
+        $payload = [
+            'name' => 'Test User',
+            'username' => 'test.user',
+            'email' => 'test.user@example.com',
+            'phone' => '+420123456789',
+            'password' => $password,
+            'is_creator' => true,
+        ];
+
+        Livewire::actingAs($admin)
+            ->test(CreateUser::class)
+            ->fillForm($payload)
+            ->call('create')
+            ->assertHasFormErrors(['password']);
+    }
+
+    #[DataProvider('passwordContainingUserDataProvider')]
+    public function test_admin_cannot_create_user_with_password_containing_user_data(string $password): void
+    {
+        $admin = $this->createAdminUser();
+
+        $payload = [
+            'name' => 'Test User',
+            'username' => 'test.user',
+            'email' => 'test.user@example.com',
+            'phone' => '+420123456789',
+            'password' => $password,
+            'is_creator' => true,
+        ];
+
+        Livewire::actingAs($admin)
+            ->test(CreateUser::class)
+            ->fillForm($payload)
+            ->call('create')
+            ->assertHasFormErrors(['password']);
+    }
+
     #[DataProvider('validPhoneProvider')]
     public function test_admin_can_save_valid_phone_numbers_on_edit(string $phone): void
     {
@@ -171,6 +213,27 @@ class UserResourceTest extends TestCase
             ['user@'],
             ['@example.com'],
             ['user@example'],
+        ];
+    }
+
+    public static function invalidPasswordProvider(): array
+    {
+        return [
+            ['S7!a'],
+            ['password123!'],
+            ['PASSWORD123!'],
+            ['Password!!!!'],
+            ['Password123'],
+            ['12345678!'],
+        ];
+    }
+
+    public static function passwordContainingUserDataProvider(): array
+    {
+        return [
+            ['Test User123!'],
+            ['test.user123!A'],
+            ['test.user@example.com123!A'],
         ];
     }
 
