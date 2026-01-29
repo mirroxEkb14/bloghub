@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\UserResource\Schemas;
 
+use App\Rules\EmailRule;
+use App\Rules\PhoneRule;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
@@ -24,12 +26,13 @@ class UserResourceForm
                 TextInput::make('email')
                     ->label(__('filament.users.form.email'))
                     ->required()
-                    ->email()
+                    ->rules([new EmailRule()])
                     ->maxLength(255)
                     ->unique(ignoreRecord: true),
                 TextInput::make('phone')
                     ->label(__('filament.users.form.phone'))
                     ->tel()
+                    ->rules([new PhoneRule()])
                     ->maxLength(255),
                 TextInput::make('password')
                     ->label(__('filament.users.form.password'))
