@@ -196,7 +196,7 @@ Pokud jsou, vyřešit konflikty otevřením příslušných souborů a editací 
 > git branch -r
 ```
 
-#### ❓ Číštění lokální Git historii
+### ❓ Číštění lokální Git historii
 
 ```bash
 > git checkout master
@@ -219,6 +219,22 @@ Pokud jsou, vyřešit konflikty otevřením příslušných souborů a editací 
 ```bash
 > git fetch origin
 > git reset --hard origin/master
+```
+
+### ❓ Rollback k minulému fungujícímu commitu (když je špatný commit již v `remote`)
+
+```bash
+> git log --oneline -10
+> git revert <bad_commit_hash>
+> git push
+```
+
+### ❓ Mázání `.env` souboru z `remote`
+
+```bash
+> git rm --cached .env
+> git commit -m "Fix: .env from remote removed"
+> git push
 ```
 
 ---
