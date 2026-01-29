@@ -46,6 +46,9 @@ class UserResourceForm
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->nullable()
                     ->maxLength(255)
+                    ->validationMessages([
+                        'min' => __('validation.password.min'),
+                    ])
                     ->rules([
                         Password::min(8)
                             ->letters()
