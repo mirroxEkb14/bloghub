@@ -4,7 +4,7 @@ namespace App\Filament\Resources\UserResource\Schemas;
 
 use App\Rules\EmailRule;
 use App\Rules\PhoneRule;
-use App\Rules\PasswordNotContainingUserData;
+use App\Rules\PasswordWithoutUserData;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Utilities\Get;
@@ -59,20 +59,7 @@ class UserResourceForm
                             ->symbols()
                             ->mixedCase()
                             ->uncompromised(),
-                        fn (Get $get) => new PasswordNotContainingUserData([
-                            'email' => [
-                                'value' => $get('email'),
-                                'label' => __('filament.users.form.email'),
-                            ],
-                            'username' => [
-                                'value' => $get('username'),
-                                'label' => __('filament.users.form.username'),
-                            ],
-                            'name' => [
-                                'value' => $get('name'),
-                                'label' => __('filament.users.form.name'),
-                            ],
-                        ]),
+                        fn (Get $get) => PasswordWithoutUserData::fromGet($get),
                     ])
                     ->dehydrated(fn (?string $state, string $operation): bool =>
                         $operation === 'create' || filled($state)

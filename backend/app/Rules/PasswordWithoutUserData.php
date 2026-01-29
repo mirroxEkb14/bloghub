@@ -4,14 +4,33 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Filament\Schemas\Components\Utilities\Get;
 
-readonly class PasswordNotContainingUserData implements ValidationRule
+readonly class PasswordWithoutUserData implements ValidationRule
 {
     /**
      * @param array<string, array{value: string|null, label: string}> $fields
      */
     public function __construct(private array $fields)
     {
+    }
+
+    public static function fromGet(Get $get): self
+    {
+        return new self([
+            'email' => [
+                'value' => $get('email'),
+                'label' => __('filament.users.form.email'),
+            ],
+            'username' => [
+                'value' => $get('username'),
+                'label' => __('filament.users.form.username'),
+            ],
+            'name' => [
+                'value' => $get('name'),
+                'label' => __('filament.users.form.name'),
+            ],
+        ]);
     }
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
