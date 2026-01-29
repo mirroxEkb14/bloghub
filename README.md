@@ -138,6 +138,19 @@ Výchozí účty (z `.env`):
 
 ---
 
+## ⚙️ Testing
+
+Testy běží v odděleném testovacím prostředí definovaném v souboru `.env.testing`. Používá se samostatná databáze `app_test`.
+
+Testy lze spustit z kořenového adresáře backendu:
+```bash
+> php artisan test
+```
+
+**Poznámka**: `APP_KEY` v `.env.testing` musí být identický hodnotě tohoto atributu v `.env` (který se generuje automaticky při instalaci kontejnerů).
+
+---
+
 ## 🔁 Časté Git scénáře
 
 ### ❓ Aktualizace lokálního `main` podle `remote`
