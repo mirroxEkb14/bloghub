@@ -39,7 +39,7 @@ class UsersSeeder extends Seeder
             [
                 'name' => 'Super Admin',
                 'username' => $superUsername,
-                'phone' => '+7123456789',
+                'phone' => '7123456789',
                 'is_creator' => false,
                 'email_verified_at' => now(),
                 'password' => Hash::make($superPassword),
@@ -51,7 +51,7 @@ class UsersSeeder extends Seeder
             [
                 'name' => 'Admin',
                 'username' => $adminUsername,
-                'phone' => '+420987654321',
+                'phone' => '420987654321',
                 'is_creator' => false,
                 'email_verified_at' => now(),
                 'password' => Hash::make($adminPassword),
@@ -63,7 +63,7 @@ class UsersSeeder extends Seeder
             [
                 'name' => 'User',
                 'username' => $userUsername,
-                'phone' => '+49456123789',
+                'phone' => '49456123789',
                 'is_creator' => true,
                 'email_verified_at' => now(),
                 'password' => Hash::make($userPassword),

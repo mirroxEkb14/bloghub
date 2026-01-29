@@ -34,7 +34,7 @@ class UserResourceTest extends TestCase
             'name' => 'Test User',
             'username' => 'test.user',
             'email' => 'test.user@example.com',
-            'phone' => '+420123456789',
+            'phone' => '420123456789',
             'password' => 'Password123!',
             'is_creator' => true,
         ];
@@ -50,6 +50,48 @@ class UserResourceTest extends TestCase
             'username' => $payload['username'],
             'is_creator' => true,
         ]);
+    }
+
+    #[DataProvider('invalidPasswordProvider')]
+    public function test_admin_cannot_create_user_with_invalid_password(string $password): void
+    {
+        $admin = $this->createAdminUser();
+
+        $payload = [
+            'name' => 'Test User',
+            'username' => 'test.user',
+            'email' => 'test.user@example.com',
+            'phone' => '420123456789',
+            'password' => $password,
+            'is_creator' => true,
+        ];
+
+        Livewire::actingAs($admin)
+            ->test(CreateUser::class)
+            ->fillForm($payload)
+            ->call('create')
+            ->assertHasFormErrors(['password']);
+    }
+
+    #[DataProvider('passwordContainingUserDataProvider')]
+    public function test_admin_cannot_create_user_with_password_containing_user_data(string $password): void
+    {
+        $admin = $this->createAdminUser();
+
+        $payload = [
+            'name' => 'Test User',
+            'username' => 'test.user',
+            'email' => 'test.user@example.com',
+            'phone' => '420123456789',
+            'password' => $password,
+            'is_creator' => true,
+        ];
+
+        Livewire::actingAs($admin)
+            ->test(CreateUser::class)
+            ->fillForm($payload)
+            ->call('create')
+            ->assertHasFormErrors(['password']);
     }
 
     #[DataProvider('validPhoneProvider')]
@@ -91,7 +133,7 @@ class UserResourceTest extends TestCase
                 'name' => $user->name,
                 'username' => 'user.' . fake()->unique()->userName(),
                 'email' => $email,
-                'phone' => '+420111222333',
+                'phone' => '420111222333',
                 'is_creator' => $user->is_creator,
             ])
             ->call('save')
@@ -114,7 +156,7 @@ class UserResourceTest extends TestCase
                 'name' => $user->name,
                 'username' => 'user.' . fake()->unique()->userName(),
                 'email' => $email,
-                'phone' => '+420111222333',
+                'phone' => '420111222333',
                 'is_creator' => $user->is_creator,
             ])
             ->call('save')
@@ -144,14 +186,14 @@ class UserResourceTest extends TestCase
     public static function validPhoneProvider(): array
     {
         return [
-            ['+420111222333'],
-            ['+7 111 222 333'],
-            ['+49111 22 2333'],
-            ['+420-111-222-333'],
-            ['+7-111 222-333'],
-            ['+7 (111) 222 333'],
-            ['+7 (111) 222-333'],
-            ['+ 7 (701) 928-67-95'],
+            ['420111222333'],
+            ['7 111 222 333'],
+            ['49111 22 2333'],
+            ['420-111-222-333'],
+            ['7-111 222-333'],
+            ['7 (111) 222 333'],
+            ['7 (111) 222-333'],
+            ['7 (701) 928-67-95'],
         ];
     }
 
@@ -171,6 +213,27 @@ class UserResourceTest extends TestCase
             ['user@'],
             ['@example.com'],
             ['user@example'],
+        ];
+    }
+
+    public static function invalidPasswordProvider(): array
+    {
+        return [
+            ['S7!a'],
+            ['password123!'],
+            ['PASSWORD123!'],
+            ['Password!!!!'],
+            ['Password123'],
+            ['12345678!'],
+        ];
+    }
+
+    public static function passwordContainingUserDataProvider(): array
+    {
+        return [
+            ['Test User123!'],
+            ['test.user123!A'],
+            ['test.user@example.com123!A'],
         ];
     }
 
