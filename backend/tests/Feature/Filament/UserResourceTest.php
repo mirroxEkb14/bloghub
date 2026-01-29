@@ -11,6 +11,7 @@ use Database\Seeders\PermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -51,9 +52,7 @@ class UserResourceTest extends TestCase
         ]);
     }
 
-    /**
-     * @dataProvider validPhoneProvider
-     */
+    #[DataProvider('validPhoneProvider')]
     public function test_admin_can_save_valid_phone_numbers_on_edit(string $phone): void
     {
         $admin = $this->createAdminUser();
@@ -76,9 +75,7 @@ class UserResourceTest extends TestCase
         $this->assertSame(PhoneRule::normalize($phone), $user->refresh()->phone);
     }
 
-    /**
-     * @dataProvider validEmailProvider
-     */
+    #[DataProvider('validEmailProvider')]
     public function test_admin_can_save_valid_email_addresses_on_edit(string $emailTemplate): void
     {
         $admin = $this->createAdminUser();
@@ -103,9 +100,7 @@ class UserResourceTest extends TestCase
         $this->assertSame($email, $user->refresh()->email);
     }
 
-    /**
-     * @dataProvider invalidEmailProvider
-     */
+    #[DataProvider('invalidEmailProvider')]
     public function test_admin_cannot_save_invalid_email_on_edit(string $email): void
     {
         $admin = $this->createAdminUser();
