@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Rules\PhoneRule;
 use Database\Seeders\PermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -75,7 +76,37 @@ class UserResourceTest extends TestCase
         $this->assertSame(PhoneRule::normalize($phone), $user->refresh()->phone);
     }
 
-    public function test_admin_cannot_save_invalid_email_on_edit(): void
+    /**
+     * @dataProvider validEmailProvider
+     */
+    public function test_admin_can_save_valid_email_addresses_on_edit(string $emailTemplate): void
+    {
+        $admin = $this->createAdminUser();
+        $user = User::factory()->create([
+            'username' => fake()->unique()->userName(),
+        ]);
+
+        $email = sprintf($emailTemplate, Str::lower(Str::random(6)));
+
+        Livewire::actingAs($admin)
+            ->test(EditUser::class, ['record' => $user->getRouteKey()])
+            ->fillForm([
+                'name' => $user->name,
+                'username' => 'user.' . fake()->unique()->userName(),
+                'email' => $email,
+                'phone' => '+420111222333',
+                'is_creator' => $user->is_creator,
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertSame($email, $user->refresh()->email);
+    }
+
+    /**
+     * @dataProvider invalidEmailProvider
+     */
+    public function test_admin_cannot_save_invalid_email_on_edit(string $email): void
     {
         $admin = $this->createAdminUser();
         $user = User::factory()->create([
@@ -87,7 +118,7 @@ class UserResourceTest extends TestCase
             ->fillForm([
                 'name' => $user->name,
                 'username' => 'user.' . fake()->unique()->userName(),
-                'email' => 'not-an-email',
+                'email' => $email,
                 'phone' => '+420111222333',
                 'is_creator' => $user->is_creator,
             ])
@@ -126,6 +157,25 @@ class UserResourceTest extends TestCase
             ['+7 (111) 222 333'],
             ['+7 (111) 222-333'],
             ['+ 7 (701) 928-67-95'],
+        ];
+    }
+
+    public static function validEmailProvider(): array
+    {
+        return [
+            ['user.%s@example.com'],
+            ['user.%s+tag@example.co.uk'],
+            ['user_%s@example.io'],
+        ];
+    }
+
+    public static function invalidEmailProvider(): array
+    {
+        return [
+            ['not-an-email'],
+            ['user@'],
+            ['@example.com'],
+            ['user@example'],
         ];
     }
 
