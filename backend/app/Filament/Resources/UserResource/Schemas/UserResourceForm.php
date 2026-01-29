@@ -42,6 +42,7 @@ class UserResourceForm
                     ->maxLength(255),
                 TextInput::make('password')
                     ->label(__('filament.users.form.password'))
+                    ->validationAttribute(__('filament.users.form.password'))
                     ->password()
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->nullable()
