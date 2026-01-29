@@ -3,6 +3,7 @@
 return [
     'email' => 'Pole :attribute musí být platná e-mailová adresa',
     'phone' => 'Formát pole :attribute je neplatný',
+    'unique' => 'Pole :attribute je již obsazeno',
     'password' => [
         'letters' => 'Pole :attribute musí obsahovat alespoň jedno písmeno',
         'mixed' => 'Pole :attribute musí obsahovat alespoň jedno velké a jedno malé písmeno',
@@ -12,4 +13,14 @@ return [
         'min' => 'Pole :attribute musí mít alespoň :min znaků',
     ],
     'password_contains_user_data' => 'Pole :attribute nesmí obsahovat hodnotu :field',
+    'attributes' => [
+        'password' => 'heslo',
+        'data.password' => 'heslo',
+        'email' => 'e-mail',
+        'data.email' => 'e-mail',
+        'username' => 'uživatelské jméno',
+        'data.username' => 'uživatelské jméno',
+        'name' => 'jméno',
+        'data.name' => 'jméno',
+    ],
 ];
