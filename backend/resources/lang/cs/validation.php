@@ -6,6 +6,7 @@ return [
         'string' => 'Text je příliš dlouhý (max. :max znaků)',
     ],
     'unique' => 'Tato hodnota je již obsazena',
+    'phone' => 'Telefon musí být ve správném formátu',
     'email' => 'Zadejte platnou e-mailovou adresu',
     'password' => [
         'letters' => 'Heslo musí obsahovat alespoň jedno písmeno',

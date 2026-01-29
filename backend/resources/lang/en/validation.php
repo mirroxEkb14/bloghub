@@ -6,6 +6,7 @@ return [
         'string' => 'This value is too long (max :max characters)',
     ],
     'unique' => 'This value has already been taken',
+    'phone' => 'Phone number format is invalid',
     'email' => 'Please enter a valid email address',
     'password' => [
         'letters' => 'Password must contain at least one letter',
