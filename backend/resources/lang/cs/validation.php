@@ -1,26 +1,44 @@
 <?php
 
 return [
-    'email' => 'Pole :attribute musí být platná e-mailová adresa',
-    'phone' => 'Formát pole :attribute je neplatný',
-    'unique' => 'Pole :attribute je již obsazeno',
-    'password' => [
-        'letters' => 'Pole :attribute musí obsahovat alespoň jedno písmeno',
-        'mixed' => 'Pole :attribute musí obsahovat alespoň jedno velké a jedno malé písmeno',
-        'numbers' => 'Pole :attribute musí obsahovat alespoň jednu číslici',
-        'symbols' => 'Pole :attribute musí obsahovat alespoň jeden speciální znak',
-        'uncompromised' => 'Pole :attribute se objevilo v úniku dat. Zvolte prosím jiné :attribute',
-        'min' => 'Pole :attribute musí mít alespoň :min znaků',
+    'required' => 'Toto pole je povinné',
+    'max' => [
+        'string' => 'Text je příliš dlouhý (max. :max znaků)',
     ],
-    'password_contains_user_data' => 'Pole :attribute nesmí obsahovat hodnotu :field',
-    'attributes' => [
-        'password' => 'heslo',
-        'data.password' => 'heslo',
-        'email' => 'e-mail',
-        'data.email' => 'e-mail',
-        'username' => 'uživatelské jméno',
-        'data.username' => 'uživatelské jméno',
-        'name' => 'jméno',
-        'data.name' => 'jméno',
+    'unique' => 'Tato hodnota je již obsazena',
+    'email' => 'Zadejte platnou e-mailovou adresu',
+    'password' => [
+        'letters' => 'Heslo musí obsahovat alespoň jedno písmeno',
+        'mixed' => 'Heslo musí obsahovat alespoň jedno velké a jedno malé písmeno',
+        'numbers' => 'Heslo musí obsahovat alespoň jednu číslici',
+        'symbols' => 'Heslo musí obsahovat alespoň jeden speciální znak',
+        'uncompromised' => 'Zvolené heslo se objevilo v úniku dat, zvolte jiné',
+    ],
+    'password_contains_user_data' => 'Heslo nesmí obsahovat hodnotu „:field“',
+    'custom' => [
+        'data.name' => [
+            'required' => 'Jméno je povinné',
+            'max' => 'Jméno může mít maximálně :max znaků',
+        ],
+        'data.username' => [
+            'required' => 'Uživatelské jméno je povinné',
+            'unique' => 'Uživatelské jméno je již obsazené',
+            'max' => 'Uživatelské jméno může mít maximálně :max znaků',
+        ],
+        'data.email' => [
+            'required' => 'E-mail je povinný',
+            'email' => 'E-mail musí být platná e-mailová adresa',
+            'unique' => 'E-mail je již obsazený',
+            'max' => 'E-mail může mít maximálně :max znaků',
+        ],
+        'data.phone' => [
+            'phone' => 'Telefon musí být ve správném formátu',
+            'regex' => 'Telefon musí být ve správném formátu',
+            'max' => 'Telefon může mít maximálně :max znaků',
+        ],
+        'data.password' => [
+            'required' => 'Heslo je povinné',
+            'min' => 'Heslo musí mít alespoň :min znaků',
+        ],
     ],
 ];

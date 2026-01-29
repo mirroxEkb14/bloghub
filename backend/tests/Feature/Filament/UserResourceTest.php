@@ -34,7 +34,7 @@ class UserResourceTest extends TestCase
             'name' => 'Test User',
             'username' => 'test.user',
             'email' => 'test.user@example.com',
-            'phone' => '+420123456789',
+            'phone' => '420123456789',
             'password' => 'Password123!',
             'is_creator' => true,
         ];
@@ -61,7 +61,7 @@ class UserResourceTest extends TestCase
             'name' => 'Test User',
             'username' => 'test.user',
             'email' => 'test.user@example.com',
-            'phone' => '+420123456789',
+            'phone' => '420123456789',
             'password' => $password,
             'is_creator' => true,
         ];
@@ -82,7 +82,7 @@ class UserResourceTest extends TestCase
             'name' => 'Test User',
             'username' => 'test.user',
             'email' => 'test.user@example.com',
-            'phone' => '+420123456789',
+            'phone' => '420123456789',
             'password' => $password,
             'is_creator' => true,
         ];
@@ -133,7 +133,7 @@ class UserResourceTest extends TestCase
                 'name' => $user->name,
                 'username' => 'user.' . fake()->unique()->userName(),
                 'email' => $email,
-                'phone' => '+420111222333',
+                'phone' => '420111222333',
                 'is_creator' => $user->is_creator,
             ])
             ->call('save')
@@ -156,7 +156,7 @@ class UserResourceTest extends TestCase
                 'name' => $user->name,
                 'username' => 'user.' . fake()->unique()->userName(),
                 'email' => $email,
-                'phone' => '+420111222333',
+                'phone' => '420111222333',
                 'is_creator' => $user->is_creator,
             ])
             ->call('save')
@@ -186,14 +186,14 @@ class UserResourceTest extends TestCase
     public static function validPhoneProvider(): array
     {
         return [
-            ['+420111222333'],
-            ['+7 111 222 333'],
-            ['+49111 22 2333'],
-            ['+420-111-222-333'],
-            ['+7-111 222-333'],
-            ['+7 (111) 222 333'],
-            ['+7 (111) 222-333'],
-            ['+ 7 (701) 928-67-95'],
+            ['420111222333'],
+            ['7 111 222 333'],
+            ['49111 22 2333'],
+            ['420-111-222-333'],
+            ['7-111 222-333'],
+            ['7 (111) 222 333'],
+            ['7 (111) 222-333'],
+            ['7 (701) 928-67-95'],
         ];
     }
 
