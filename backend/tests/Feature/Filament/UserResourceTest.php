@@ -49,7 +49,13 @@ class UserResourceTest extends TestCase
             'email' => $payload['email'],
             'username' => $payload['username'],
             'is_creator' => true,
+            'phone' => PhoneRule::normalize($payload['phone']),
         ]);
+
+        $this->assertSame(
+            PhoneRule::normalize($payload['phone']),
+            User::where('email', $payload['email'])->value('phone')
+        );
     }
 
     #[DataProvider('invalidPasswordProvider')]
@@ -163,7 +169,8 @@ class UserResourceTest extends TestCase
             ->assertHasFormErrors(['email']);
     }
 
-    public function test_admin_cannot_save_invalid_phone_on_edit(): void
+    #[DataProvider('invalidPhoneProvider')]
+    public function test_admin_cannot_save_invalid_phone_on_edit(string $phone): void
     {
         $admin = $this->createAdminUser();
         $user = User::factory()->create([
@@ -176,7 +183,7 @@ class UserResourceTest extends TestCase
                 'name' => $user->name,
                 'username' => 'user.' . fake()->unique()->userName(),
                 'email' => 'valid.user.' . fake()->unique()->safeEmail(),
-                'phone' => 'invalid-phone',
+                'phone' => $phone,
                 'is_creator' => $user->is_creator,
             ])
             ->call('save')
@@ -194,6 +201,23 @@ class UserResourceTest extends TestCase
             ['7 (111) 222 333'],
             ['7 (111) 222-333'],
             ['7 (701) 928-67-95'],
+        ];
+    }
+
+    public static function invalidPhoneProvider(): array
+    {
+        return [
+            ['invalid-phone'],
+            ['abcdef'],
+            ['123'],
+            ['+'],
+            ['++420123456789'],
+            ['420123'],
+            ['00420123456789'],
+            ['+0123456789'],
+            ['+42012345678912345'],
+            ['+420-abc-123'],
+            ['()--'],
         ];
     }
 

@@ -9,6 +9,10 @@ class PhoneRule implements ValidationRule
 {
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
+        if ($value === null || $value === '') {
+            return;
+        }
+
         if (!is_string($value)) {
             $fail(__('validation.phone'));
             return;

@@ -13,7 +13,6 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use BackedEnum;
-use UnitEnum;
 
 class UserResource extends Resource
 {

@@ -38,12 +38,16 @@ bloghub/
 ├── backend/
 │   ├── app/
 │   │   ├── Enums/
+│   │   ├── Filament/
+│   │   │   ├── Pages/
+│   │   │   └── Resources/
 │   │   ├── Http/
 │   │   │   ├── Controllers/
 │   │   │   └── Requests/
 │   │   ├── Models/
 │   │   ├── Policies/
-│   │   └── Providers/
+│   │   ├── Providers/
+│   │   └── Rules/
 │   ├── bootstrap/
 │   ├── config/
 │   ├── database/
@@ -58,12 +62,19 @@ bloghub/
 │   │   └── web.php
 │   ├── storage/
 │   ├── tests/
+│   │   ├── Feature/
+│   │   ├── Unit/
+│   │   └── TestCase.php
 │   ├── .env.example
+│   ├── .env.testing.example
 │   ├── composer.json
 │   ├── Dockerfile
 │   ├── entrypoint.sh
 │   └── ...
 ├── docker/
+│   ├── mysql/
+│   │   └── init/
+│   │       └── 01-create-test-db.sql
 │   └── nginx/
 │       └── backend.conf
 ├── frontend/
@@ -121,7 +132,10 @@ Projekt běží v následujících kontejnerech:
 > docker compose up -d --build
 ```
 
-**Poznámka**: building proces muže potrvat cca 3,2 minuty, nastavení kontejnerů další 1 minutu.
+**Poznámka №1**: building kontejnerů muže potrvat cca 1,5 minuty, běh skriptu backend kontejneru dalších cca 10-15 vteřin.
+
+**Poznámka №2**: lze narazit na **race condition** kvůli `entrypoint.sh` skriptu, když Filament začne obsluhovat requesty dřív, než doběhnou veškeré migrace a seedery, protože backendový `entrypoint.sh` je nastaven tak, že **PHP-FPM** je spouštěn hned, zatímco migrace a seedery běží na pozadí. Tzn. server už pžijímá requesty, ale DB ještě není připravená.
+- `Table 'app.sessions' doesn't exist` (zpřístupnění `/admin`) a `These credentials do not match our records.` (login)
 
 ---
 
@@ -196,7 +210,7 @@ Pokud jsou, vyřešit konflikty otevřením příslušných souborů a editací 
 > git branch -r
 ```
 
-#### ❓ Číštění lokální Git historii
+### ❓ Číštění lokální Git historii
 
 ```bash
 > git checkout master
@@ -219,6 +233,22 @@ Pokud jsou, vyřešit konflikty otevřením příslušných souborů a editací 
 ```bash
 > git fetch origin
 > git reset --hard origin/master
+```
+
+### ❓ Rollback k minulému fungujícímu commitu (když je špatný commit již v `remote`)
+
+```bash
+> git log --oneline -10
+> git revert <bad_commit_hash>
+> git push
+```
+
+### ❓ Mázání `.env` souboru z `remote`
+
+```bash
+> git rm --cached .env
+> git commit -m "Fix: .env from remote removed"
+> git push
 ```
 
 ---

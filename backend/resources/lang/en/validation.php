@@ -1,11 +1,12 @@
 <?php
 
 return [
-    'required' => 'This field is required.',
+    'required' => 'This field is required',
     'max' => [
-        'string' => 'This value is too long (max :max characters).',
+        'string' => 'This value is too long (max :max characters)',
     ],
     'unique' => 'This value has already been taken',
+    'phone' => 'Phone number format is invalid',
     'email' => 'Please enter a valid email address',
     'password' => [
         'letters' => 'Password must contain at least one letter',
@@ -14,7 +15,7 @@ return [
         'symbols' => 'Password must contain at least one special character',
         'uncompromised' => 'This password has appeared in a data leak, please choose a different one',
     ],
-    'password_contains_user_data' => 'Password cannot contain “:field”.',
+    'password_contains_user_data' => 'Password cannot contain “:field”',
     'custom' => [
         'data.name' => [
             'required' => 'Name is required',
