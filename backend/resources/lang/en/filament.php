@@ -31,9 +31,6 @@ return [
                 'edit' => 'Edit',
             ],
         ],
-        'form' => [
-            'is_creator' => 'Creator account',
-        ],
         'tabs' => [
             'all' => 'All',
             'super_admins' => 'Super Admins',

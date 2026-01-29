@@ -31,9 +31,6 @@ return [
                 'edit' => 'Upravit',
             ],
         ],
-        'form' => [
-            'is_creator' => 'Tvůrčí účet',
-        ],
         'tabs' => [
             'all' => 'Všichni',
             'super_admins' => 'Super administrátoři',

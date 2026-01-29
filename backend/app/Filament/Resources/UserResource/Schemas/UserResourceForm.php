@@ -14,38 +14,26 @@ class UserResourceForm
             ->schema([
                 TextInput::make('name')
                     ->required()
-                    ->maxLength(255)
-                    ->disabled()
-                    ->dehydrated(false),
+                    ->maxLength(255),
                 TextInput::make('username')
                     ->required()
                     ->maxLength(255)
-                    ->unique(ignoreRecord: true)
-                    ->disabled()
-                    ->dehydrated(false),
+                    ->unique(ignoreRecord: true),
                 TextInput::make('email')
                     ->required()
                     ->email()
                     ->maxLength(255)
-                    ->unique(ignoreRecord: true)
-                    ->disabled()
-                    ->dehydrated(false),
+                    ->unique(ignoreRecord: true),
                 TextInput::make('phone')
                     ->tel()
-                    ->maxLength(255)
-                    ->disabled()
-                    ->dehydrated(false),
+                    ->maxLength(255),
                 TextInput::make('password')
                     ->password()
-                    ->dehydrated(fn ($state): bool => filled($state))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->maxLength(255)
-                    ->disabled()
-                    ->dehydrated(false),
+                    ->dehydrated(fn (?string $state): bool => filled($state)),
                 Toggle::make('is_creator')
-                    ->label(__('filament.users.form.is_creator'))
-                    ->disabled()
-                    ->dehydrated(false),
+                    ->default(false),
             ]);
     }
 }
