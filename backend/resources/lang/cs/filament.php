@@ -9,7 +9,7 @@ return [
             'cs' => 'Čeština',
         ],
         'save' => 'Uložit',
-        'saved' => 'Profil byl aktualizován.',
+        'saved' => 'Profil byl aktualizován',
     ],
     'roles' => [
         'navigation_group' => 'Panel Rolí',

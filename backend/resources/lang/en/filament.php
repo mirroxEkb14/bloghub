@@ -9,7 +9,7 @@ return [
             'cs' => 'Czech',
         ],
         'save' => 'Save',
-        'saved' => 'Profile updated.',
+        'saved' => 'Profile updated',
     ],
     'roles' => [
         'navigation_group' => 'Role Panel',
