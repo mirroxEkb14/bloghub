@@ -18,12 +18,26 @@ fi
 php-fpm -D
 
 (
-  # Livewire assets (jen když chybí)
   if [ ! -f "public/livewire/livewire.js" ]; then
     php artisan vendor:publish --tag=livewire:assets --force || true
   fi
 
-  grep -q "^APP_KEY=base64:" .env || php artisan key:generate --force || true
+  if [ ! -f ".env.testing" ]; then
+    if [ -f ".env.testing.example" ]; then
+      cp .env.testing.example .env.testing
+    else
+      cp .env .env.testing
+    fi
+  fi
+
+  APP_KEY_VALUE="$(grep -E '^APP_KEY=' .env | head -n1 || true)"
+  if [ -n "$APP_KEY_VALUE" ]; then
+    if grep -qE '^APP_KEY=' .env.testing; then
+      sed -i "s|^APP_KEY=.*|$APP_KEY_VALUE|" .env.testing
+    else
+      echo "$APP_KEY_VALUE" >> .env.testing
+    fi
+  fi
 
   php -r '
   $host=getenv("DB_HOST") ?: "mysql";
