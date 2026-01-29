@@ -22,6 +22,7 @@ return [
                 'username' => 'Username',
                 'email' => 'Email',
                 'phone' => 'Phone',
+                'is_creator' => 'Creator',
                 'roles' => 'Roles',
                 'created_at' => 'Created',
             ],
@@ -29,6 +30,9 @@ return [
                 'view' => 'View',
                 'edit' => 'Edit',
             ],
+        ],
+        'form' => [
+            'is_creator' => 'Creator account',
         ],
         'tabs' => [
             'all' => 'All',

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\UserResource\Schemas;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class UserResourceForm
@@ -39,6 +40,10 @@ class UserResourceForm
                     ->dehydrated(fn ($state): bool => filled($state))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->maxLength(255)
+                    ->disabled()
+                    ->dehydrated(false),
+                Toggle::make('is_creator')
+                    ->label(__('filament.users.form.is_creator'))
                     ->disabled()
                     ->dehydrated(false),
             ]);

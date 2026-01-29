@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Filament\Resources\UserResource\UserResource;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Table;
@@ -40,6 +41,10 @@ class UserResourceTable
                 TextColumn::make('phone')
                     ->label(__('filament.users.table.columns.phone'))
                     ->searchable()
+                    ->toggleable(),
+                IconColumn::make('is_creator')
+                    ->label(__('filament.users.table.columns.is_creator'))
+                    ->boolean()
                     ->toggleable(),
                 TextColumn::make('roles.name')
                     ->label(__('filament.users.table.columns.roles'))
