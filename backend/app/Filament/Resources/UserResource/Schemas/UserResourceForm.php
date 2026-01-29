@@ -14,33 +14,32 @@ class UserResourceForm
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255)
-                    ->disabled()
-                    ->dehydrated(false),
+                    ->disabled(fn (string $operation): bool => $operation !== 'create')
+                    ->dehydrated(fn (string $operation): bool => $operation === 'create'),
                 TextInput::make('username')
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true)
-                    ->disabled()
-                    ->dehydrated(false),
+                    ->disabled(fn (string $operation): bool => $operation !== 'create')
+                    ->dehydrated(fn (string $operation): bool => $operation === 'create'),
                 TextInput::make('email')
                     ->required()
                     ->email()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true)
-                    ->disabled()
-                    ->dehydrated(false),
+                    ->disabled(fn (string $operation): bool => $operation !== 'create')
+                    ->dehydrated(fn (string $operation): bool => $operation === 'create'),
                 TextInput::make('phone')
                     ->tel()
                     ->maxLength(255)
-                    ->disabled()
-                    ->dehydrated(false),
+                    ->disabled(fn (string $operation): bool => $operation !== 'create')
+                    ->dehydrated(fn (string $operation): bool => $operation === 'create'),
                 TextInput::make('password')
                     ->password()
-                    ->dehydrated(fn ($state): bool => filled($state))
+                    ->dehydrated(fn (string $operation): bool => $operation === 'create')
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->maxLength(255)
-                    ->disabled()
-                    ->dehydrated(false),
+                    ->disabled(fn (string $operation): bool => $operation !== 'create'),
             ]);
     }
 }
