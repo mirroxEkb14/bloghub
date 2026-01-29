@@ -31,7 +31,6 @@ class UserResourceForm
                     ->unique(ignoreRecord: true),
                 TextInput::make('phone')
                     ->label(__('filament.users.form.phone'))
-                    ->tel()
                     ->rules([new PhoneRule()])
                     ->validationMessages([
                         'phone' => __('validation.phone'),
