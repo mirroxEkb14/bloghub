@@ -16,6 +16,16 @@ return [
     ],
     'users' => [
         'navigation_label' => 'Users',
+        'model_label' => 'User',
+        'plural_label' => 'Users',
+        'form' => [
+            'name' => 'Name',
+            'username' => 'Username',
+            'email' => 'Email',
+            'phone' => 'Phone',
+            'password' => 'Password',
+            'is_creator' => 'Creator',
+        ],
         'table' => [
             'columns' => [
                 'name' => 'Name',
