@@ -33,6 +33,10 @@ class UserResourceForm
                     ->label(__('filament.users.form.phone'))
                     ->tel()
                     ->rules([new PhoneRule()])
+                    ->validationMessages([
+                        'phone' => __('validation.phone'),
+                        'regex' => __('validation.phone'),
+                    ])
                     ->maxLength(255),
                 TextInput::make('password')
                     ->label(__('filament.users.form.password'))
