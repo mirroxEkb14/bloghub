@@ -14,7 +14,7 @@ class Profile extends Page
     use InteractsWithForms;
 
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-identification';
-    protected static ?int $navigationSort = 100;
+    protected static ?int $navigationSort = 1;
     protected string $view = 'filament.pages.profile';
 
     public array $data = [];
@@ -32,7 +32,6 @@ class Profile extends Page
     public function mount(): void
     {
         $locale = auth()->user()?->locale ?? config('app.locale');
-        $locale = $locale === 'cz' ? 'cs' : $locale;
 
         $this->form->fill([
             'locale' => $locale,
@@ -64,7 +63,7 @@ class Profile extends Page
         }
 
         $user->forceFill([
-            'locale' => $data['locale'] === 'cz' ? 'cs' : $data['locale'],
+            'locale' => $data['locale'],
         ])->save();
 
         Notification::make()
