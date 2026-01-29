@@ -7,7 +7,7 @@ use App\Rules\PhoneRule;
 use App\Rules\PasswordNotContainingUserData;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Get;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Validation\Rules\Password;
 
