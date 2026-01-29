@@ -16,6 +16,14 @@ return [
     ],
     'users' => [
         'navigation_label' => 'Uživatelé',
+        'form' => [
+            'name' => 'Jméno',
+            'username' => 'Uživatelské jméno',
+            'email' => 'E-mail',
+            'phone' => 'Telefon',
+            'password' => 'Heslo',
+            'is_creator' => 'Tvůrce',
+        ],
         'table' => [
             'columns' => [
                 'name' => 'Jméno',
