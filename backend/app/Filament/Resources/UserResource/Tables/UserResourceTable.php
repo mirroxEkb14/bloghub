@@ -5,6 +5,7 @@ namespace App\Filament\Resources\UserResource\Tables;
 use App\Models\User;
 use App\Filament\Resources\UserResource\UserResource;
 use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -57,7 +58,7 @@ class UserResourceTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->actions([
+            ->recordActions([
                 Action::make('view')
                     ->label(__('filament.users.table.actions.view'))
                     ->icon('heroicon-o-eye')
@@ -68,8 +69,10 @@ class UserResourceTable
                     ->icon('heroicon-o-pencil-square')
                     ->url(fn (User $record): string => UserResource::getUrl('edit', ['record' => $record])),
             ])
-            ->bulkActions([
-                DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
             ]);
     }
 }
