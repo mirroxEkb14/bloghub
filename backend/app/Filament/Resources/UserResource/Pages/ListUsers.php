@@ -5,6 +5,7 @@ namespace App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\UserResource;
 use App\Enums\UserRoleEnum;
 use App\Models\User;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,6 +13,14 @@ use Illuminate\Database\Eloquent\Builder;
 class ListUsers extends ListRecords
 {
     protected static string $resource = UserResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            CreateAction::make()
+                ->label(__('filament.users.actions.create')),
+        ];
+    }
 
     public function getTabs(): array
     {

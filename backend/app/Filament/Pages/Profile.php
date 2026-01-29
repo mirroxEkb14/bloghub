@@ -8,6 +8,7 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\App;
 
 class Profile extends Page
 {
@@ -66,6 +67,8 @@ class Profile extends Page
         $user->forceFill([
             'locale' => $data['locale'] === 'cz' ? 'cs' : $data['locale'],
         ])->save();
+
+        App::setLocale($user->locale);
 
         Notification::make()
             ->title(__('filament.profile.saved'))

@@ -16,6 +16,11 @@ return [
     ],
     'users' => [
         'navigation_label' => 'Users',
+        'model_label' => 'User',
+        'plural_label' => 'Users',
+        'actions' => [
+            'create' => 'Create user',
+        ],
         'table' => [
             'columns' => [
                 'name' => 'Name',

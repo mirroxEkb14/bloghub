@@ -16,6 +16,11 @@ return [
     ],
     'users' => [
         'navigation_label' => 'Uživatelé',
+        'model_label' => 'Uživatel',
+        'plural_label' => 'Uživatelé',
+        'actions' => [
+            'create' => 'Vytvořit uživatele',
+        ],
         'table' => [
             'columns' => [
                 'name' => 'Jméno',
