@@ -17,6 +17,8 @@ class PasswordNotContainingUserData implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $password = mb_strtolower((string) $value);
+        $attributeName = __('validation.attributes.' . $attribute);
+        $attributeLabel = $attributeName === 'validation.attributes.' . $attribute ? $attribute : $attributeName;
 
         foreach ($this->fields as $field) {
             $valueString = trim((string) ($field['value'] ?? ''));
@@ -29,7 +31,7 @@ class PasswordNotContainingUserData implements ValidationRule
 
             if (str_contains($password, $lowerValue)) {
                 $fail(__('validation.password_contains_user_data', [
-                    'attribute' => $attribute,
+                    'attribute' => $attributeLabel,
                     'field' => $field['label'],
                 ]));
                 break;
