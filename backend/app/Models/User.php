@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Rules\PhoneRule;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -35,6 +36,11 @@ class User extends Authenticatable implements FilamentUser
             'password' => 'hashed',
             'is_creator' => 'boolean',
         ];
+    }
+
+    public function setPhoneAttribute(?string $value): void
+    {
+        $this->attributes['phone'] = PhoneRule::normalize($value);
     }
 
     public function canAccessPanel(Panel $panel): bool
