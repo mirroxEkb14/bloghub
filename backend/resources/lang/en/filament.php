@@ -16,6 +16,8 @@ return [
     ],
     'users' => [
         'navigation_label' => 'Users',
+        'model_label' => 'User',
+        'plural_label' => 'Users',
         'form' => [
             'name' => 'Name',
             'username' => 'Username',

@@ -32,6 +32,16 @@ class UserResource extends Resource
         return __('filament.roles.navigation_group');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('filament.users.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.users.plural_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return UserResourceForm::configure($schema);

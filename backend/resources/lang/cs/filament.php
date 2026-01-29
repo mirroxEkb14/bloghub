@@ -16,6 +16,8 @@ return [
     ],
     'users' => [
         'navigation_label' => 'Uživatelé',
+        'model_label' => 'Uživatele',
+        'plural_label' => 'Uživatelé',
         'form' => [
             'name' => 'Jméno',
             'username' => 'Uživatelské jméno',
