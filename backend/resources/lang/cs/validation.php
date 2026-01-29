@@ -3,6 +3,9 @@
 return [
     'email' => 'Pole :attribute musí být platná e-mailová adresa',
     'phone' => 'Formát pole :attribute je neplatný',
+    'min' => [
+        'string' => 'Pole :attribute musí mít alespoň :min znaků.',
+    ],
     'password' => [
         'letters' => 'Pole :attribute musí obsahovat alespoň jedno písmeno.',
         'mixed' => 'Pole :attribute musí obsahovat alespoň jedno velké a jedno malé písmeno.',
