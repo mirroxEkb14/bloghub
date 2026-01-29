@@ -22,6 +22,7 @@ return [
                 'username' => 'Uživatelské jméno',
                 'email' => 'E-mail',
                 'phone' => 'Telefon',
+                'is_creator' => 'Tvůrce',
                 'roles' => 'Role',
                 'created_at' => 'Vytvořeno',
             ],
@@ -29,6 +30,9 @@ return [
                 'view' => 'Zobrazit',
                 'edit' => 'Upravit',
             ],
+        ],
+        'form' => [
+            'is_creator' => 'Tvůrčí účet',
         ],
         'tabs' => [
             'all' => 'Všichni',
