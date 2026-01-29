@@ -32,11 +32,19 @@ class PhoneRule implements ValidationRule
             return null;
         }
 
-        $normalized = preg_replace('/[\s\-()]/', '', $trimmed);
-        if ($normalized === null) {
+        if (!str_starts_with($trimmed, '+')) {
             return null;
         }
 
-        return $normalized;
+        if (!preg_match('/^[+\d\s\-()]+$/u', $trimmed)) {
+            return null;
+        }
+
+        $digits = preg_replace('/\D+/', '', $trimmed);
+        if ($digits === null || $digits === '') {
+            return null;
+        }
+
+        return '+' . $digits;
     }
 }
