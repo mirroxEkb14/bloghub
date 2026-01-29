@@ -183,13 +183,14 @@ Pokud jsou, vyřešit konflikty otevřením příslušných souborů a editací 
 > git branch -r
 ```
 
-#### Číštění lokální Git historii
+#### ❓ Číštění lokální Git historii
 
 ```bash
 > git checkout master
 > git fetch origin
 > git pull origin master
 > git branch -D fix/default-permissions
+> git fetch origin --prune
 ```
 
 ### ❓ Zahození celé větve, pro kterou již existuje MR v `remote`
