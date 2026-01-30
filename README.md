@@ -165,6 +165,24 @@ Testy lze spustit z kořenového adresáře backendu:
 
 ---
 
+## 🗄 Přístup k databázi z konzole
+
+```bash
+> docker compose exec mysql mysql -uapp -p
+> secret
+> show databases;
+> use app;
+> show tables;
+> select * from model_has_roles;
+> SELECT u.email, r.name
+FROM users u
+JOIN model_has_roles mr ON mr.model_id = u.id
+JOIN roles r ON r.id = mr.role_id;
+> exit
+```
+
+---
+
 ## 🔁 Časté Git scénáře
 
 ### ❓ Aktualizace lokálního `main` podle `remote`
