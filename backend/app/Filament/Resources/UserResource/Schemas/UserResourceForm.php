@@ -5,6 +5,7 @@ namespace App\Filament\Resources\UserResource\Schemas;
 use App\Rules\EmailRule;
 use App\Rules\PhoneRule;
 use App\Rules\PasswordWithoutUserData;
+use App\Support\UserResourceSupport;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Utilities\Get;
@@ -43,6 +44,7 @@ class UserResourceForm
                     ->hint(__('filament.users.form.phone_helper'))
                     ->placeholder(__('filament.users.form.phone_placeholder'))
                     ->prefix('+')
+                    ->formatStateUsing(UserResourceSupport::stripLeadingPlus())
                     ->rules([new PhoneRule()])
                     ->maxLength(20),
                 TextInput::make('password')
@@ -50,7 +52,7 @@ class UserResourceForm
                     ->hint(__('filament.users.form.password_helper'))
                     ->validationAttribute(__('filament.users.form.password'))
                     ->password()
-                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->required(UserResourceSupport::requiredOnCreate())
                     ->maxLength(255)
                     ->rules([
                         Password::min(8)
@@ -61,9 +63,7 @@ class UserResourceForm
                             ->uncompromised(),
                         fn (Get $get) => PasswordWithoutUserData::fromGet($get),
                     ])
-                    ->dehydrated(fn (?string $state, string $operation): bool =>
-                        $operation === 'create' || filled($state)
-                    ),
+                    ->dehydrated(UserResourceSupport::dehydratedOnCreateOrFilled()),
                 Toggle::make('is_creator')
                     ->label(__('filament.users.form.is_creator'))
                     ->default(false),
