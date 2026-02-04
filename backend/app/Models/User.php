@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
-use App\Rules\PhoneRule;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Spatie\Permission\Traits\HasRoles;
+use App\Rules\PhoneRule;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -36,6 +38,21 @@ class User extends Authenticatable implements FilamentUser
             'password' => 'hashed',
             'is_creator' => 'boolean',
         ];
+    }
+
+    public function creatorProfile(): HasOne
+    {
+        return $this->hasOne(CreatorProfile::class);
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
     }
 
     public function setPhoneAttribute(?string $value): void
