@@ -27,11 +27,11 @@ class ListUsers extends ListRecords
             'all' => Tab::make(__('filament.users.tabs.all'))
                 ->badge(User::count()),
             'super_admins' => Tab::make(__('filament.users.tabs.super_admins'))
-                ->modifyQueryUsing(fn (Builder $query) => $query->role(UserRoleEnum::SUPER_ADMIN->value))
-                ->badge(User::role(UserRoleEnum::SUPER_ADMIN->value)->count()),
+                ->modifyQueryUsing(fn (Builder $query) => $query->role(UserRoleEnum::SuperAdmin->value))
+                ->badge(User::role(UserRoleEnum::SuperAdmin->value)->count()),
             'admins' => Tab::make(__('filament.users.tabs.admins'))
-                ->modifyQueryUsing(fn (Builder $query) => $query->role(UserRoleEnum::ADMIN->value))
-                ->badge(User::role(UserRoleEnum::ADMIN->value)->count()),
+                ->modifyQueryUsing(fn (Builder $query) => $query->role(UserRoleEnum::Admin->value))
+                ->badge(User::role(UserRoleEnum::Admin->value)->count()),
             'others' => Tab::make(__('filament.users.tabs.others'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereDoesntHave('roles'))
                 ->badge(User::whereDoesntHave('roles')->count()),

@@ -24,6 +24,8 @@ class User extends Authenticatable implements FilamentUser
         'password',
         'locale',
         'is_creator',
+        'terms_accepted_at',
+        'privacy_accepted_at',
     ];
 
     protected $hidden = [
@@ -37,6 +39,8 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_creator' => 'boolean',
+            'terms_accepted_at' => 'datetime',
+            'privacy_accepted_at' => 'datetime',
         ];
     }
 
@@ -58,6 +62,16 @@ class User extends Authenticatable implements FilamentUser
     public function setPhoneAttribute(?string $value): void
     {
         $this->attributes['phone'] = PhoneRule::normalize($value);
+    }
+
+    public function hasAcceptedTerms(): bool
+    {
+        return ! is_null($this->terms_accepted_at);
+    }
+
+    public function hasAcceptedPrivacyPolicy(): bool
+    {
+        return ! is_null($this->privacy_accepted_at);
     }
 
     public function canAccessPanel(Panel $panel): bool

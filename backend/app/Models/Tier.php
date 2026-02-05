@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Enums\Currency;
 
 class Tier extends Model
 {
@@ -15,6 +16,10 @@ class Tier extends Model
         'tier_desc',
         'price',
         'currency',
+    ];
+
+    protected $casts = [
+        'currency' => Currency::class,
     ];
 
     public function creatorProfile(): BelongsTo

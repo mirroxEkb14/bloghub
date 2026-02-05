@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Enums\MediaType;
 
 class Post extends Model
 {
@@ -16,6 +17,10 @@ class Post extends Model
         'content_text',
         'media_url',
         'media_type',
+    ];
+
+    protected $casts = [
+        'media_type' => MediaType::class,
     ];
 
     public function creatorProfile(): BelongsTo

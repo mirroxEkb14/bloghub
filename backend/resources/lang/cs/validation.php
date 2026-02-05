@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'attributes' => require __DIR__ . '/attributes.php',
+
     'required' => 'Toto pole je povinné',
     'max' => [
         'string' => 'Text je příliš dlouhý (max. :max znaků)',
@@ -42,4 +44,5 @@ return [
             'min' => 'Heslo musí mít alespoň :min znaků',
         ],
     ],
+    'regex' => 'Formát není platný',
 ];
