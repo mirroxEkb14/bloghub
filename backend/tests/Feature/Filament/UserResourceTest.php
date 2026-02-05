@@ -267,7 +267,7 @@ class UserResourceTest extends TestCase
             'username' => fake()->unique()->userName(),
         ]);
 
-        $role = Role::where('name', UserRoleEnum::ADMIN->value)->firstOrFail();
+        $role = Role::where('name', UserRoleEnum::Admin->value)->firstOrFail();
         $admin->assignRole($role);
 
         return $admin;

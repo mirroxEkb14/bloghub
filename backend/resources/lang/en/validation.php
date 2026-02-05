@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'attributes' => require __DIR__ . '/attributes.php',
+
     'required' => 'This field is required',
     'max' => [
         'string' => 'This value is too long (max :max characters)',
@@ -42,4 +44,5 @@ return [
             'min' => 'Password must be at least :min characters',
         ],
     ],
+    'regex' => 'This format is invalid',
 ];

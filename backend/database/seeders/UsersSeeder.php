@@ -13,12 +13,12 @@ class UsersSeeder extends Seeder
     public function run(): void
     {
         $superAdminRole = Role::firstOrCreate([
-            'name' => UserRoleEnum::SUPER_ADMIN->value,
+            'name' => UserRoleEnum::SuperAdmin->value,
             'guard_name' => 'web',
         ]);
 
         $adminRole = Role::firstOrCreate([
-            'name' => UserRoleEnum::ADMIN->value,
+            'name' => UserRoleEnum::Admin->value,
             'guard_name' => 'web',
         ]);
 

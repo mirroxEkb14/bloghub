@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'slug' => 'slug',
+    'display_name' => 'zobrazované jméno',
+    'about' => 'o mně',
+    'profile_avatar_url' => 'URL avataru',
+    'profile_cover_url' => 'URL úvodního obrázku',
+    'tier_name' => 'název úrovně',
+    'tier_desc' => 'popis úrovně',
+    'level' => 'úroveň',
+    'price' => 'cena',
+    'currency' => 'měna',
+    'title' => 'název',
+    'content_text' => 'obsah',
+    'media_type' => 'typ média',
+    'media_url' => 'URL média',
+    'required_tier_id' => 'vyžadovaná úroveň',
+    'post_id' => 'příspěvek',
+    'tier_id' => 'úroveň předplatného',
+    'subscription_id' => 'předplatné',
+    'amount' => 'částka',
+    'card_last4' => 'poslední 4 číslice karty',
+    'payment_status' => 'stav platby',
+    'sub_status' => 'stav předplatného',
+];
