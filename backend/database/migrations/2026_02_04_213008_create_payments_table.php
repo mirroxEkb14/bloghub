@@ -18,6 +18,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->unsignedInteger('amount');
+            $table->char('currency', 3);
             $table->dateTime('checkout_date');
             $table->string('card_last4', 4);
             $table->enum('payment_status', ['Pending','Completed','Failed']);
