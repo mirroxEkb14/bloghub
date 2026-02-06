@@ -4,6 +4,7 @@ namespace App\Filament\Resources\CreatorProfileResource\Schemas;
 
 use App\Support\CreatorProfileResourceSupport;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -14,6 +15,7 @@ class CreatorProfileResourceForm
     {
         return $schema
             ->schema([
+                Hidden::make('id'),
                 Select::make('user_id')
                     ->label(__('filament.creator_profiles.form.user_id'))
                     ->relationship('user', 'name', CreatorProfileResourceSupport::userRelationshipQuery())

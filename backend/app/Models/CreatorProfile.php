@@ -36,18 +36,24 @@ class CreatorProfile extends Model
         });
     }
 
-    public function generateUniqueSlug(): string
+    public static function uniqueSlugForDisplayName(string $displayName, ?int $excludeId = null): string
     {
-        $base = Str::slug($this->display_name ?? '');
+        $base = Str::slug($displayName);
         if ($base === '') {
             $base = 'creator';
         }
         $slug = $base;
         $count = 1;
-        while (static::query()->where('slug', $slug)->when($this->exists, fn ($q) => $q->whereKeyNot($this->getKey()))->exists()) {
+        while (static::query()->where('slug', $slug)->when($excludeId !== null, fn ($q) => $q->whereKeyNot($excludeId))->exists()) {
             $slug = $base.'-'.($count++);
         }
+
         return $slug;
+    }
+
+    public function generateUniqueSlug(): string
+    {
+        return static::uniqueSlugForDisplayName($this->display_name ?? '', $this->exists ? $this->getKey() : null);
     }
 
     public function user(): BelongsTo

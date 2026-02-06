@@ -16,4 +16,9 @@ class EditCreatorProfile extends EditRecord
             DeleteAction::make()->requiresConfirmation(),
         ];
     }
+
+    protected function afterSave(): void
+    {
+        $this->fillForm();
+    }
 }

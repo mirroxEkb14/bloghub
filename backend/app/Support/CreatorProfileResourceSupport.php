@@ -5,10 +5,10 @@ namespace App\Support;
 use App\Filament\Resources\CreatorProfileResource\CreatorProfileResource;
 use App\Models\CreatorProfile;
 use Closure;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class CreatorProfileResourceSupport
 {
@@ -40,7 +40,16 @@ class CreatorProfileResourceSupport
 
     public static function setSlugFromDisplayName(): Closure
     {
-        return static fn (Set $set, ?string $state): mixed => $set('slug', Str::slug($state ?? ''));
+        return static function (Set $set, Get $get, ?string $state): mixed {
+            $excludeId = $get('id');
+            if ($excludeId !== null && $excludeId !== '') {
+                $excludeId = (int) $excludeId;
+            } else {
+                $excludeId = null;
+            }
+
+            return $set('slug', CreatorProfile::uniqueSlugForDisplayName($state ?? '', $excludeId));
+        };
     }
 
     public static function recordViewUrl(CreatorProfile $record): string
