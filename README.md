@@ -269,6 +269,19 @@ Pokud jsou, vyřešit konflikty otevřením příslušných souborů a editací 
 > git push
 ```
 
+### ❓ up-to-date s upraveným `main` v průběhu práce ve vlastní větve
+
+```bash
+> git checkout fix/default-permissions
+> git fetch origin
+> git merge origin/main
+```
+```bash
+> git add .
+> git commit
+> git push
+```
+
 ---
 
 ## 📬 Kontakty
