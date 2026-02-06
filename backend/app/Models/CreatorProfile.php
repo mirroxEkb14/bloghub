@@ -26,6 +26,14 @@ class CreatorProfile extends Model
                 $profile->slug = $profile->generateUniqueSlug();
             }
         });
+
+        static::created(function (CreatorProfile $profile): void {
+            $profile->user?->update(['is_creator' => true]);
+        });
+
+        static::deleted(function (CreatorProfile $profile): void {
+            $profile->user?->update(['is_creator' => false]);
+        });
     }
 
     public function generateUniqueSlug(): string
