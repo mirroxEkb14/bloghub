@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\UserResource\Tables;
 
+use App\Support\UserResourceActions;
 use App\Support\UserResourceSupport;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -60,7 +60,7 @@ class UserResourceTable
             ->recordActions([
                 ViewAction::make()->label(__('filament.users.table.actions.view')),
                 EditAction::make()->label(__('filament.users.table.actions.edit')),
-                DeleteAction::make()->label(__('filament.users.table.actions.delete'))->requiresConfirmation(),
+                UserResourceActions::deleteActionForTable(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

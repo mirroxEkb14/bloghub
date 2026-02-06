@@ -71,6 +71,7 @@ return [
             'phone_helper' => '+420123456789, +7 (987) 654 32 10, +49-456-987-321',
             'password_helper' => '8 chars, upper- & lowercase letters, a number, a special char',
         ],
+        'cannot_delete_yourself' => 'Cannot delete yourself',
         'table' => [
             'columns' => [
                 'name' => 'Name',

@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource\UserResource;
-use Filament\Resources\Pages\ViewRecord;
+use App\Support\UserResourceActions;
 use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\ViewRecord;
 
 class ViewUser extends ViewRecord
 {
@@ -15,7 +15,7 @@ class ViewUser extends ViewRecord
     {
         return [
             EditAction::make(),
-            DeleteAction::make()->requiresConfirmation(),
+            UserResourceActions::deleteActionForRecord($this->getRecord()),
         ];
     }
 }

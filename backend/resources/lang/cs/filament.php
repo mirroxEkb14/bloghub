@@ -54,6 +54,7 @@ return [
         'navigation_label' => 'Uživatelé',
         'model_label' => 'Uživatele',
         'plural_label' => 'Uživatelé',
+        'cannot_delete_yourself' => 'Nemůžete smazat sám sebe',
         'form' => [
             'name' => 'Jméno',
             'username' => 'Uživatelské jméno',
