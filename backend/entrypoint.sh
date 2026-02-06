@@ -7,7 +7,7 @@ if [ ! -f ".env" ]; then
   cp .env.example .env
 fi
 
-mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions storage/logs bootstrap/cache
+mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions storage/logs bootstrap/cache storage/app/private
 chmod -R 775 storage bootstrap/cache || true
 chown -R www-data:www-data storage bootstrap/cache || true
 

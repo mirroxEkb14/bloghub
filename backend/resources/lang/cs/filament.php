@@ -14,6 +14,42 @@ return [
     'roles' => [
         'navigation_group' => 'Panel Rolí',
     ],
+    'content' => [
+        'navigation_group' => 'Obsah',
+    ],
+    'creator_profiles' => [
+        'navigation_label' => 'Profily tvůrců',
+        'model_label' => 'Profil tvůrce',
+        'plural_label' => 'Profily tvůrců',
+        'form' => [
+            'user_id' => 'Uživatel',
+            'slug' => 'Slug',
+            'display_name' => 'Zobrazované jméno',
+            'about' => 'O mně',
+            'profile_avatar_path' => 'Avatar',
+            'profile_cover_path' => 'Úvodní obrázek',
+            'slug_auto_hint' => 'vygenerováno automaticky ze Zobrazovaného jména',
+            'display_name_placeholder' => 'Dr. Gregory House',
+            'about_placeholder' => 'Krátký popis nebo bio',
+            'about_hint' => 'max. 255 znaků',
+        ],
+        'table' => [
+            'columns' => [
+                'user' => 'Uživatel',
+                'slug' => 'Slug',
+                'display_name' => 'Zobrazované jméno',
+                'about' => 'O mně',
+                'posts_count' => 'Příspěvky',
+                'tiers_count' => 'Úrovně',
+                'created_at' => 'Vytvořeno',
+            ],
+            'actions' => [
+                'view' => 'Zobrazit',
+                'edit' => 'Upravit',
+                'delete' => 'Smazat',
+            ],
+        ],
+    ],
     'users' => [
         'navigation_label' => 'Uživatelé',
         'model_label' => 'Uživatele',
@@ -48,6 +84,7 @@ return [
             'actions' => [
                 'view' => 'Zobrazit',
                 'edit' => 'Upravit',
+                'delete' => 'Smazat',
             ],
         ],
         'tabs' => [
