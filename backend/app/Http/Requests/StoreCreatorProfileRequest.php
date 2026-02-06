@@ -26,8 +26,8 @@ class StoreCreatorProfileRequest extends FormRequest
             ],
             'display_name' => ['required', 'string', 'max:50'],
             'about' => ['nullable', 'string', 'max:255'],
-            'profile_avatar_url' => ['nullable', 'string', 'max:255', 'url'],
-            'profile_cover_url' => ['nullable', 'string', 'max:255', 'url'],
+            'profile_avatar_path' => ['nullable', 'string', 'max:255'],
+            'profile_cover_path' => ['nullable', 'string', 'max:255'],
         ];
     }
 

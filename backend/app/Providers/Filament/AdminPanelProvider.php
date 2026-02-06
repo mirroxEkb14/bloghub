@@ -34,6 +34,8 @@ class AdminPanelProvider extends PanelProvider
             ->navigationGroups([
                 NavigationGroup::make()
                     ->label(fn (): string => __('filament.roles.navigation_group')),
+                NavigationGroup::make()
+                    ->label(fn (): string => __('filament.content.navigation_group')),
             ])
             ->colors([
                 'primary' => Color::Amber,

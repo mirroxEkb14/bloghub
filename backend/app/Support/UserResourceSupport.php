@@ -2,12 +2,19 @@
 
 namespace App\Support;
 
+use App\Filament\Resources\UserResource\UserResource;
+use App\Models\User;
 use Closure;
 
 class UserResourceSupport
 {
     private function __construct()
     {
+    }
+
+    public static function recordViewUrl(User $record): string
+    {
+        return UserResource::getUrl('view', ['record' => $record]);
     }
 
     public static function requiredOnCreate(): Closure

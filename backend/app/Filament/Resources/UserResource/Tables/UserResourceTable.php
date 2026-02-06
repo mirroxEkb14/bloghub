@@ -2,11 +2,12 @@
 
 namespace App\Filament\Resources\UserResource\Tables;
 
-use App\Models\User;
-use App\Filament\Resources\UserResource\UserResource;
-use Filament\Actions\Action;
+use App\Support\UserResourceSupport;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
@@ -17,7 +18,7 @@ class UserResourceTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->recordUrl(fn (User $record): string => UserResource::getUrl('view', ['record' => $record]))
+            ->recordUrl(UserResourceSupport::recordViewUrl(...))
             ->defaultSort('id')
             ->columns([
                 TextColumn::make('id')
@@ -27,13 +28,11 @@ class UserResourceTable
                     ->label(__('filament.users.table.columns.name'))
                     ->view('filament.tables.columns.user-name')
                     ->searchable()
-                    ->sortable()
-                    ->toggleable(),
+                    ->sortable(),
                 TextColumn::make('username')
                     ->label(__('filament.users.table.columns.username'))
                     ->searchable()
-                    ->sortable()
-                    ->toggleable(),
+                    ->sortable(),
                 TextColumn::make('email')
                     ->label(__('filament.users.table.columns.email'))
                     ->searchable()
@@ -59,19 +58,13 @@ class UserResourceTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->recordActions([
-                Action::make('view')
-                    ->label(__('filament.users.table.actions.view'))
-                    ->icon('heroicon-o-eye')
-                    ->color('gray')
-                    ->url(fn (User $record): string => UserResource::getUrl('view', ['record' => $record])),
-                Action::make('edit')
-                    ->label(__('filament.users.table.actions.edit'))
-                    ->icon('heroicon-o-pencil-square')
-                    ->url(fn (User $record): string => UserResource::getUrl('edit', ['record' => $record])),
+                ViewAction::make()->label(__('filament.users.table.actions.view')),
+                EditAction::make()->label(__('filament.users.table.actions.edit')),
+                DeleteAction::make()->label(__('filament.users.table.actions.delete'))->requiresConfirmation(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->requiresConfirmation(),
                 ]),
             ]);
     }
