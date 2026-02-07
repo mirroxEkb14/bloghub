@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\Currency;
+use App\Support\TierResourceSupport;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -17,18 +18,25 @@ class StoreTierRequest extends FormRequest
     public function rules(): array
     {
         $creatorProfileId = $this->user()?->creatorProfile?->id;
+
         return [
             'level' => [
                 'required',
                 'integer',
-                Rule::in([1, 2, 3]),
+                Rule::in(TierResourceSupport::LEVEL_VALUES),
                 Rule::unique('tiers', 'level')
                     ->where(fn ($q) => $q->where('creator_profile_id', $creatorProfileId)),
             ],
-            'tier_name' => ['required', 'string', 'max:50'],
-            'tier_desc' => ['required', 'string', 'max:255'],
+            'tier_name' => ['required', 'string', 'max:'.TierResourceSupport::NAME_MAX_LENGTH],
+            'tier_desc' => ['required', 'string', 'max:'.TierResourceSupport::DESC_MAX_LENGTH],
             'price' => ['required', 'integer', 'min:1'],
-            'currency' => ['required', new Enum(Currency::class)],
+            'tier_currency' => ['required', new Enum(Currency::class)],
+            'tier_cover_path' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,png,webp',
+                'max:'.TierResourceSupport::COVER_MAX_FILE_SIZE_KB,
+            ],
         ];
     }
 

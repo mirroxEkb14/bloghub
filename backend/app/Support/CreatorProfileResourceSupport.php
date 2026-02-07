@@ -12,10 +12,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class CreatorProfileResourceSupport
 {
+    public const DISPLAY_NAME_MAX_LENGTH = 50;
+    public const ABOUT_MAX_LENGTH = 255;
     public const MAX_FILE_SIZE_KB = 5 * 1024;
-
     public const AVATAR_DIRECTORY = 'creator-profiles/avatars';
-
     public const COVER_DIRECTORY = 'creator-profiles/covers';
 
     private function __construct()

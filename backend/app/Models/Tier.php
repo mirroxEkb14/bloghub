@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\Currency;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Enums\Currency;
+use Illuminate\Support\Facades\Storage;
 
 class Tier extends Model
 {
@@ -15,11 +16,12 @@ class Tier extends Model
         'tier_name',
         'tier_desc',
         'price',
-        'currency',
+        'tier_currency',
+        'tier_cover_path',
     ];
 
     protected $casts = [
-        'currency' => Currency::class,
+        'tier_currency' => Currency::class,
     ];
 
     public function creatorProfile(): BelongsTo
@@ -35,5 +37,14 @@ class Tier extends Model
     public function requiredByPosts(): HasMany
     {
         return $this->hasMany(Post::class, 'required_tier_id');
+    }
+
+    public function getTierCoverUrlAttribute(): ?string
+    {
+        $path = $this->attributes['tier_cover_path'] ?? null;
+
+        return $path !== null && $path !== ''
+            ? Storage::disk('public')->url($path)
+            : null;
     }
 }

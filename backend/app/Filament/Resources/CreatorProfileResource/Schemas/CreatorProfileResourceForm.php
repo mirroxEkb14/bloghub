@@ -26,7 +26,7 @@ class CreatorProfileResourceForm
                     ->label(__('filament.creator_profiles.form.display_name'))
                     ->placeholder(__('filament.creator_profiles.form.display_name_placeholder'))
                     ->required()
-                    ->maxLength(50)
+                    ->maxLength(CreatorProfileResourceSupport::DISPLAY_NAME_MAX_LENGTH)
                     ->live(onBlur: true)
                     ->afterStateUpdated(CreatorProfileResourceSupport::setSlugFromDisplayName()),
                 TextInput::make('slug')
@@ -37,7 +37,7 @@ class CreatorProfileResourceForm
                     ->label(__('filament.creator_profiles.form.about'))
                     ->hint(__('filament.creator_profiles.form.about_hint'))
                     ->placeholder(__('filament.creator_profiles.form.about_placeholder'))
-                    ->maxLength(255),
+                    ->maxLength(CreatorProfileResourceSupport::ABOUT_MAX_LENGTH),
                 FileUpload::make('profile_avatar_path')
                     ->label(__('filament.creator_profiles.form.profile_avatar_path'))
                     ->disk('public')

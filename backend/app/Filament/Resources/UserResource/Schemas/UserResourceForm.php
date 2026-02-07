@@ -4,7 +4,7 @@ namespace App\Filament\Resources\UserResource\Schemas;
 
 use App\Rules\EmailRule;
 use App\Rules\PhoneRule;
-use App\Rules\PasswordWithoutUserData;
+use App\Rules\PasswordWithoutUserDataRule;
 use App\Support\UserResourceSupport;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -23,13 +23,13 @@ class UserResourceForm
                     ->hint(__('filament.users.form.name_helper'))
                     ->placeholder(__('filament.users.form.name_placeholder'))
                     ->required()
-                    ->maxLength(100),
+                    ->maxLength(UserResourceSupport::NAME_MAX_LENGTH),
                 TextInput::make('username')
                     ->label(__('filament.users.form.username'))
                     ->hint(__('filament.users.form.username_helper'))
                     ->placeholder(__('filament.users.form.username_placeholder'))
                     ->required()
-                    ->maxLength(50)
+                    ->maxLength(UserResourceSupport::USERNAME_MAX_LENGTH)
                     ->unique(ignoreRecord: true),
                 TextInput::make('email')
                     ->label(__('filament.users.form.email'))
@@ -37,7 +37,7 @@ class UserResourceForm
                     ->placeholder(__('filament.users.form.email_placeholder'))
                     ->required()
                     ->rules([new EmailRule()])
-                    ->maxLength(255)
+                    ->maxLength(UserResourceSupport::EMAIL_MAX_LENGTH)
                     ->unique(ignoreRecord: true),
                 TextInput::make('phone')
                     ->label(__('filament.users.form.phone'))
@@ -46,22 +46,22 @@ class UserResourceForm
                     ->prefix('+')
                     ->formatStateUsing(UserResourceSupport::stripLeadingPlus())
                     ->rules([new PhoneRule()])
-                    ->maxLength(20),
+                    ->maxLength(UserResourceSupport::PHONE_MAX_LENGTH),
                 TextInput::make('password')
                     ->label(__('filament.users.form.password'))
                     ->hint(__('filament.users.form.password_helper'))
                     ->validationAttribute(__('filament.users.form.password'))
                     ->password()
                     ->required(UserResourceSupport::requiredOnCreate())
-                    ->maxLength(255)
+                    ->maxLength(UserResourceSupport::PASSWORD_MAX_LENGTH)
                     ->rules([
-                        Password::min(8)
+                        Password::min(UserResourceSupport::PASSWORD_MIN_LENGTH)
                             ->letters()
                             ->numbers()
                             ->symbols()
                             ->mixedCase()
                             ->uncompromised(),
-                        fn (Get $get) => PasswordWithoutUserData::fromGet($get),
+                        fn (Get $get) => PasswordWithoutUserDataRule::fromGet($get),
                     ])
                     ->dehydrated(UserResourceSupport::dehydratedOnCreateOrFilled()),
                 Toggle::make('is_creator')

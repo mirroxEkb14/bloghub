@@ -10,6 +10,7 @@ return [
     'tier_desc' => 'tier description',
     'level' => 'level',
     'price' => 'price',
+    'tier_currency' => 'tier currency',
     'currency' => 'currency',
     'title' => 'title',
     'content_text' => 'content',

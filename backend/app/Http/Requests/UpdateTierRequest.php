@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\Currency;
+use App\Support\TierResourceSupport;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -12,6 +13,7 @@ class UpdateTierRequest extends FormRequest
     public function authorize(): bool
     {
         $tier = $this->route('tier');
+
         return $tier && $this->user()?->creatorProfile?->id === $tier->creator_profile_id;
     }
 
@@ -31,13 +33,19 @@ class UpdateTierRequest extends FormRequest
                 'sometimes',
                 'required',
                 'integer',
-                Rule::in([1, 2, 3]),
+                Rule::in(TierResourceSupport::LEVEL_VALUES),
                 $levelUnique,
             ],
-            'tier_name' => ['sometimes', 'required', 'string', 'max:50'],
-            'tier_desc' => ['sometimes', 'required', 'string', 'max:255'],
+            'tier_name' => ['sometimes', 'required', 'string', 'max:'.TierResourceSupport::NAME_MAX_LENGTH],
+            'tier_desc' => ['sometimes', 'required', 'string', 'max:'.TierResourceSupport::DESC_MAX_LENGTH],
             'price' => ['sometimes', 'required', 'integer', 'min:1'],
-            'currency' => ['sometimes', 'required', new Enum(Currency::class)],
+            'tier_currency' => ['sometimes', 'required', new Enum(Currency::class)],
+            'tier_cover_path' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,png,webp',
+                'max:'.TierResourceSupport::COVER_MAX_FILE_SIZE_KB,
+            ],
         ];
     }
 
