@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TierResource\Tables;
 
+use App\Filters\TierTableFilters;
 use App\Support\TierResourceSupport;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -10,6 +11,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 
 class TierResourceTable
@@ -20,6 +22,7 @@ class TierResourceTable
             ->recordUrl(TierResourceSupport::recordViewUrl(...))
             ->defaultSort('creator_profile_id')
             ->modifyQueryUsing(TierResourceSupport::tierTableModifyQueryUsing())
+            ->filters(TierTableFilters::filters(), FiltersLayout::AboveContentCollapsible)
             ->columns([
                 TextColumn::make('id')
                     ->label('#')
