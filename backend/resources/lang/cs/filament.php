@@ -43,6 +43,11 @@ return [
                 'tiers_count' => 'Úrovně',
                 'created_at' => 'Vytvořeno',
             ],
+            'filters' => [
+                'user' => 'Uživatel',
+                'posts_count' => 'Příspěvky (počet)',
+                'posts_count_indicator' => 'Příspěvky: :count',
+            ],
             'actions' => [
                 'view' => 'Zobrazit',
                 'edit' => 'Upravit',

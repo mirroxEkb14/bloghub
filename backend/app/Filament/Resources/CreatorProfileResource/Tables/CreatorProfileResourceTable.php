@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CreatorProfileResource\Tables;
 
+use App\Filters\CreatorProfileTableFilters;
 use App\Support\CreatorProfileResourceSupport;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -20,6 +21,7 @@ class CreatorProfileResourceTable
             ->recordUrl(CreatorProfileResourceSupport::recordViewUrl(...))
             ->defaultSort('id')
             ->modifyQueryUsing(fn ($query) => $query->with('user'))
+            ->filters(CreatorProfileTableFilters::filters())
             ->columns([
                 TextColumn::make('id')
                     ->label('#')

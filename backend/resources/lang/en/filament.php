@@ -43,6 +43,11 @@ return [
                 'tiers_count' => 'Tiers',
                 'created_at' => 'Created',
             ],
+            'filters' => [
+                'user' => 'User',
+                'posts_count' => 'Posts (count)',
+                'posts_count_indicator' => 'Posts: :count',
+            ],
             'actions' => [
                 'view' => 'View',
                 'edit' => 'Edit',
