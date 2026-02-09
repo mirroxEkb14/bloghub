@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Enums\Currency;
+use App\Support\StorageUrlSupport;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Storage;
 
 class Tier extends Model
 {
@@ -41,10 +41,6 @@ class Tier extends Model
 
     public function getTierCoverUrlAttribute(): ?string
     {
-        $path = $this->attributes['tier_cover_path'] ?? null;
-
-        return $path !== null && $path !== ''
-            ? Storage::disk('public')->url($path)
-            : null;
+        return StorageUrlSupport::publicUrl($this->attributes['tier_cover_path'] ?? null);
     }
 }

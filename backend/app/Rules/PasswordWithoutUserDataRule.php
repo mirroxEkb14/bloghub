@@ -8,9 +8,6 @@ use Filament\Schemas\Components\Utilities\Get;
 
 readonly class PasswordWithoutUserDataRule implements ValidationRule
 {
-    /**
-     * @param array<string, array{value: string|null, label: string}> $fields
-     */
     public function __construct(private array $fields)
     {
     }

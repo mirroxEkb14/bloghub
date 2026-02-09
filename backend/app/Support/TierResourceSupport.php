@@ -53,11 +53,6 @@ class TierResourceSupport
         };
     }
 
-    /**
-     * Unique level per creator profile (for Filament form).
-     *
-     * @return array<int, mixed>
-     */
     public static function levelUniqueRules(): array
     {
         return [
@@ -74,9 +69,6 @@ class TierResourceSupport
         return TierResource::getUrl('view', ['record' => $record]);
     }
 
-    /**
-     * Closure for Tier table: eager load creatorProfile on the query.
-     */
     public static function tierTableModifyQueryUsing(): Closure
     {
         return static function (Builder $query): Builder {
@@ -84,14 +76,10 @@ class TierResourceSupport
         };
     }
 
-    /**
-     * Closure for Tier table currency column: display enum value (e.g. USD) or raw state.
-     */
     public static function formatCurrencyForTable(): Closure
     {
         return static function (mixed $state): mixed {
             return $state?->value ?? $state;
         };
     }
-
 }

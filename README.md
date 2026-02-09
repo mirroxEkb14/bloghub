@@ -282,6 +282,12 @@ Pokud jsou, vyřešit konflikty otevřením příslušných souborů a editací 
 > git push
 ```
 
+### ❓ Zobrazit přehled commitu (autor, datum, zpráva, seznam nových/upravených souborů)
+
+```bash
+> git show --name-only <commit-hash>
+```
+
 ---
 
 ## 📬 Kontakty
