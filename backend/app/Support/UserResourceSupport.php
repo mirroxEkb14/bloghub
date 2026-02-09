@@ -8,6 +8,13 @@ use Closure;
 
 class UserResourceSupport
 {
+    public const NAME_MAX_LENGTH = 100;
+    public const USERNAME_MAX_LENGTH = 50;
+    public const EMAIL_MAX_LENGTH = 255;
+    public const PHONE_MAX_LENGTH = 20;
+    public const PASSWORD_MAX_LENGTH = 255;
+    public const PASSWORD_MIN_LENGTH = 8;
+
     private function __construct()
     {
     }

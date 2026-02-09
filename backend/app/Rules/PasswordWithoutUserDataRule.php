@@ -6,11 +6,8 @@ use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Filament\Schemas\Components\Utilities\Get;
 
-readonly class PasswordWithoutUserData implements ValidationRule
+readonly class PasswordWithoutUserDataRule implements ValidationRule
 {
-    /**
-     * @param array<string, array{value: string|null, label: string}> $fields
-     */
     public function __construct(private array $fields)
     {
     }

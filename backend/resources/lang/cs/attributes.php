@@ -10,6 +10,7 @@ return [
     'tier_desc' => 'popis úrovně',
     'level' => 'úroveň',
     'price' => 'cena',
+    'tier_currency' => 'měna úrovně',
     'currency' => 'měna',
     'title' => 'název',
     'content_text' => 'obsah',
