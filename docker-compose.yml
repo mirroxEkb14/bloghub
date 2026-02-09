@@ -39,9 +39,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "php -r 'exit(file_exists(\"/var/www/html/vendor/autoload.php\") ? 0 : 1);'"]
-      interval: 2s
-      timeout: 2s
-      retries: 30
+      interval: 5s
+      timeout: 3s
+      retries: 24
+      start_period: 90s
 
   backend-nginx:
     image: nginx:1.27-alpine

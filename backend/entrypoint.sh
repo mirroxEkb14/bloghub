@@ -53,7 +53,7 @@ php-fpm -D
 
   php artisan migrate --force || true
   php artisan db:seed --force || true
-  php artisan storage:link || true
+  [ -e public/storage ] || php artisan storage:link || true
 ) &
 
 tail -f /dev/null
