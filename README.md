@@ -35,7 +35,7 @@ Projekt je rozdělen na backend (**Laravel** + **Filament**) a frontend (**React
 
 ```
 bloghub/
-├── backend/
+├── bloghub-backend/
 │   ├── app/
 │   │   ├── Enums/
 │   │   ├── Filament/
@@ -77,7 +77,7 @@ bloghub/
 │   │       └── 01-create-test-db.sql
 │   └── nginx/
 │       └── backend.conf
-├── frontend/
+├── bloghub-frontend/
 │   ├── public/
 │   ├── src/
 │   │   ├── assets/
@@ -132,7 +132,7 @@ Projekt běží v následujících kontejnerech:
 > docker compose up -d --build
 ```
 
-**Poznámka №1**: building kontejnerů muže potrvat cca 1,5 minuty, běh skriptu backend kontejneru dalších cca 10-15 vteřin.
+**Poznámka №1**: první building kontejnerů muže potrvat do 5 minut.
 
 **Poznámka №2**: lze narazit na **race condition** kvůli `entrypoint.sh` skriptu, když Filament začne obsluhovat requesty dřív, než doběhnou veškeré migrace a seedery, protože backendový `entrypoint.sh` je nastaven tak, že **PHP-FPM** je spouštěn hned, zatímco migrace a seedery běží na pozadí. Tzn. server už pžijímá requesty, ale DB ještě není připravená.
 - `Table 'app.sessions' doesn't exist` (zpřístupnění `/admin`) a `These credentials do not match our records.` (login)
@@ -156,7 +156,7 @@ Výchozí účty (z `.env`):
 
 Testy běží v odděleném testovacím prostředí definovaném v souboru `.env.testing`. Používá se samostatná databáze `app_test`.
 
-Testy lze spustit z kořenového adresáře backendu:
+Testy lze spustit z kořenového adresáře `bloghub-backend/`:
 ```bash
 > php artisan test
 ```
