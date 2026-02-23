@@ -7,6 +7,7 @@ use App\Support\TierResourceSupport;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -50,12 +51,15 @@ class TierResourceForm
                                             ->required()
                                             ->maxLength(TierResourceSupport::NAME_MAX_LENGTH)
                                             ->columnSpanFull(),
-                                        TextInput::make('tier_desc')
+                                        Textarea::make('tier_desc')
                                             ->label(__('filament.tiers.form.tier_desc'))
                                             ->placeholder(__('filament.tiers.form.tier_desc_placeholder'))
+                                            ->hint(__('filament.tiers.form.tier_desc_hint', ['max' => TierResourceSupport::DESC_MAX_LENGTH]))
                                             ->required()
                                             ->maxLength(TierResourceSupport::DESC_MAX_LENGTH)
-                                            ->columnSpanFull(),
+                                            ->columnSpanFull()
+                                            ->rows(8)
+                                            ->extraInputAttributes(['class' => 'max-h-[20rem] overflow-y-auto']),
                                         FileUpload::make('tier_cover_path')
                                             ->label(__('filament.tiers.form.tier_cover_path'))
                                             ->disk('public')

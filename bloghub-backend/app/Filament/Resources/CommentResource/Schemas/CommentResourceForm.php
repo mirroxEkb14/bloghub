@@ -46,6 +46,7 @@ class CommentResourceForm
                                         Textarea::make('content_text')
                                             ->label(__('filament.comments.form.content_text'))
                                             ->placeholder(__('filament.comments.form.content_text_placeholder'))
+                                            ->hint(__('filament.comments.form.content_text_hint', ['max' => CommentResourceSupport::CONTENT_TEXT_MAX_LENGTH]))
                                             ->required()
                                             ->maxLength(CommentResourceSupport::CONTENT_TEXT_MAX_LENGTH)
                                             ->columnSpanFull()

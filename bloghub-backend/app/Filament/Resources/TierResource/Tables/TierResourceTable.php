@@ -44,10 +44,6 @@ class TierResourceTable
                     ->searchable()
                     ->sortable()
                     ->limit(30),
-                TextColumn::make('tier_desc')
-                    ->label(__('filament.tiers.table.columns.tier_desc'))
-                    ->limit(40)
-                    ->toggleable(),
                 TextColumn::make('price')
                     ->label(__('filament.tiers.table.columns.price'))
                     ->sortable(),

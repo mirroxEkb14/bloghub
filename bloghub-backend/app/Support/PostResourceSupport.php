@@ -10,6 +10,7 @@ class PostResourceSupport
     public const SLUG_MAX_LENGTH = 255;
     public const TITLE_MAX_LENGTH = 50;
     public const CONTENT_TEXT_MIN_LENGTH = 1;
+    public const CONTENT_TEXT_MAX_LENGTH = 65535;
     public const MEDIA_URL_MAX_LENGTH = 255;
     public const MEDIA_TYPE_MAX_LENGTH = 20;
 

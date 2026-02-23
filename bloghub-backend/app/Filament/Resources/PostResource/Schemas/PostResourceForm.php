@@ -47,6 +47,7 @@ class PostResourceForm
                                         TextInput::make('slug')
                                             ->label(__('filament.posts.form.slug'))
                                             ->placeholder(__('filament.posts.form.slug_placeholder'))
+                                            ->hint(__('filament.posts.form.slug_hint'))
                                             ->required()
                                             ->maxLength(PostResourceSupport::SLUG_MAX_LENGTH)
                                             ->rules([SlugUniquePerCreatorProfileRule::forForm()]),
@@ -59,8 +60,10 @@ class PostResourceForm
                                         Textarea::make('content_text')
                                             ->label(__('filament.posts.form.content_text'))
                                             ->placeholder(__('filament.posts.form.content_text_placeholder'))
+                                            ->hint(__('filament.posts.form.content_text_hint', ['max' => PostResourceSupport::CONTENT_TEXT_MAX_LENGTH]))
                                             ->required()
                                             ->minLength(PostResourceSupport::CONTENT_TEXT_MIN_LENGTH)
+                                            ->maxLength(PostResourceSupport::CONTENT_TEXT_MAX_LENGTH)
                                             ->columnSpanFull()
                                             ->rows(10),
                                         Select::make('required_tier_id')

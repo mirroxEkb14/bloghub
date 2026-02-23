@@ -39,11 +39,6 @@ class CreatorProfileResourceTable
                     ->label(__('filament.creator_profiles.table.columns.display_name'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('about')
-                    ->label(__('filament.creator_profiles.table.columns.about'))
-                    ->limit(40)
-                    ->searchable()
-                    ->toggleable(),
                 TextColumn::make('posts_count')
                     ->label(__('filament.creator_profiles.table.columns.posts_count'))
                     ->counts('posts')

@@ -44,6 +44,7 @@ class UpdatePostRequest extends FormRequest
                 'required',
                 'string',
                 'min:'.PostResourceSupport::CONTENT_TEXT_MIN_LENGTH,
+                'max:'.PostResourceSupport::CONTENT_TEXT_MAX_LENGTH,
             ],
             'media_url' => [
                 'nullable',

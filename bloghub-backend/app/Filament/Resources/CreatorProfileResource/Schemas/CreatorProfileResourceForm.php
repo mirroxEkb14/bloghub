@@ -6,6 +6,7 @@ use App\Support\CreatorProfileResourceSupport;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -33,11 +34,13 @@ class CreatorProfileResourceForm
                     ->label(__('filament.creator_profiles.form.slug'))
                     ->hint(__('filament.creator_profiles.form.slug_auto_hint'))
                     ->required(),
-                TextInput::make('about')
+                Textarea::make('about')
                     ->label(__('filament.creator_profiles.form.about'))
                     ->hint(__('filament.creator_profiles.form.about_hint'))
                     ->placeholder(__('filament.creator_profiles.form.about_placeholder'))
-                    ->maxLength(CreatorProfileResourceSupport::ABOUT_MAX_LENGTH),
+                    ->maxLength(CreatorProfileResourceSupport::ABOUT_MAX_LENGTH)
+                    ->rows(8)
+                    ->extraInputAttributes(['class' => 'max-h-[20rem] overflow-y-auto']),
                 FileUpload::make('profile_avatar_path')
                     ->label(__('filament.creator_profiles.form.profile_avatar_path'))
                     ->disk('public')
