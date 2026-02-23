@@ -7,7 +7,6 @@ use App\Support\CreatorProfileResourceSupport;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
@@ -55,7 +54,6 @@ class CreatorProfileResourceTable
             ])
             ->recordActions([
                 ViewAction::make()->label(__('filament.creator_profiles.table.actions.view')),
-                EditAction::make()->label(__('filament.creator_profiles.table.actions.edit'))->requiresConfirmation(),
                 DeleteAction::make()->label(__('filament.creator_profiles.table.actions.delete'))->requiresConfirmation(),
             ])
             ->toolbarActions([

@@ -20,27 +20,53 @@ class CreatorProfileTableFilters
             Filter::make('posts_count')
                 ->label(__('filament.creator_profiles.table.filters.posts_count'))
                 ->schema([
-                    TextInput::make('value')
-                        ->label(__('filament.creator_profiles.table.filters.posts_count'))
+                    TextInput::make('from')
+                        ->label(__('filament.creator_profiles.table.filters.posts_count_from'))
                         ->numeric()
                         ->integer()
                         ->minValue(0)
                         ->step(1)
-                        ->placeholder('0'),
+                        ->placeholder(__('filament.creator_profiles.table.filters.posts_count_from_placeholder')),
+                    TextInput::make('to')
+                        ->label(__('filament.creator_profiles.table.filters.posts_count_to'))
+                        ->numeric()
+                        ->integer()
+                        ->minValue(0)
+                        ->step(1)
+                        ->placeholder(__('filament.creator_profiles.table.filters.posts_count_to_placeholder')),
                 ])
                 ->query(function (Builder $query, array $data): Builder {
-                    $value = $data['value'] ?? null;
-                    if ($value === null || $value === '') {
+                    $base = $data['posts_count'] ?? $data;
+                    $from = isset($base['from']) && $base['from'] !== '' ? (int) $base['from'] : null;
+                    $to = isset($base['to']) && $base['to'] !== '' ? (int) $base['to'] : null;
+                    if ($from === null && $to === null) {
                         return $query;
                     }
-                    return $query->withCount('posts')->having('posts_count', '=', (int) $value);
+                    $subquery = '(select count(*) from posts where posts.creator_profile_id = creator_profiles.id)';
+                    if ($from !== null) {
+                        $query->whereRaw($subquery.' >= ?', [$from]);
+                    }
+                    if ($to !== null) {
+                        $query->whereRaw($subquery.' <= ?', [$to]);
+                    }
+
+                    return $query;
                 })
                 ->indicateUsing(function (array $data): ?string {
-                    $value = $data['value'] ?? null;
-                    if ($value === null || $value === '') {
+                    $base = $data['posts_count'] ?? $data;
+                    $from = isset($base['from']) && $base['from'] !== '' ? (int) $base['from'] : null;
+                    $to = isset($base['to']) && $base['to'] !== '' ? (int) $base['to'] : null;
+                    if ($from === null && $to === null) {
                         return null;
                     }
-                    return __('filament.creator_profiles.table.filters.posts_count_indicator', ['count' => $value]);
+                    if ($from !== null && $to !== null) {
+                        return __('filament.creator_profiles.table.filters.posts_count_indicator_range', ['from' => $from, 'to' => $to]);
+                    }
+                    if ($from !== null) {
+                        return __('filament.creator_profiles.table.filters.posts_count_indicator_from', ['from' => $from]);
+                    }
+
+                    return __('filament.creator_profiles.table.filters.posts_count_indicator_to', ['to' => $to]);
                 }),
         ];
     }

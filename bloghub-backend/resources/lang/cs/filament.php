@@ -106,6 +106,9 @@ return [
             'about_placeholder' => 'Krátký popis nebo bio',
             'about_hint' => 'max. 255 znaků',
             'tags' => 'Štítky',
+            'section_profile' => 'Profil',
+            'section_display' => 'Zobrazení',
+            'section_about' => 'O mně',
         ],
         'table' => [
             'columns' => [

@@ -106,6 +106,9 @@ return [
             'about_placeholder' => 'Short bio or description',
             'about_hint' => 'max. 255 characters',
             'tags' => 'Tags',
+            'section_profile' => 'Profile',
+            'section_display' => 'Display',
+            'section_about' => 'About',
         ],
         'table' => [
             'columns' => [
@@ -120,7 +123,13 @@ return [
             'filters' => [
                 'user' => 'User',
                 'posts_count' => 'Posts (count)',
-                'posts_count_indicator' => 'Posts: :count',
+                'posts_count_from' => 'Posts (min)',
+                'posts_count_to' => 'Posts (max)',
+                'posts_count_from_placeholder' => 'Min',
+                'posts_count_to_placeholder' => 'Max',
+                'posts_count_indicator_range' => 'Posts: :from–:to',
+                'posts_count_indicator_from' => 'Posts: ≥:from',
+                'posts_count_indicator_to' => 'Posts: ≤:to',
             ],
             'actions' => [
                 'view' => 'View',

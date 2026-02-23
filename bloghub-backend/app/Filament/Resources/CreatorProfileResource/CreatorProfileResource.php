@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\CreatorProfileResource;
 
 use App\Filament\Resources\CreatorProfileResource\Pages\CreateCreatorProfile;
-use App\Filament\Resources\CreatorProfileResource\Pages\EditCreatorProfile;
 use App\Filament\Resources\CreatorProfileResource\Pages\ListCreatorProfiles;
 use App\Filament\Resources\CreatorProfileResource\Pages\ViewCreatorProfile;
 use App\Filament\Resources\CreatorProfileResource\Schemas\CreatorProfileResourceForm;
@@ -58,7 +57,6 @@ class CreatorProfileResource extends Resource
             'index' => ListCreatorProfiles::route('/'),
             'create' => CreateCreatorProfile::route('/create'),
             'view' => ViewCreatorProfile::route('/{record}'),
-            'edit' => EditCreatorProfile::route('/{record}/edit'),
         ];
     }
 }
