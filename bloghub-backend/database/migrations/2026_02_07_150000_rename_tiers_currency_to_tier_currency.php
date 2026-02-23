@@ -8,7 +8,6 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * Rename currency to tier_currency (tier-prefixed, snake_case).
      */
     public function up(): void
     {
