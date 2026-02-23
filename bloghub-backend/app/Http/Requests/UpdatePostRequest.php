@@ -3,68 +3,60 @@
 namespace App\Http\Requests;
 
 use App\Enums\MediaType;
+use App\Models\Post;
+use App\Support\PostResourceSupport;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
 class UpdatePostRequest extends FormRequest
 {
-    private const SLUG_REGEX = '/^[a-z0-9]+(?:-[a-z0-9]+)*$/';
-
     public function authorize(): bool
     {
         $post = $this->route('post');
-        return $post && $this->user()?->creatorProfile?->id === $post->creator_profile_id;
+
+        return $post instanceof Post
+            && $this->user()?->creatorProfile?->id === $post->creator_profile_id;
     }
 
     public function rules(): array
     {
         $post = $this->route('post');
-        $creatorProfileId = $this->user()?->creatorProfile?->id;
+        $creatorProfileId = (int) $this->user()?->creatorProfile?->id;
 
-        $slugUnique = Rule::unique('posts', 'slug')
-            ->where(fn ($q) => $q->where('creator_profile_id', $creatorProfileId));
-        if ($post) {
-            $slugUnique->ignore($post->id);
-        }
+        $slugRules = [
+            'sometimes',
+            'required',
+            'string',
+            'max:'.PostResourceSupport::SLUG_MAX_LENGTH,
+            ...PostResourceSupport::slugUniqueRules($creatorProfileId, $post?->id),
+        ];
 
         return [
-            'slug' => [
+            'slug' => $slugRules,
+            'title' => [
                 'sometimes',
                 'required',
                 'string',
-                'max:255',
-                Rule::regex(self::SLUG_REGEX),
-                $slugUnique,
+                'max:'.PostResourceSupport::TITLE_MAX_LENGTH,
             ],
-            'title' => ['sometimes', 'required', 'string', 'max:50'],
-            'content_text' => ['sometimes', 'required', 'string', 'max:65535'],
-            'media_type' => [
-                'nullable',
-                new Enum(MediaType::class),
-                Rule::requiredIf(fn () => $this->filled('media_url'))
+            'content_text' => [
+                'sometimes',
+                'required',
+                'string',
+                'min:'.PostResourceSupport::CONTENT_TEXT_MIN_LENGTH,
             ],
             'media_url' => [
                 'nullable',
                 'string',
-                'max:255',
-                'url',
-                Rule::requiredIf(fn () => $this->filled('media_type')),
+                'max:'.PostResourceSupport::MEDIA_URL_MAX_LENGTH,
             ],
-            'required_tier_id' => [
+            'media_type' => [
                 'nullable',
-                'integer',
-                Rule::exists('tiers', 'id')
-                    ->where(fn ($q) => $q->where('creator_profile_id', $creatorProfileId)),
+                'string',
+                'max:'.PostResourceSupport::MEDIA_TYPE_MAX_LENGTH,
+                new Enum(MediaType::class),
             ],
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'slug.regex' => __('messages.slug_invalid'),
-            'media_url.required' => __('messages.media_url_required'),
+            'required_tier_id' => PostResourceSupport::requiredTierBelongsToCreatorRules($creatorProfileId),
         ];
     }
 }

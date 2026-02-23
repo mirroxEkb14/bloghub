@@ -3,14 +3,12 @@
 namespace App\Http\Requests;
 
 use App\Enums\MediaType;
+use App\Support\PostResourceSupport;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
 class StorePostRequest extends FormRequest
 {
-    private const SLUG_REGEX = '/^[a-z0-9]+(?:-[a-z0-9]+)*$/';
-
     public function authorize(): bool
     {
         return (bool) $this->user()?->creatorProfile;
@@ -18,44 +16,37 @@ class StorePostRequest extends FormRequest
 
     public function rules(): array
     {
-        $creatorProfileId = $this->user()?->creatorProfile?->id;
+        $creatorProfileId = (int) $this->user()?->creatorProfile?->id;
+
         return [
             'slug' => [
                 'required',
                 'string',
-                'max:255',
-                Rule::regex(self::SLUG_REGEX),
-                Rule::unique('posts', 'slug')
-                    ->where(fn ($q) => $q->where('creator_profile_id', $creatorProfileId)),
+                'max:'.PostResourceSupport::SLUG_MAX_LENGTH,
+                ...PostResourceSupport::slugUniqueRules($creatorProfileId),
             ],
-            'title' => ['required', 'string', 'max:50'],
+            'title' => [
+                'required',
+                'string',
+                'max:'.PostResourceSupport::TITLE_MAX_LENGTH,
+            ],
             'content_text' => [
                 'required',
                 'string',
-                'max:65535',
+                'min:'.PostResourceSupport::CONTENT_TEXT_MIN_LENGTH,
             ],
-            'media_type' => ['nullable', new Enum(MediaType::class)],
             'media_url' => [
                 'nullable',
                 'string',
-                'max:255',
-                'url',
-                Rule::requiredIf(fn () => $this->filled('media_type')),
+                'max:'.PostResourceSupport::MEDIA_URL_MAX_LENGTH,
             ],
-            'required_tier_id' => [
+            'media_type' => [
                 'nullable',
-                'integer',
-                Rule::exists('tiers', 'id')
-                    ->where(fn ($q) => $q->where('creator_profile_id', $creatorProfileId)),
+                'string',
+                'max:'.PostResourceSupport::MEDIA_TYPE_MAX_LENGTH,
+                new Enum(MediaType::class),
             ],
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'slug.regex' => __('messages.slug_invalid'),
-            'media_url.required' => __('messages.media_url_required'),
+            'required_tier_id' => PostResourceSupport::requiredTierBelongsToCreatorRules($creatorProfileId),
         ];
     }
 }

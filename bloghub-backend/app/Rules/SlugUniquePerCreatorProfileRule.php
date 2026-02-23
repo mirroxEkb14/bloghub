@@ -2,12 +2,12 @@
 
 namespace App\Rules;
 
-use App\Models\Tier;
+use App\Models\Post;
 use Closure;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-readonly class LevelUniquePerCreatorProfileRule implements ValidationRule
+readonly class SlugUniquePerCreatorProfileRule implements ValidationRule
 {
     public function __construct(private mixed $get)
     {
@@ -18,30 +18,29 @@ readonly class LevelUniquePerCreatorProfileRule implements ValidationRule
         return new self($get);
     }
 
-    public static function forForm(): Closure
+    public static function forForm(): \Closure
     {
         return fn (Get $get): self => self::fromGet($get);
     }
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $get = $this->get;
-        $creatorProfileId = $get('creator_profile_id');
+        $creatorProfileId = $this->get('creator_profile_id');
         if ($creatorProfileId === null || $creatorProfileId === '') {
             return;
         }
 
-        $query = Tier::query()
+        $query = Post::query()
             ->where('creator_profile_id', $creatorProfileId)
-            ->where('level', $value);
+            ->where('slug', $value);
 
-        $record = $get('id');
-        if ($record !== null && $record !== '') {
-            $query->whereKeyNot($record);
+        $recordId = $this->get('id');
+        if ($recordId !== null && $recordId !== '') {
+            $query->whereKeyNot($recordId);
         }
 
         if ($query->exists()) {
-            $fail(__('validation.unique', ['attribute' => __('filament.tiers.form.level')]));
+            $fail(__('validation.unique', ['attribute' => __('filament.posts.form.slug')]));
         }
     }
 }

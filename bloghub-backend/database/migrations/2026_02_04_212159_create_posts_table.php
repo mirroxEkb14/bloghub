@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('title', 50);
             $table->text('content_text');
             $table->string('media_url', 255)->nullable();
-            $table->enum('media_type', ['Image','Audio','Video'])->nullable();
+            $table->enum('media_type', ['Image', 'Audio', 'Video'])->nullable();
 
             $table->timestamps();
 

@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
+use App\Enums\MediaType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Enums\MediaType;
 
 class Post extends Model
 {
     protected $fillable = [
         'creator_profile_id',
-        'required_tier_id', // nullable
+        'required_tier_id',
         'slug',
         'title',
         'content_text',
