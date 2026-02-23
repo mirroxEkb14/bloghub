@@ -18,12 +18,24 @@ class StoreSubscriptionRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'user_id' => [
+                'required',
+                'integer',
+                Rule::exists('users', 'id'),
+            ],
             'tier_id' => [
                 'required',
                 'integer',
                 Rule::exists('tiers', 'id'),
             ],
-            'sub_status' => ['sometimes', new Enum(SubStatus::class)],
+            'start_date' => ['sometimes', 'nullable', 'date'],
+            'end_date' => ['required', 'date'],
+            'sub_status' => [
+                'required',
+                'string',
+                'max:20',
+                new Enum(SubStatus::class),
+            ],
         ];
     }
 

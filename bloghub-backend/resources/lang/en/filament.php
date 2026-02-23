@@ -163,6 +163,42 @@ return [
             ],
         ],
     ],
+    'subscriptions' => [
+        'navigation_label' => 'Subscriptions',
+        'model_label' => 'Subscription',
+        'plural_label' => 'Subscriptions',
+        'tabs' => [
+            'all' => 'All',
+            'active' => 'Active',
+            'canceled' => 'Canceled',
+        ],
+        'form' => [
+            'user_id' => 'User',
+            'tier_id' => 'Tier',
+            'start_date' => 'Start date',
+            'end_date' => 'End date',
+            'sub_status' => 'Status',
+            'start_date_placeholder' => 'Y-m-d H:i',
+            'end_date_placeholder' => 'Y-m-d H:i',
+            'section_main' => 'Details',
+        ],
+        'table' => [
+            'columns' => [
+                'user' => 'User',
+                'tier' => 'Tier',
+                'start_date' => 'Start date',
+                'end_date' => 'End date',
+                'sub_status' => 'Status',
+                'payments_count' => 'Payments',
+                'created_at' => 'Created',
+            ],
+            'actions' => [
+                'view' => 'View',
+                'edit' => 'Edit',
+                'delete' => 'Delete',
+            ],
+        ],
+    ],
     'users' => [
         'navigation_label' => 'Users',
         'model_label' => 'User',

@@ -163,6 +163,42 @@ return [
             ],
         ],
     ],
+    'subscriptions' => [
+        'navigation_label' => 'Předplatné',
+        'model_label' => 'Předplatné',
+        'plural_label' => 'Předplatné',
+        'tabs' => [
+            'all' => 'Vše',
+            'active' => 'Aktivní',
+            'canceled' => 'Zrušené',
+        ],
+        'form' => [
+            'user_id' => 'Uživatel',
+            'tier_id' => 'Úroveň předplatného',
+            'start_date' => 'Datum začátku',
+            'end_date' => 'Datum konce',
+            'sub_status' => 'Status',
+            'start_date_placeholder' => 'Y-m-d H:i',
+            'end_date_placeholder' => 'Y-m-d H:i',
+            'section_main' => 'Údaje',
+        ],
+        'table' => [
+            'columns' => [
+                'user' => 'Uživatel',
+                'tier' => 'Úroveň',
+                'start_date' => 'Začátek',
+                'end_date' => 'Konec',
+                'sub_status' => 'Status',
+                'payments_count' => 'Platby',
+                'created_at' => 'Vytvořeno',
+            ],
+            'actions' => [
+                'view' => 'Zobrazit',
+                'edit' => 'Upravit',
+                'delete' => 'Smazat',
+            ],
+        ],
+    ],
     'users' => [
         'navigation_label' => 'Uživatelé',
         'model_label' => 'Uživatele',

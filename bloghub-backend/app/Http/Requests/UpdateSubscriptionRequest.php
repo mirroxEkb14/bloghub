@@ -17,7 +17,13 @@ class UpdateSubscriptionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'sub_status' => ['sometimes', 'required', new Enum(SubStatus::class)],
+            'sub_status' => [
+                'sometimes',
+                'required',
+                'string',
+                'max:20',
+                new Enum(SubStatus::class),
+            ],
         ];
     }
 }

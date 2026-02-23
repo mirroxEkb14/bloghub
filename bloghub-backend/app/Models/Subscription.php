@@ -23,6 +23,15 @@ class Subscription extends Model
         'sub_status' => SubStatus::class,
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (Subscription $subscription): void {
+            if ($subscription->start_date === null) {
+                $subscription->start_date = now();
+            }
+        });
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
