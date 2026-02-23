@@ -24,8 +24,33 @@ class Payment extends Model
         'payment_status' => PaymentStatus::class,
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (Payment $payment): void {
+            if ($payment->checkout_date === null) {
+                $payment->checkout_date = now();
+            }
+        });
+    }
+
     public function subscription(): BelongsTo
     {
         return $this->belongsTo(Subscription::class);
+    }
+
+    public function getSubscriptionLabelAttribute(): string
+    {
+        $subscription = $this->subscription;
+        if (! $subscription) {
+            return '—';
+        }
+        $parts = ['#'.$subscription->id];
+        if ($subscription->user?->name) {
+            $parts[] = $subscription->user->name;
+        }
+        if ($subscription->tier?->tier_name) {
+            $parts[] = $subscription->tier->tier_name;
+        }
+        return implode(' · ', $parts);
     }
 }

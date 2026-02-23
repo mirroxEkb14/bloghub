@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             CreatorProfileSeeder::class,
             TierSeeder::class,
             SubscriptionSeeder::class,
+            PaymentSeeder::class,
             PostSeeder::class,
             CommentSeeder::class,
         ]);

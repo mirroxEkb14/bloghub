@@ -25,13 +25,15 @@ class StorePaymentRequest extends FormRequest
                 Rule::exists('subscriptions', 'id'),
             ],
             'amount' => ['required', 'integer', 'min:1'],
-            'currency' => ['required', new Enum(Currency::class)],
+            'currency' => ['required', 'string', 'max:3', new Enum(Currency::class)],
+            'checkout_date' => ['sometimes', 'nullable', 'date'],
             'card_last4' => [
                 'required',
                 'string',
+                'max:4',
                 'regex:/^\d{4}$/',
             ],
-            'payment_status' => ['sometimes', new Enum(PaymentStatus::class)],
+            'payment_status' => ['required', 'string', 'max:20', new Enum(PaymentStatus::class)],
         ];
     }
 
