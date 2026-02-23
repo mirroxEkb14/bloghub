@@ -20,7 +20,7 @@ class TierResourceTable
     {
         return $table
             ->recordUrl(TierResourceSupport::recordViewUrl(...))
-            ->defaultSort('creator_profile_id')
+            ->defaultSort('id')
             ->modifyQueryUsing(TierResourceSupport::tierTableModifyQueryUsing())
             ->filters(TierTableFilters::filters(), FiltersLayout::AboveContentCollapsible)
             ->columns([

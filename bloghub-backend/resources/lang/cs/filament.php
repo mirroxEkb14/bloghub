@@ -57,6 +57,33 @@ return [
             ],
         ],
     ],
+    'comments' => [
+        'navigation_label' => 'Komentáře',
+        'model_label' => 'Komentář',
+        'plural_label' => 'Komentáře',
+        'form' => [
+            'user_id' => 'Uživatel',
+            'post_id' => 'Příspěvek',
+            'content_text' => 'Obsah',
+            'content_text_placeholder' => 'Napište komentář...',
+            'section_main' => 'Údaje',
+            'section_metadata' => 'Metadata',
+            'created_at' => 'Vytvořeno',
+            'updated_at' => 'Upraveno',
+        ],
+        'table' => [
+            'columns' => [
+                'user' => 'Uživatel',
+                'post' => 'Příspěvek',
+                'content_text' => 'Obsah',
+                'created_at' => 'Vytvořeno',
+            ],
+            'actions' => [
+                'view' => 'Zobrazit',
+                'delete' => 'Smazat',
+            ],
+        ],
+    ],
     'creator_profiles' => [
         'navigation_label' => 'Profily tvůrců',
         'model_label' => 'Profil tvůrce',

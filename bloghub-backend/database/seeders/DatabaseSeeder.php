@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             CreatorProfileSeeder::class,
             TierSeeder::class,
             PostSeeder::class,
+            CommentSeeder::class,
         ]);
     }
 }

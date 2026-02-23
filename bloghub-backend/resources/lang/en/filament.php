@@ -57,6 +57,33 @@ return [
             ],
         ],
     ],
+    'comments' => [
+        'navigation_label' => 'Comments',
+        'model_label' => 'Comment',
+        'plural_label' => 'Comments',
+        'form' => [
+            'user_id' => 'User',
+            'post_id' => 'Post',
+            'content_text' => 'Content',
+            'content_text_placeholder' => 'Write a comment...',
+            'section_main' => 'Details',
+            'section_metadata' => 'Metadata',
+            'created_at' => 'Created',
+            'updated_at' => 'Updated',
+        ],
+        'table' => [
+            'columns' => [
+                'user' => 'User',
+                'post' => 'Post',
+                'content_text' => 'Content',
+                'created_at' => 'Created',
+            ],
+            'actions' => [
+                'view' => 'View',
+                'delete' => 'Delete',
+            ],
+        ],
+    ],
     'creator_profiles' => [
         'navigation_label' => 'Creator Profiles',
         'model_label' => 'Creator Profile',

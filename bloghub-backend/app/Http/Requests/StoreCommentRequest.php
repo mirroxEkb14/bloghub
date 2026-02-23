@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Support\CommentResourceSupport;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -20,7 +21,11 @@ class StoreCommentRequest extends FormRequest
                 'integer',
                 Rule::exists('posts', 'id'),
             ],
-            'content_text' => ['required', 'string', 'max:65535'],
+            'content_text' => [
+                'required',
+                'string',
+                'max:'.CommentResourceSupport::CONTENT_TEXT_MAX_LENGTH,
+            ],
         ];
     }
 }

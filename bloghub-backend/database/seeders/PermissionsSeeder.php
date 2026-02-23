@@ -70,6 +70,17 @@ class PermissionsSeeder extends Seeder
             'RestoreAny:Tier',
             'Replicate:Tier',
             'Reorder:Tier',
+            'ViewAny:Comment',
+            'View:Comment',
+            'Create:Comment',
+            'Update:Comment',
+            'Delete:Comment',
+            'Restore:Comment',
+            'ForceDelete:Comment',
+            'ForceDeleteAny:Comment',
+            'RestoreAny:Comment',
+            'Replicate:Comment',
+            'Reorder:Comment',
         ];
 
         foreach ($permissionNames as $permissionName) {
