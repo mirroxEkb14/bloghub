@@ -114,6 +114,17 @@ class PermissionsSeeder extends Seeder
             'RestoreAny:Payment',
             'Replicate:Payment',
             'Reorder:Payment',
+            'ViewAny:Tag',
+            'View:Tag',
+            'Create:Tag',
+            'Update:Tag',
+            'Delete:Tag',
+            'Restore:Tag',
+            'ForceDelete:Tag',
+            'ForceDeleteAny:Tag',
+            'RestoreAny:Tag',
+            'Replicate:Tag',
+            'Reorder:Tag',
         ];
 
         foreach ($permissionNames as $permissionName) {

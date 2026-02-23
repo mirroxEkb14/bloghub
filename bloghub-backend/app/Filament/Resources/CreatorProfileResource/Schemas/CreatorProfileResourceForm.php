@@ -41,6 +41,12 @@ class CreatorProfileResourceForm
                     ->maxLength(CreatorProfileResourceSupport::ABOUT_MAX_LENGTH)
                     ->rows(8)
                     ->extraInputAttributes(['class' => 'max-h-[20rem] overflow-y-auto']),
+                Select::make('tags')
+                    ->label(__('filament.creator_profiles.form.tags'))
+                    ->relationship('tags', 'name')
+                    ->multiple()
+                    ->searchable()
+                    ->preload(),
                 FileUpload::make('profile_avatar_path')
                     ->label(__('filament.creator_profiles.form.profile_avatar_path'))
                     ->disk('public')

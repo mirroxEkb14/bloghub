@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\CreatorProfile;
+use App\Models\Tag;
 use App\Models\User;
 use App\Support\CreatorProfileResourceSupport;
 use Illuminate\Database\Seeder;
@@ -32,16 +33,19 @@ class CreatorProfileSeeder extends Seeder
             'display_name' => 'Repus Nimda',
             'about' => 'Repus Nimda is an independent digital creator focused on technical tutorials, backend development, and system design. He shares practical examples from real projects, explains application architecture, and helps developers write clean, sustainable code — without unnecessary theory.',
             'user_name' => 'Super Admin',
+            'tag_slugs' => ['tech', 'backend', 'tutorials'],
         ],
         [
             'display_name' => 'Resu',
             'about' => 'Resu is a creative author focused on personal development, productivity, and working with ideas. He shares thoughts on creation, habits, and long-term motivation, blending structure with creativity and space for reflection in the digital world.',
             'user_name' => 'User',
+            'tag_slugs' => ['productivity', 'personal-development'],
         ],
         [
             'display_name' => 'Urban Faune',
             'about' => 'Urban Fauna documents animals in human-made environments. From zoos to conservation parks, the creator shares knowledge, impressions, and curiosity-driven content about wildlife and coexistence.',
             'user_name' => 'Admin',
+            'tag_slugs' => [],
         ],
     ];
 
@@ -62,7 +66,7 @@ class CreatorProfileSeeder extends Seeder
                 ? mb_substr($data['about'], 0, $maxAbout - 3).'...'
                 : $data['about'];
 
-            $slug = CreatorProfile::uniqueSlugForDisplayName($data['display_name'], null);
+            $slug = CreatorProfile::uniqueSlugForDisplayName($data['display_name']);
 
             $profile = CreatorProfile::firstOrCreate(
                 ['user_id' => $user->id],
@@ -92,6 +96,10 @@ class CreatorProfileSeeder extends Seeder
             }
 
             $profile->save();
+
+            $tagSlugs = $data['tag_slugs'] ?? [];
+            $tagIds = Tag::whereIn('slug', $tagSlugs)->pluck('id');
+            $profile->tags()->sync($tagIds);
         }
     }
 

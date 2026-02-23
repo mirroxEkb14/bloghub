@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Support\StorageUrlSupport;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
@@ -69,6 +70,13 @@ class CreatorProfile extends Model
     public function tiers(): HasMany
     {
         return $this->hasMany(Tier::class);
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'creator_profile_tag')
+            ->using(CreatorProfileTag::class)
+            ->withPivot('attached_at');
     }
 
     public function getProfileAvatarUrlAttribute(): ?string

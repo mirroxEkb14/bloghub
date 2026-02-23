@@ -17,6 +17,9 @@ return [
     'content' => [
         'navigation_group' => 'Obsah',
     ],
+    'administration' => [
+        'navigation_group' => 'Administrace',
+    ],
     'posts' => [
         'navigation_label' => 'Příspěvky',
         'model_label' => 'Příspěvek',
@@ -102,6 +105,7 @@ return [
             'display_name_placeholder' => 'Dr. Gregory House',
             'about_placeholder' => 'Krátký popis nebo bio',
             'about_hint' => 'max. 255 znaků',
+            'tags' => 'Štítky',
         ],
         'table' => [
             'columns' => [
@@ -117,6 +121,32 @@ return [
                 'user' => 'Uživatel',
                 'posts_count' => 'Příspěvky (počet)',
                 'posts_count_indicator' => 'Příspěvky: :count',
+            ],
+            'actions' => [
+                'view' => 'Zobrazit',
+                'edit' => 'Upravit',
+                'delete' => 'Smazat',
+            ],
+        ],
+    ],
+    'tags' => [
+        'navigation_label' => 'Štítky',
+        'model_label' => 'Štítek',
+        'plural_label' => 'Štítky',
+        'cannot_delete_in_use' => 'Nelze smazat štítek přiřazený profilům tvůrců',
+        'form' => [
+            'slug' => 'Slug',
+            'name' => 'Název',
+            'slug_placeholder' => 'muj-stittek',
+            'name_placeholder' => 'Můj štítek',
+            'slug_auto_hint' => 'vygenerováno z Názvu',
+        ],
+        'table' => [
+            'columns' => [
+                'slug' => 'Slug',
+                'name' => 'Název',
+                'creator_profiles' => 'Profily tvůrců',
+                'created_at' => 'Vytvořeno',
             ],
             'actions' => [
                 'view' => 'Zobrazit',

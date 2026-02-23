@@ -17,6 +17,9 @@ return [
     'content' => [
         'navigation_group' => 'Content',
     ],
+    'administration' => [
+        'navigation_group' => 'Administration',
+    ],
     'posts' => [
         'navigation_label' => 'Posts',
         'model_label' => 'Post',
@@ -102,6 +105,7 @@ return [
             'display_name_placeholder' => 'Ellen Ripley',
             'about_placeholder' => 'Short bio or description',
             'about_hint' => 'max. 255 characters',
+            'tags' => 'Tags',
         ],
         'table' => [
             'columns' => [
@@ -117,6 +121,32 @@ return [
                 'user' => 'User',
                 'posts_count' => 'Posts (count)',
                 'posts_count_indicator' => 'Posts: :count',
+            ],
+            'actions' => [
+                'view' => 'View',
+                'edit' => 'Edit',
+                'delete' => 'Delete',
+            ],
+        ],
+    ],
+    'tags' => [
+        'navigation_label' => 'Tags',
+        'model_label' => 'Tag',
+        'plural_label' => 'Tags',
+        'cannot_delete_in_use' => 'Cannot delete tag assigned to creator profiles',
+        'form' => [
+            'slug' => 'Slug',
+            'name' => 'Name',
+            'slug_placeholder' => 'my-tag',
+            'name_placeholder' => 'My Tag',
+            'slug_auto_hint' => 'auto-generated from Name',
+        ],
+        'table' => [
+            'columns' => [
+                'slug' => 'Slug',
+                'name' => 'Name',
+                'creator_profiles' => 'Creator profiles',
+                'created_at' => 'Created',
             ],
             'actions' => [
                 'view' => 'View',
