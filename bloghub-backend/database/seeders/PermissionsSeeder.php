@@ -125,6 +125,10 @@ class PermissionsSeeder extends Seeder
             'RestoreAny:Tag',
             'Replicate:Tag',
             'Reorder:Tag',
+            'View:Profile',
+            'View:OverviewStatsWidget',
+            'View:PaymentStatsOverviewWidget',
+            'View:PaymentsChartWidget',
         ];
 
         foreach ($permissionNames as $permissionName) {
