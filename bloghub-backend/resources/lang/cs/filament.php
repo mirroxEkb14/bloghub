@@ -20,6 +20,33 @@ return [
     'administration' => [
         'navigation_group' => 'Administrace',
     ],
+    'dashboard' => [
+        'payments_stats' => [
+            'heading' => 'Statistiky plateb',
+            'total_payments' => 'Celkem plateb',
+            'revenue' => 'Výnos (dokončené)',
+            'revenue_currency' => 'Výnos (:currency)',
+            'pending' => 'Čekající',
+            'failed' => 'Neúspěšné',
+            'all_time' => 'Celkem',
+            'completed_only' => 'Pouze dokončené',
+            'tabs' => [
+                'pending' => 'Čekající',
+                'failed' => 'Neúspěch',
+            ],
+        ],
+        'payments_chart' => [
+            'heading' => 'Platby v čase',
+            'revenue' => 'Výnos',
+            'revenue_currency' => 'Výnos (:currency)',
+            'count' => 'Počet plateb',
+            'filters' => [
+                'week' => 'Posledních 7 dní',
+                'month' => 'Posledních 30 dní',
+                'year' => 'Tento rok',
+            ],
+        ],
+    ],
     'posts' => [
         'navigation_label' => 'Příspěvky',
         'model_label' => 'Příspěvek',

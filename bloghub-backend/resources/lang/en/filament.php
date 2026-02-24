@@ -20,6 +20,33 @@ return [
     'administration' => [
         'navigation_group' => 'Administration',
     ],
+    'dashboard' => [
+        'payments_stats' => [
+            'heading' => 'Payment statistics',
+            'total_payments' => 'Total payments',
+            'revenue' => 'Revenue (completed)',
+            'revenue_currency' => 'Revenue (:currency)',
+            'pending' => 'Pending',
+            'failed' => 'Failed',
+            'all_time' => 'All time',
+            'completed_only' => 'Completed only',
+            'tabs' => [
+                'pending' => 'Pending',
+                'failed' => 'Failed',
+            ],
+        ],
+        'payments_chart' => [
+            'heading' => 'Payments over time',
+            'revenue' => 'Revenue',
+            'revenue_currency' => 'Revenue (:currency)',
+            'count' => 'Payment count',
+            'filters' => [
+                'week' => 'Last 7 days',
+                'month' => 'Last 30 days',
+                'year' => 'This year',
+            ],
+        ],
+    ],
     'posts' => [
         'navigation_label' => 'Posts',
         'model_label' => 'Post',
