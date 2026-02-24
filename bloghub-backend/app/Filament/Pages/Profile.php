@@ -2,6 +2,8 @@
 
 namespace App\Filament\Pages;
 
+use App\Contracts\AdminLocaleProvider;
+use App\Support\AdminLocale;
 use BackedEnum;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -31,10 +33,8 @@ class Profile extends Page
 
     public function mount(): void
     {
-        $locale = auth()->user()?->locale ?? config('app.locale');
-
         $this->form->fill([
-            'locale' => $locale,
+            'locale' => app(AdminLocaleProvider::class)->get(),
         ]);
     }
 
@@ -56,15 +56,14 @@ class Profile extends Page
     public function save(): void
     {
         $data = $this->form->getState();
-        $user = auth()->user();
+        $locale = $data['locale'] ?? null;
 
-        if (! $user) {
+        if (! is_string($locale) || ! AdminLocale::isValid($locale)) {
             return;
         }
 
-        $user->forceFill([
-            'locale' => $data['locale'],
-        ])->save();
+        session([AdminLocale::ADMIN_LOCALE_SESSION_KEY => $locale]);
+        session()->save();
 
         Notification::make()
             ->title(__('filament.profile.saved'))
