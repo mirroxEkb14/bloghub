@@ -1,0 +1,107 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "BlogHub API",
+    "description": "BlogHub REST API with Sanctum token authentication.",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "API base URL (prefixed with APP_URL in production)"
+    }
+  ],
+  "paths": {
+    "/api/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Register a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "username", "email", "password", "password_confirmation"],
+                "properties": {
+                  "name": { "type": "string", "maxLength": 100, "example": "Jane Doe" },
+                  "username": { "type": "string", "maxLength": 50, "example": "jane_doe" },
+                  "email": { "type": "string", "format": "email", "example": "jane@example.com" },
+                  "password": { "type": "string", "format": "password", "minLength": 8 },
+                  "password_confirmation": { "type": "string", "format": "password" },
+                  "phone": { "type": "string", "nullable": true },
+                  "terms_accepted": { "type": "boolean", "nullable": true },
+                  "privacy_accepted": { "type": "boolean", "nullable": true }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User registered successfully" },
+          "422": { "description": "Validation error" }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login and get token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string", "format": "password" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login successful" },
+          "422": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/api/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Logout (revoke current token)",
+        "security": [{ "sanctum": [] }],
+        "responses": {
+          "204": { "description": "Logged out" },
+          "401": { "description": "Unauthenticated" }
+        }
+      }
+    },
+    "/api/user": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Get current authenticated user",
+        "security": [{ "sanctum": [] }],
+        "responses": {
+          "200": { "description": "Current user" },
+          "401": { "description": "Unauthenticated" }
+        }
+      }
+    }
+  },
+  "tags": [
+    { "name": "Auth", "description": "Authentication endpoints" }
+  ],
+  "components": {
+    "securitySchemes": {
+      "sanctum": {
+        "type": "apiKey",
+        "description": "Enter token in format (Bearer <token>)",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  }
+}
