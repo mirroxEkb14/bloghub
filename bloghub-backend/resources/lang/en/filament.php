@@ -21,6 +21,17 @@ return [
         'navigation_group' => 'Administration',
     ],
     'dashboard' => [
+        'overview_stats' => [
+            'heading' => 'Overview',
+            'user_registrations' => 'User registrations',
+            'created_posts' => 'Created posts',
+            'subscriptions_made' => 'Subscriptions made',
+            'period' => [
+                'total' => 'Total',
+                'week' => 'Week',
+                'month' => 'Month',
+            ],
+        ],
         'payments_stats' => [
             'heading' => 'Payment statistics',
             'total_payments' => 'Total payments',

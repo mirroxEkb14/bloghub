@@ -21,6 +21,17 @@ return [
         'navigation_group' => 'Administrace',
     ],
     'dashboard' => [
+        'overview_stats' => [
+            'heading' => 'Přehled',
+            'user_registrations' => 'Registrace uživatelů',
+            'created_posts' => 'Vytvořené příspěvky',
+            'subscriptions_made' => 'Sjednaná předplatné',
+            'period' => [
+                'total' => 'Celkem',
+                'week' => 'Týden',
+                'month' => 'Měsíc',
+            ],
+        ],
         'payments_stats' => [
             'heading' => 'Statistiky plateb',
             'total_payments' => 'Celkem plateb',
