@@ -20,7 +20,7 @@ class TagResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-tag';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     public static function getNavigationLabel(): string
     {
@@ -29,7 +29,7 @@ class TagResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('filament.administration.navigation_group');
+        return __('filament.content.navigation_group');
     }
 
     public static function getModelLabel(): string

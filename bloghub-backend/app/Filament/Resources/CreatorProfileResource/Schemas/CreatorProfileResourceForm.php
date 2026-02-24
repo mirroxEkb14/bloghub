@@ -37,6 +37,7 @@ class CreatorProfileResourceForm
                                             ->required(),
                                         TextInput::make('slug')
                                             ->label(__('filament.creator_profiles.form.slug'))
+                                            ->placeholder(__('filament.creator_profiles.form.slug_placeholder'))
                                             ->helperText(__('filament.creator_profiles.form.slug_auto_hint'))
                                             ->required(),
                                         FileUpload::make('profile_avatar_path')

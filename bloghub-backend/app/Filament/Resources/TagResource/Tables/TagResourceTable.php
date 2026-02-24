@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TagResource\Tables;
 
+use App\Filters\TagTableFilters;
 use App\Support\TagResourceActions;
 use App\Support\TagResourceSupport;
 use Filament\Actions\BulkActionGroup;
@@ -19,6 +20,7 @@ class TagResourceTable
             ->recordUrl(TagResourceSupport::recordViewUrl(...))
             ->defaultSort('id')
             ->modifyQueryUsing(TagResourceSupport::tagTableModifyQueryUsing())
+            ->filters(TagTableFilters::filters())
             ->columns([
                 TextColumn::make('id')
                     ->label('#')

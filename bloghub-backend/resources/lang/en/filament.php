@@ -140,6 +140,7 @@ return [
             'profile_avatar_path' => 'Avatar',
             'profile_cover_path' => 'Cover',
             'slug_auto_hint' => 'auto-generated from Display name',
+            'slug_placeholder' => 'ellen-ripley',
             'display_name_placeholder' => 'Ellen Ripley',
             'about_placeholder' => 'Short bio or description',
             'about_hint' => 'max. 255 characters',
@@ -194,6 +195,9 @@ return [
                 'name' => 'Name',
                 'creator_profiles' => 'Creator profiles',
                 'created_at' => 'Created',
+            ],
+            'filters' => [
+                'creator_profile' => 'Creator profile',
             ],
             'actions' => [
                 'view' => 'View',
@@ -313,14 +317,14 @@ return [
             ],
             'filters' => [
                 'amount' => 'Amount',
-                'amount_from' => 'From',
+                'amount_from' => 'From (amount)',
                 'amount_to' => 'To',
                 'amount_from_placeholder' => 'Min',
                 'amount_to_placeholder' => 'Max',
                 'amount_from_indicator' => 'From :value',
                 'amount_to_indicator' => 'To :value',
                 'checkout_date' => 'Checkout date',
-                'checkout_from' => 'From',
+                'checkout_from' => 'From (date)',
                 'checkout_until' => 'To',
                 'checkout_from_placeholder' => 'Start date',
                 'checkout_until_placeholder' => 'End date',
@@ -358,8 +362,12 @@ return [
                 'email' => 'Email',
                 'phone' => 'Phone',
                 'is_creator' => 'Creator',
-                'roles' => 'Roles',
                 'created_at' => 'Created',
+            ],
+            'filters' => [
+                'creator' => 'Creator',
+                'creator_yes' => 'Yes',
+                'creator_no' => 'No',
             ],
             'actions' => [
                 'view' => 'View',

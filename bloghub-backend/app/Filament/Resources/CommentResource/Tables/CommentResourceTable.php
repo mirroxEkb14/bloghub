@@ -38,7 +38,7 @@ class CommentResourceTable
                     ->limit(40),
                 TextColumn::make('content_text')
                     ->label(__('filament.comments.table.columns.content_text'))
-                    ->limit(50)
+                    ->limit(40)
                     ->wrap()
                     ->toggleable(),
                 TextColumn::make('created_at')

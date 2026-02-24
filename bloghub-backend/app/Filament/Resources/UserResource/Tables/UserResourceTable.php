@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\UserResource\Tables;
 
+use App\Filters\UserTableFilters;
 use App\Support\UserResourceActions;
 use App\Support\UserResourceSupport;
 use Filament\Actions\BulkActionGroup;
@@ -20,6 +21,7 @@ class UserResourceTable
         return $table
             ->recordUrl(UserResourceSupport::recordViewUrl(...))
             ->defaultSort('id')
+            ->filters(UserTableFilters::filters())
             ->columns([
                 TextColumn::make('id')
                     ->label('#')
@@ -45,11 +47,6 @@ class UserResourceTable
                 IconColumn::make('is_creator')
                     ->label(__('filament.users.table.columns.is_creator'))
                     ->boolean()
-                    ->toggleable(),
-                TextColumn::make('roles.name')
-                    ->label(__('filament.users.table.columns.roles'))
-                    ->badge()
-                    ->separator(', ')
                     ->toggleable(),
                 TextColumn::make('created_at')
                     ->label(__('filament.users.table.columns.created_at'))
