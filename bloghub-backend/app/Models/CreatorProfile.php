@@ -23,7 +23,7 @@ class CreatorProfile extends Model
     protected static function booted(): void
     {
         static::saving(function (CreatorProfile $profile): void {
-            if (filled($profile->display_name)) {
+            if (filled($profile->display_name) && blank($profile->slug)) {
                 $profile->slug = $profile->generateUniqueSlug();
             }
         });

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CreatorProfileController;
+use App\Http\Controllers\Api\CreatorProfileUploadController;
 use App\Http\Controllers\Api\TagController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,5 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/me/creator-profile', [CreatorProfileController::class, 'me']);
     Route::post('/creator-profiles', [CreatorProfileController::class, 'store']);
+    Route::post('/creator-profiles/upload-avatar', [CreatorProfileUploadController::class, 'avatar']);
+    Route::post('/creator-profiles/upload-cover', [CreatorProfileUploadController::class, 'cover']);
     Route::put('/creator-profiles/{creatorProfile}', [CreatorProfileController::class, 'update']);
 });
