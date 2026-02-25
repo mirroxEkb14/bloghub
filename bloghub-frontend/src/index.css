@@ -74,8 +74,12 @@ textarea.form-textarea {
   color: var(--text);
   font-family: inherit;
   font-size: 1rem;
-  resize: vertical;
-  min-height: 100px;
+}
+
+/* About field: fits ~255 chars (5 lines), no resize */
+textarea.form-textarea-about {
+  resize: none;
+  min-height: 6.25rem;
 }
 textarea.form-textarea:focus {
   outline: none;

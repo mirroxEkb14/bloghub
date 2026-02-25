@@ -12,6 +12,14 @@ type Props = {
   mode: 'create' | 'edit';
 };
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 export default function CreatorProfileForm({ mode }: Props) {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -83,10 +91,16 @@ export default function CreatorProfileForm({ mode }: Props) {
 
   const update = useCallback(
     (field: keyof typeof form, value: string | number[]) => {
-      setForm((prev) => ({ ...prev, [field]: value }));
+      setForm((prev) => {
+        const next = { ...prev, [field]: value };
+        if (mode === 'create' && field === 'display_name' && typeof value === 'string') {
+          next.slug = slugify(value);
+        }
+        return next;
+      });
       setError(null);
     },
-    []
+    [mode]
   );
 
   const toggleTag = useCallback((id: number) => {
@@ -197,7 +211,6 @@ export default function CreatorProfileForm({ mode }: Props) {
           about: form.about.trim() || null,
           tag_ids: form.tag_ids,
         };
-        // Only send path when it's a non-empty string (new upload) or null (remove). Never send "".
         if (typeof form.profile_avatar_path === 'string' && form.profile_avatar_path.trim()) {
           p.profile_avatar_path = form.profile_avatar_path;
         } else if (form.profile_avatar_path === null) {
@@ -306,7 +319,7 @@ export default function CreatorProfileForm({ mode }: Props) {
                   </button>
                 )}
               </div>
-              <span className="form-hint">JPEG, PNG or WebP, max {MAX_FILE_MB} MB</span>
+              <span className="form-hint">JPEG, PNG or WebP (max {MAX_FILE_MB} MB)</span>
             </div>
             <div className="form-image-field">
               <label>Cover</label>
@@ -352,7 +365,7 @@ export default function CreatorProfileForm({ mode }: Props) {
             />
             <span className="form-hint">
               {mode === 'create'
-                ? 'Leave blank to auto-generate from Display name'
+                ? 'Auto-generates from Display name (recommended)'
                 : 'Your profile URL is /creator/[slug]. Changing it will break existing links'}
             </span>
           </div>
@@ -363,10 +376,11 @@ export default function CreatorProfileForm({ mode }: Props) {
               value={form.about}
               onChange={(e) => update('about', e.target.value)}
               placeholder="A legendary Swedish DJ, remixer, and music producer"
-              rows={4}
+              rows={5}
               maxLength={255}
-              className="form-textarea"
+              className="form-textarea form-textarea-about"
             />
+            <span className="form-hint">Short Bio or Description (max 255 chars)</span>
           </div>
           <div className="form-group">
             <label>Tags</label>
