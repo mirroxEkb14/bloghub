@@ -251,7 +251,7 @@ export default function CreatorProfileForm({ mode }: Props) {
 
   return (
     <div className="page-center">
-      <div className="card" style={{ maxWidth: 520 }}>
+      <div className="card creator-form-card">
         <h1 className="form-title">
           {mode === 'create' ? 'Create creator profile' : 'Edit creator profile'}
         </h1>
@@ -295,11 +295,13 @@ export default function CreatorProfileForm({ mode }: Props) {
                   id="avatar-upload"
                   disabled={!!uploading}
                 />
-                <label htmlFor="avatar-upload" className="btn btn-secondary btn-sm">
-                  {uploading === 'avatar' ? 'Uploading…' : form.avatar_preview_url ? 'Change' : 'Upload'}
-                </label>
+                <span className="form-image-btn-wrap">
+                  <label htmlFor="avatar-upload" className="btn btn-secondary btn-sm form-image-btn">
+                    {uploading === 'avatar' ? 'Uploading…' : form.avatar_preview_url ? 'Change' : 'Upload'}
+                  </label>
+                </span>
                 {(form.avatar_preview_url || form.profile_avatar_path !== undefined) && (
-                  <button type="button" className="btn btn-secondary btn-sm" onClick={clearAvatar}>
+                  <button type="button" className="btn btn-secondary btn-sm form-image-btn" onClick={clearAvatar}>
                     Remove
                   </button>
                 )}
@@ -324,16 +326,17 @@ export default function CreatorProfileForm({ mode }: Props) {
                   id="cover-upload"
                   disabled={!!uploading}
                 />
-                <label htmlFor="cover-upload" className="btn btn-secondary btn-sm">
-                  {uploading === 'cover' ? 'Uploading…' : form.cover_preview_url ? 'Change' : 'Upload'}
-                </label>
+                <span className="form-image-btn-wrap">
+                  <label htmlFor="cover-upload" className="btn btn-secondary btn-sm form-image-btn">
+                    {uploading === 'cover' ? 'Uploading…' : form.cover_preview_url ? 'Change' : 'Upload'}
+                  </label>
+                </span>
                 {(form.cover_preview_url || form.profile_cover_path !== undefined) && (
-                  <button type="button" className="btn btn-secondary btn-sm" onClick={clearCover}>
+                  <button type="button" className="btn btn-secondary btn-sm form-image-btn" onClick={clearCover}>
                     Remove
                   </button>
                 )}
               </div>
-              <span className="form-hint">JPEG, PNG or WebP, max {MAX_FILE_MB} MB</span>
             </div>
           </div>
           <div className="form-group">

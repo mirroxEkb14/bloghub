@@ -112,8 +112,13 @@ textarea.form-textarea:focus {
 
 .form-group-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(232px, 1fr) minmax(232px, 1.4fr);
   gap: 1.5rem;
+  align-items: start;
+}
+
+.card.creator-form-card {
+  max-width: 552px;
 }
 
 @media (max-width: 560px) {
@@ -143,8 +148,12 @@ textarea.form-textarea:focus {
 }
 
 .form-image-box-cover {
-  aspect-ratio: 16 / 9;
-  max-height: 120px;
+  aspect-ratio: auto;
+  width: 232px;
+  max-width: 100%;
+  height: 140px;
+  min-height: 140px;
+  max-height: 140px;
 }
 
 .form-image-preview {
@@ -161,9 +170,53 @@ textarea.form-textarea:focus {
 
 .form-image-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.5rem;
   margin-top: 0.5rem;
+  align-items: flex-start;
+}
+
+.form-image-btn-wrap {
+  display: block;
+  width: 112px;
+  min-width: 112px;
+  max-width: 112px;
+  height: 38px;
+  flex: 0 0 112px;
+  flex-shrink: 0;
+}
+
+.form-image-btn-wrap .form-image-btn {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  box-sizing: border-box;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.9rem !important;
+  line-height: 1 !important;
+}
+
+.form-image-actions button.form-image-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 112px !important;
+  min-width: 112px !important;
+  max-width: 112px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  flex: 0 0 112px !important;
+  flex-grow: 0 !important;
+  flex-shrink: 0 !important;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.9rem !important;
+  line-height: 1 !important;
 }
 
 .form-image-input {
