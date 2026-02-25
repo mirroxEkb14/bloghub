@@ -15,6 +15,8 @@ class TierResourceSupport
     public const NAME_MAX_LENGTH = 50;
     public const DESC_MAX_LENGTH = 255;
     public const COVER_MAX_FILE_SIZE_KB = 5 * 1024;
+    public const COVER_MAX_WIDTH = 1080;
+    public const COVER_MAX_HEIGHT = 1920;
     public const COVER_DIRECTORY = 'tiers/covers';
 
     private function __construct()

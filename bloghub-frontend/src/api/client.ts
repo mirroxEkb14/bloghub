@@ -143,6 +143,36 @@ export type CreatorProfile = {
   updated_at?: string;
 };
 
+export type PostRequiredTier = {
+  id: number;
+  level: number;
+  tier_name: string;
+};
+
+export type Post = {
+  id: number;
+  slug: string;
+  title: string;
+  content_text: string | null;
+  media_url: string | null;
+  media_type: 'Image' | 'Audio' | 'Video' | null;
+  required_tier?: PostRequiredTier | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type Tier = {
+  id: number;
+  level: number;
+  tier_name: string;
+  tier_desc: string | null;
+  price: number;
+  tier_currency: string | null;
+  tier_cover_url: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
 export type CreatorProfilesParams = {
   tag?: string | number;
   search?: string;
@@ -248,5 +278,36 @@ export const creatorProfilesApi = {
       'cover',
       file
     ).then(normalizeUploadResponse);
+  },
+};
+
+export type PostsByCreatorParams = {
+  per_page?: number;
+  page?: number;
+};
+
+export const postsApi = {
+  listByCreator(creatorSlug: string, params: PostsByCreatorParams = {}) {
+    const sp = new URLSearchParams();
+    if (params.per_page != null) sp.set('per_page', String(params.per_page));
+    if (params.page != null) sp.set('page', String(params.page));
+    const q = sp.toString();
+    return api<PaginatedResponse<Post>>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts${q ? `?${q}` : ''}`
+    );
+  },
+
+  getBySlug(creatorSlug: string, postSlug: string) {
+    return api<Post | { data: Post }>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts/${encodeURIComponent(postSlug)}`
+    ).then(unwrapData);
+  },
+};
+
+export const tiersApi = {
+  listByCreator(creatorSlug: string) {
+    return api<{ data: Tier[] } | Tier[]>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/tiers`
+    ).then((r) => (Array.isArray(r) ? r : (r as { data: Tier[] }).data ?? []));
   },
 };
