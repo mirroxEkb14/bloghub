@@ -240,7 +240,7 @@ export default function CreatorProfileForm({ mode }: Props) {
       <div className="page-center">
         <div className="card" style={{ maxWidth: 420 }}>
           <h1 className="form-title">No creator profile</h1>
-          <p className="form-subtitle">You don&apos;t have a creator profile yet. Create one to get started.</p>
+          <p className="form-subtitle">You don&apos;t have a creator profile yet</p>
           <Link to="/creator/new" className="btn btn-primary" style={{ display: 'inline-block', marginTop: '1rem' }}>
             Create profile
           </Link>
@@ -257,7 +257,7 @@ export default function CreatorProfileForm({ mode }: Props) {
         </h1>
         <p className="form-subtitle">
           {mode === 'create'
-            ? 'Set up your public Creator page.'
+            ? 'Set up your public Creator page'
             : 'Update your Display name, About, and Tags'}
         </p>
 
@@ -271,7 +271,7 @@ export default function CreatorProfileForm({ mode }: Props) {
               type="text"
               value={form.display_name}
               onChange={(e) => update('display_name', e.target.value)}
-              placeholder="Your public name"
+              placeholder="Avicii"
               required
               maxLength={50}
             />
@@ -346,13 +346,13 @@ export default function CreatorProfileForm({ mode }: Props) {
               type="text"
               value={form.slug}
               onChange={(e) => update('slug', e.target.value)}
-              placeholder="your-profile"
+              placeholder="avicii"
               pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
               title="Lowercase letters, numbers, and hyphens only"
             />
             <span className="form-hint">
               {mode === 'create'
-                ? 'Leave blank to auto-generate from display name.'
+                ? 'Leave blank to auto-generate from Display name'
                 : 'Your profile URL is /creator/[slug]. Changing it will break existing links'}
             </span>
           </div>
@@ -362,7 +362,7 @@ export default function CreatorProfileForm({ mode }: Props) {
               id="about"
               value={form.about}
               onChange={(e) => update('about', e.target.value)}
-              placeholder="Short bio or description"
+              placeholder="A legendary Swedish DJ, remixer, and music producer"
               rows={4}
               maxLength={255}
               className="form-textarea"
