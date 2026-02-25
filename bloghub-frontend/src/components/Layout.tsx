@@ -21,8 +21,14 @@ export default function Layout() {
               <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
                 Home
               </Link>
+              <Link to="/discover" className={location.pathname.startsWith('/discover') ? 'active' : ''}>
+                Discover
+              </Link>
               {user ? (
                 <>
+                  <Link to="/creator/edit" className={location.pathname === '/creator/edit' ? 'active' : ''}>
+                    My profile
+                  </Link>
                   <span className="avatar" title={user.email}>
                     {initial}
                   </span>

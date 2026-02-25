@@ -261,6 +261,28 @@ Pokud jsou, vyřešit konflikty otevřením příslušných souborů a editací 
 > git push
 ```
 
+### ❓ Rollback k minulému fungujícímu commitu (na `local`)
+
+```bash
+> git restore .
+> git clean -fd
+```
+
+Pro **staged** situace (`git add .`):
+```bash
+> git restore --staged .
+> git restore .
+```
+
+Pro kommitnuté situace (`git commit -m "..."`):
+```bash
+> git reset --hard HEAD~1
+```
+```bash
+> git log fix/default-permissions --oneline
+> git reset --hard 8dbd965
+```
+
 ### ❓ Mázání `.env` souboru z `remote`
 
 ```bash

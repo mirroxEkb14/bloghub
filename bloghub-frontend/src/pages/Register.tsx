@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -13,15 +13,25 @@ export default function Register() {
     password_confirmation: '',
   });
   const [submitting, setSubmitting] = useState(false);
+  const [passwordMismatch, setPasswordMismatch] = useState(false);
+
+  useEffect(() => {
+    clearError();
+  }, [clearError]);
 
   function update(f: keyof typeof form, value: string) {
     setForm((prev) => ({ ...prev, [f]: value }));
+    if (f === 'password' || f === 'password_confirmation') {
+      setPasswordMismatch(false);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     clearError();
+    setPasswordMismatch(false);
     if (form.password !== form.password_confirmation) {
+      setPasswordMismatch(true);
       return;
     }
     setSubmitting(true);
@@ -48,6 +58,9 @@ export default function Register() {
         <p className="form-subtitle">Join BlogHub</p>
 
         {error && <div className="auth-error">{error}</div>}
+        {passwordMismatch && (
+          <div className="auth-error">Passwords do not match</div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -57,7 +70,7 @@ export default function Register() {
               type="text"
               value={form.name}
               onChange={(e) => update('name', e.target.value)}
-              placeholder="Jane Doe"
+              placeholder="Fox Mulder"
               required
               autoComplete="name"
             />
@@ -69,7 +82,7 @@ export default function Register() {
               type="text"
               value={form.username}
               onChange={(e) => update('username', e.target.value)}
-              placeholder="jane_doe"
+              placeholder="trust_no1"
               required
               autoComplete="username"
             />
@@ -81,7 +94,7 @@ export default function Register() {
               type="email"
               value={form.email}
               onChange={(e) => update('email', e.target.value)}
-              placeholder="you@example.com"
+              placeholder="trust_no1@gmail.com"
               required
               autoComplete="email"
             />
