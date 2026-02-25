@@ -8,8 +8,10 @@
     "require": {
         "php": "^8.2",
         "bezhansalleh/filament-shield": "^4.1",
+        "dedoc/scramble": "^0.13.14",
         "filament/filament": "^4.0",
         "laravel/framework": "^12.0",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1"
     },
     "require-dev": {
