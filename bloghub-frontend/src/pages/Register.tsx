@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -13,6 +13,10 @@ export default function Register() {
     password_confirmation: '',
   });
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    clearError();
+  }, [clearError]);
 
   function update(f: keyof typeof form, value: string) {
     setForm((prev) => ({ ...prev, [f]: value }));
