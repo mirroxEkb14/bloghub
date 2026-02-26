@@ -241,7 +241,7 @@ export default function CreatorProfileForm({ mode }: Props) {
   if (authLoading || (mode === 'edit' && profileLoading)) {
     return (
       <div className="page-center">
-        <p className="form-subtitle">Loading…</p>
+        <p className="form-subtitle">Loading...</p>
       </div>
     );
   }
@@ -310,7 +310,7 @@ export default function CreatorProfileForm({ mode }: Props) {
                 />
                 <span className="form-image-btn-wrap">
                   <label htmlFor="avatar-upload" className="btn btn-secondary btn-sm form-image-btn">
-                    {uploading === 'avatar' ? 'Uploading…' : form.avatar_preview_url ? 'Change' : 'Upload'}
+                    {uploading === 'avatar' ? 'Uploading...' : form.avatar_preview_url ? 'Change' : 'Upload'}
                   </label>
                 </span>
                 {(form.avatar_preview_url || form.profile_avatar_path !== undefined) && (
@@ -341,7 +341,7 @@ export default function CreatorProfileForm({ mode }: Props) {
                 />
                 <span className="form-image-btn-wrap">
                   <label htmlFor="cover-upload" className="btn btn-secondary btn-sm form-image-btn">
-                    {uploading === 'cover' ? 'Uploading…' : form.cover_preview_url ? 'Change' : 'Upload'}
+                    {uploading === 'cover' ? 'Uploading...' : form.cover_preview_url ? 'Change' : 'Upload'}
                   </label>
                 </span>
                 {(form.cover_preview_url || form.profile_cover_path !== undefined) && (
@@ -400,7 +400,7 @@ export default function CreatorProfileForm({ mode }: Props) {
                 );
               })}
               {tags.length === 0 && (
-                <span className="form-hint">No tags available.</span>
+                <span className="form-hint">No tags available</span>
               )}
             </div>
           </div>
@@ -408,8 +408,8 @@ export default function CreatorProfileForm({ mode }: Props) {
             <button type="submit" className="btn btn-primary" disabled={submitting}>
               {submitting
                 ? mode === 'create'
-                  ? 'Creating…'
-                  : 'Saving…'
+                  ? 'Creating...'
+                  : 'Saving...'
                 : mode === 'create'
                   ? 'Create profile'
                   : 'Save changes'}

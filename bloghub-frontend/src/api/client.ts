@@ -155,7 +155,7 @@ export type Post = {
   title: string;
   content_text: string | null;
   media_url: string | null;
-  media_type: 'Image' | 'Audio' | 'Video' | null;
+  media_type: 'Image' | 'Gif' | 'Audio' | 'Video' | null;
   required_tier?: PostRequiredTier | null;
   created_at?: string;
   updated_at?: string;

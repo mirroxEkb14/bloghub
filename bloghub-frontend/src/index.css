@@ -76,7 +76,6 @@ textarea.form-textarea {
   font-size: 1rem;
 }
 
-/* About field: fits ~255 chars (5 lines), no resize */
 textarea.form-textarea-about {
   resize: none;
   min-height: 6.25rem;
@@ -933,13 +932,21 @@ label {
   border-radius: var(--radius);
   overflow: hidden;
   background: var(--bg-input);
+  width: 100%;
+  aspect-ratio: 16 / 10;
 }
 
 .post-media img,
 .post-media video {
   display: block;
-  max-width: 100%;
-  height: auto;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.post-media:has(audio) {
+  aspect-ratio: auto;
 }
 
 .post-media audio {
@@ -1049,19 +1056,34 @@ label {
   font-weight: 500;
 }
 
+.post-preview-body {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding: 0 1.5rem;
+}
+
 .post-preview-modal .post-preview-media {
-  margin: 0;
-  padding: 0 1.5rem 1rem;
+  margin: 0 0 1rem 0;
   flex-shrink: 0;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-input);
 }
 
 .post-preview-modal .post-preview-media img,
 .post-preview-modal .post-preview-media video {
   display: block;
-  max-width: 100%;
-  height: auto;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.post-preview-modal .post-preview-media:has(audio) {
+  aspect-ratio: auto;
 }
 
 .post-preview-modal .post-preview-media audio {
@@ -1069,12 +1091,13 @@ label {
 }
 
 .post-preview-content {
-  padding: 0 1.5rem 1rem;
+  padding: 0 0 1rem 0;
   line-height: 1.65;
   color: var(--text-secondary);
-  overflow-y: auto;
-  flex: 1;
-  min-height: 0;
+}
+
+.post-preview-body .post-preview-content:last-child {
+  padding-bottom: 0.5rem;
 }
 
 .post-preview-content p {

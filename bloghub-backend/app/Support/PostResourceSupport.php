@@ -14,6 +14,18 @@ class PostResourceSupport
     public const MEDIA_URL_MAX_LENGTH = 255;
     public const MEDIA_TYPE_MAX_LENGTH = 20;
 
+    public const MEDIA_MAX_SIZE_KB = [
+        MediaType::Image->value => 5 * 1024,
+        MediaType::Gif->value => 15 * 1024,
+        MediaType::Audio->value => 2 * 1024,
+        MediaType::Video->value => 64 * 1024,
+    ];
+
+    public static function maxFileSizeKbForMediaType(MediaType $mediaType): int
+    {
+        return self::MEDIA_MAX_SIZE_KB[$mediaType->value] ?? 5 * 1024;
+    }
+
     private function __construct()
     {
     }

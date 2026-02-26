@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class SubscriptionResourceSupport
 {
-    /** SP-19: sub_status max length */
     public const SUB_STATUS_MAX_LENGTH = 20;
 
     private function __construct()

@@ -29,7 +29,7 @@ export default function PostPage() {
   if (loading) {
     return (
       <div className="page-center">
-        <p className="form-subtitle">Loading…</p>
+        <p className="form-subtitle">Loading...</p>
       </div>
     );
   }
@@ -70,7 +70,7 @@ export default function PostPage() {
           {post.created_at && new Date(post.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' })}
         </p>
       )}
-      {post.media_url && post.media_type === 'Image' && (
+      {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
         <figure className="post-media post-media-image">
           <img src={post.media_url} alt="" />
         </figure>

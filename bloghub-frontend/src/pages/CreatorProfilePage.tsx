@@ -93,7 +93,7 @@ export default function CreatorProfilePage() {
   if (loading) {
     return (
       <div className="page-center">
-        <p className="form-subtitle">Loading…</p>
+        <p className="form-subtitle">Loading...</p>
       </div>
     );
   }
@@ -148,9 +148,9 @@ export default function CreatorProfilePage() {
           <section className="profile-posts">
             <h2 className="profile-section-title">Posts</h2>
             {loadingPosts ? (
-              <p className="profile-meta">Loading posts…</p>
+              <p className="profile-meta">Loading posts...</p>
             ) : posts.length === 0 ? (
-              <p className="profile-meta">No posts yet.</p>
+              <p className="profile-meta">No posts yet</p>
             ) : (
               <>
                 <ul className="post-list">
@@ -237,7 +237,9 @@ export default function CreatorProfilePage() {
                     <div className="tier-card-body">
                       <h3 className="tier-card-name">{tier.tier_name}</h3>
                       {tier.tier_desc && (
-                        <p className="tier-card-desc">{tier.tier_desc}</p>
+                        <p className="tier-card-desc" style={{ whiteSpace: 'pre-line' }}>
+                          {tier.tier_desc}
+                        </p>
                       )}
                       <p className="tier-card-price">
                         {tier.price === 0
@@ -289,27 +291,29 @@ export default function CreatorProfilePage() {
                 </span>
               )}
             </div>
-            {previewPost.media_url && previewPost.media_type === 'Image' && (
-              <figure className="post-preview-media">
-                <img src={previewPost.media_url} alt="" />
-              </figure>
-            )}
-            {previewPost.media_url && (previewPost.media_type === 'Audio' || previewPost.media_type === 'Video') && (
-              <figure className="post-preview-media">
-                {previewPost.media_type === 'Video' ? (
-                  <video src={previewPost.media_url} controls />
-                ) : (
-                  <audio src={previewPost.media_url} controls />
-                )}
-              </figure>
-            )}
-            {previewPost.content_text && (
-              <div className="post-preview-content">
-                {previewPost.content_text.split('\n').map((line, i) => (
-                  <p key={i}>{line || '\u00A0'}</p>
-                ))}
-              </div>
-            )}
+            <div className="post-preview-body">
+              {previewPost.media_url && (previewPost.media_type === 'Image' || previewPost.media_type === 'Gif') && (
+                <figure className="post-preview-media">
+                  <img src={previewPost.media_url} alt="" />
+                </figure>
+              )}
+              {previewPost.media_url && (previewPost.media_type === 'Audio' || previewPost.media_type === 'Video') && (
+                <figure className="post-preview-media">
+                  {previewPost.media_type === 'Video' ? (
+                    <video src={previewPost.media_url} controls />
+                  ) : (
+                    <audio src={previewPost.media_url} controls />
+                  )}
+                </figure>
+              )}
+              {previewPost.content_text && (
+                <div className="post-preview-content">
+                  {previewPost.content_text.split('\n').map((line, i) => (
+                    <p key={i}>{line || '\u00A0'}</p>
+                  ))}
+                </div>
+              )}
+            </div>
             <div className="post-preview-actions">
               <Link
                 to={`/creator/${slug}/post/${previewPost.slug}`}

@@ -48,7 +48,7 @@ export default function Discovery() {
         <input
           type="search"
           className="discovery-search"
-          placeholder="Search by name or username…"
+          placeholder="Search by name or username..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           aria-label="Search creators"
@@ -76,11 +76,11 @@ export default function Discovery() {
 
       {loading ? (
         <div className="page-center">
-          <p className="form-subtitle">Loading…</p>
+          <p className="form-subtitle">Loading...</p>
         </div>
       ) : profiles.length === 0 ? (
         <div className="discovery-empty">
-          <p>No creators found. Try another search or tag.</p>
+          <p>No creators found. Try another search or tag</p>
         </div>
       ) : (
         <>
