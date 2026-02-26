@@ -14,49 +14,65 @@ class CreatorProfileSeeder extends Seeder
 {
     private const FIXTURES_BASE = 'database/seeders/fixtures/creator-profiles';
 
-    private const AVATAR_NAMES = [
-        'creator-profile_avatar-1',
-        'creator-profile_avatar-2',
-        'creator-profile_avatar-3',
-    ];
-
-    private const COVER_NAMES = [
-        'creator-profile_cover-1',
-        'creator-profile_cover-2',
-        'creator-profile_cover-3',
-    ];
-
     private const EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
 
     private const PROFILES = [
-        [
-            'display_name' => 'Repus Nimda',
-            'about' => 'Repus Nimda is an independent digital creator focused on technical tutorials, backend development, and system design. He shares practical examples from real projects, explains application architecture, and helps developers write clean, sustainable code — without unnecessary theory.',
-            'user_name' => 'Super Admin',
-            'tag_slugs' => ['tech', 'backend', 'tutorials'],
+        'Fox Mulder' => [
+            'about' => 'Criminal psychology specialist focused on behavioral profiling and unexplained cases. I explore patterns behind extreme crimes, conspiracy narratives, and the psychology of belief. Deep dives, case breakdowns, and analytical commentary.',
+            'tag_slugs' => ['psychology', 'conspiracy-theory', 'true-crime'],
+            'avatar_base' => 'fox-mulder_avatar',
+            'cover_base' => 'fox-mulder_cover',
         ],
-        [
-            'display_name' => 'Resu',
-            'about' => 'Resu is a creative author focused on personal development, productivity, and working with ideas. He shares thoughts on creation, habits, and long-term motivation, blending structure with creativity and space for reflection in the digital world.',
-            'user_name' => 'User',
-            'tag_slugs' => ['productivity', 'personal-development'],
+        'Dana Scully' => [
+            'about' => 'Medical doctor and forensic pathologist sharing insights into forensic medicine, scientific skepticism, and evidence-based investigation. Autopsy analysis, pathology basics, and medical myth debunking.',
+            'tag_slugs' => ['medicine', 'science', 'skepticism'],
+            'avatar_base' => 'dana-scully_avatar',
+            'cover_base' => 'dana-scully_cover',
         ],
-        [
-            'display_name' => 'Urban Faune',
-            'about' => 'Urban Fauna documents animals in human-made environments. From zoos to conservation parks, the creator shares knowledge, impressions, and curiosity-driven content about wildlife and coexistence.',
-            'user_name' => 'Admin',
-            'tag_slugs' => [],
+        'Gordon Freeman' => [
+            'about' => 'Theoretical physicist discussing quantum theory, anomalous phenomena, and high-risk experimental science. Content covers physics concepts, research ethics, and speculative science scenarios.',
+            'tag_slugs' => ['physics', 'science', 'research'],
+            'avatar_base' => 'gordon-freeman_avatar',
+            'cover_base' => 'gordon-freeman_cover',
+        ],
+        'Gregory House' => [
+            'about' => 'Diagnostic medicine specialist breaking down rare diseases, complex symptoms, and medical reasoning. Analytical case studies with a focus on logic, misdiagnosis, and unconventional thinking.',
+            'tag_slugs' => ['healthcare', 'medicine'],
+            'avatar_base' => 'gregory-house_avatar',
+            'cover_base' => 'gregory-house_cover',
+        ],
+        'Caroline' => [
+            'about' => 'AI-driven content on experimental testing environments, human-machine interaction, and the philosophy of artificial intelligence. Dark humor meets research in automation and cognitive systems.',
+            'tag_slugs' => ['AI', 'automation'],
+            'avatar_base' => 'glados_avatar',
+            'cover_base' => 'glados_cover',
+        ],
+        'Ellen Ripley' => [
+            'about' => 'Space operations specialist sharing survival strategies, risk management principles, and crisis leadership insights. Practical breakdowns of high-stakes decision-making in hostile environments.',
+            'tag_slugs' => ['space', 'leadership', 'survival'],
+            'avatar_base' => 'ellen-ripley_avatar',
+            'cover_base' => 'ellen-ripley_cover',
+        ],
+        'Maggie Rhee' => [
+            'about' => 'Community builder and survival strategist focused on resilience, leadership under pressure, and rebuilding systems after crisis. Lessons on cooperation, agriculture basics, and sustainable communities.',
+            'tag_slugs' => ['community', 'sustainability', 'leadership'],
+            'avatar_base' => 'maggie-rhee_avatar',
+            'cover_base' => 'maggie-rhee_cover',
+        ],
+        'Negan' => [
+            'about' => 'Former physical education teacher exploring discipline, group dynamics, and authority structures. Content mixes motivational leadership, behavioral control theory, and physical training insights.',
+            'tag_slugs' => ['physical-education', 'motivation'],
+            'avatar_base' => 'negan_avatar',
+            'cover_base' => 'negan_cover',
         ],
     ];
 
     public function run(): void
     {
-        $basePath = base_path(self::FIXTURES_BASE);
-
-        foreach (self::PROFILES as $index => $data) {
-            $user = User::where('name', $data['user_name'])->first();
+        foreach (self::PROFILES as $userName => $data) {
+            $user = User::where('name', $userName)->first();
             if (! $user) {
-                $this->command->warn("User \"{$data['user_name']}\" not found, skipping creator profile \"{$data['display_name']}\".");
+                $this->command->warn("User \"{$userName}\" not found, skipping creator profile.");
 
                 continue;
             }
@@ -66,18 +82,20 @@ class CreatorProfileSeeder extends Seeder
                 ? mb_substr($data['about'], 0, $maxAbout - 3).'...'
                 : $data['about'];
 
-            $slug = CreatorProfile::uniqueSlugForDisplayName($data['display_name']);
+            $displayName = $userName;
+            $slug = CreatorProfile::uniqueSlugForDisplayName($displayName);
 
             $profile = CreatorProfile::firstOrCreate(
                 ['user_id' => $user->id],
                 [
                     'slug' => $slug,
-                    'display_name' => $data['display_name'],
+                    'display_name' => $displayName,
                     'about' => $about,
                 ]
             );
 
-            $avatarPath = $this->findFixtureFile($basePath.'/avatars', self::AVATAR_NAMES[$index] ?? null);
+            $basePath = base_path(self::FIXTURES_BASE);
+            $avatarPath = $this->findFixtureFile($basePath.'/avatars', $data['avatar_base'] ?? null);
             if ($avatarPath !== null) {
                 $stored = Storage::disk('public')->putFile(
                     CreatorProfileResourceSupport::AVATAR_DIRECTORY,
@@ -86,7 +104,7 @@ class CreatorProfileSeeder extends Seeder
                 $profile->profile_avatar_path = $stored;
             }
 
-            $coverPath = $this->findFixtureFile($basePath.'/covers', self::COVER_NAMES[$index] ?? null);
+            $coverPath = $this->findFixtureFile($basePath.'/covers', $data['cover_base'] ?? null);
             if ($coverPath !== null) {
                 $stored = Storage::disk('public')->putFile(
                     CreatorProfileResourceSupport::COVER_DIRECTORY,
@@ -97,8 +115,7 @@ class CreatorProfileSeeder extends Seeder
 
             $profile->save();
 
-            $tagSlugs = $data['tag_slugs'] ?? [];
-            $tagIds = Tag::whereIn('slug', $tagSlugs)->pluck('id');
+            $tagIds = Tag::whereIn('slug', $data['tag_slugs'])->pluck('id');
             $profile->tags()->sync($tagIds);
         }
     }

@@ -20,10 +20,7 @@ class DatabaseSeeder extends Seeder
             TagSeeder::class,
             CreatorProfileSeeder::class,
             TierSeeder::class,
-            SubscriptionSeeder::class,
-            PaymentSeeder::class,
             PostSeeder::class,
-            CommentSeeder::class,
         ]);
     }
 }

@@ -20,7 +20,7 @@ export default function Home() {
   if (loading) {
     return (
       <div className="page-center">
-        <p className="form-subtitle">Loading…</p>
+        <p className="form-subtitle">Loading...</p>
       </div>
     );
   }

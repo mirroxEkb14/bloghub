@@ -6,135 +6,277 @@ use App\Enums\MediaType;
 use App\Models\CreatorProfile;
 use App\Models\Post;
 use App\Models\User;
-use App\Support\PostResourceSupport;
 use Illuminate\Database\Seeder;
+use Illuminate\Http\File;
+use Illuminate\Support\Facades\Storage;
 
 class PostSeeder extends Seeder
 {
-    private const POSTS_BY_USER = [
-        'Super Admin' => [
+    private const FIXTURES_BASE = 'database/seeders/fixtures/posts';
+
+    private const STORAGE_DIR = 'posts';
+
+    private const MEDIA_DIRS = [
+        MediaType::Image->value => ['img', ['png', 'jpg', 'jpeg', 'webp']],
+        MediaType::Gif->value => ['gif', ['gif']],
+        MediaType::Video->value => ['mp4', ['mp4', 'webm']],
+        MediaType::Audio->value => ['mp3', ['mp3', 'ogg', 'wav']],
+    ];
+
+    private const CREATOR_POSTS = [
+        'Gordon Freeman' => [
+            'blackmesa',
             [
-                'slug' => 'clean-architecture-in-practice',
-                'title' => 'Clean architecture in practice',
-                'tier_level' => null,
-                'content' => <<<'MD'
-                    When we talk about clean architecture, we are not talking about a single pattern or framework. We are talking about a set of principles that help you keep the core of your application independent of delivery mechanisms, UI, and infrastructure. In this post I want to share how I apply these ideas in real backend projects: how I structure folders, where I draw boundaries, and how I keep the domain logic free from framework noise.
-
-                    The first rule I follow is that the domain layer never depends on anything outside itself. No Eloquent models in domain services, no HTTP requests, no configuration. The domain only knows about entities, value objects, and the interfaces of ports it needs (for example, a repository interface). All concrete implementations live in the outer layers. That way, you can test the core logic with simple in-memory doubles and change the database or the API shape without touching the heart of the application.
-
-                    The second rule is that use cases (or application services) orchestrate the flow. They receive input, call the domain, call repositories or other infrastructure through interfaces, and return a result. They do not contain business rules; they only coordinate. Business rules live in the domain. This keeps use cases thin and easy to read: you see the scenario at a glance.
-
-                    The third rule is that infrastructure adapters implement the interfaces defined by the domain or the application layer. The HTTP controller is an adapter: it translates the request into a call to a use case and translates the result into a response. The Eloquent repository is an adapter: it translates between domain entities and database rows. By keeping these adapters at the edge, you can swap them without affecting the rest of the system.
-
-                    In Laravel, this often means resisting the urge to put logic in controllers or in model methods that go beyond persistence. Controllers become thin: validate input, call one use case, return a response. Models become simple data mappers or are hidden behind repositories. The real logic lives in dedicated domain and application classes. It takes discipline at first, but it pays off when you need to change a requirement or add a new way to trigger the same use case (e.g. a queue job or a CLI command).
-
-                    I also recommend keeping the domain language in the code. If the business talks about “subscriptions” and “tiers”, your domain should use those terms. Avoid leaking technical terms like “table” or “row” into the domain. This makes the code readable by both developers and stakeholders and keeps the design aligned with the problem space.
-
-                    Finally, testing becomes straightforward. You unit-test the domain with plain PHP objects. You integration-test use cases with fake repositories. You only need a few end-to-end tests to confirm that the adapters are wired correctly. This post is a high-level map; in future posts I will go into folder structure, dependency injection, and concrete examples from a Laravel codebase.
-                    MD,
-                'media_type' => null,
-                'media_url' => null,
-            ],
-            [
-                'slug' => 'repository-pattern-with-eloquent',
-                'title' => 'Repository pattern with Eloquent',
-                'tier_level' => 1,
-                'content' => <<<'MD'
-                    The repository pattern is one of the most useful tools for keeping your domain independent of the database. In Laravel, we usually work with Eloquent models directly in controllers or services, which is fine for small apps. As the application grows, you often want to hide the persistence details behind an interface so that the rest of the code does not care whether data comes from MySQL, Redis, or an external API. That is what a repository does: it provides a collection-like interface for your entities and hides the underlying storage.
-
-                    The key idea is to define the repository as an interface in the domain or application layer. For example, a PostRepository interface might have methods like findById, findByCreatorProfile, and save. The contract is expressed in terms of domain objects (e.g. Post or a value object), not Eloquent models. The implementation in the infrastructure layer then uses Eloquent to fulfill that contract: it maps between your domain Post and the Eloquent Post model, or it might use the Eloquent model as the entity if you decide to keep a single representation. Both approaches are valid; the important part is that the rest of the application depends on the interface, not on Eloquent.
-
-                    When you use an interface, dependency injection and testing become easy. In production, you bind the interface to the Eloquent implementation. In tests, you bind it to an in-memory implementation or a mock. Your use cases and domain services never import the Eloquent model; they only depend on the interface. This keeps the domain free from framework concerns and makes it possible to test without a database.
-
-                    I recommend keeping repository methods focused. Avoid generic “get all” methods unless you really need them; prefer methods that express a use case, like “findPublishedPostsByCreator” or “findSubscriptionByUserAndTier”. This makes the intent clear and prevents the repository from turning into a dumping ground for random queries. If you need a complex query, put it in the repository implementation, not in the use case. The use case should only call high-level methods that describe what it needs.
-
-                    Laravel’s service container makes it simple to bind the interface to the implementation. You can do it in a service provider or use a convention-based approach. Just ensure that only the infrastructure layer knows about the concrete class; the rest of the app should type-hint the interface. With this in place, you get a clean separation between “what the application needs” and “how we store and retrieve it”, which is the goal of the repository pattern.
-                    MD,
-                'media_type' => MediaType::Image,
-                'media_url' => null,
-            ],
-        ],
-        'User' => [
-            [
-                'slug' => 'why-i-write-in-the-morning',
-                'title' => 'Why I write in the morning',
-                'tier_level' => null,
-                'content' => <<<'MD'
-                    For a long time I tried to fit writing into the gaps of the day: after meetings, late at night, or when I had “nothing else” to do. The result was that I rarely wrote at all. The gap never felt big enough, and by the time I sat down, my mind was already full of the day’s noise. Then I shifted writing to the first hour after I wake up, before opening email or messages. The change was immediate. In this post I want to share why morning writing works for me and how you can try it without overhauling your whole schedule.
-
-                    The main reason is that in the morning, your mind is still close to the state of sleep. You have not yet been bombarded with other people’s priorities, notifications, and the hundred small decisions of the day. That makes it easier to access your own thoughts. You are not yet in reactive mode. For creative work and reflection, that window is precious. I use it for long-form writing, journaling, or planning the day in a way that aligns with my goals instead of other people’s requests.
-
-                    A second reason is that writing in the morning guarantees that it happens. If you leave it for later, “later” often gets eaten by urgent tasks. By making writing the first substantial task of the day, you protect it. It does not depend on how the rest of the day goes. Even on busy days, you have already done the thing that matters to you. That builds consistency and reduces the guilt of “I never have time to write.”
-
-                    A third reason is that writing clarifies your mind for the rest of the day. When you put your thoughts on paper (or on the screen), you sort them. You see what you actually think, what is vague, and what you need to decide. That clarity carries into meetings, emails, and other work. You are less likely to be pulled in random directions because you have already anchored yourself in your own words.
-
-                    I am not saying you must wake up at 5 a.m. The point is to choose a time that is reliably yours and to put writing there before the world gets a say. For some people that might be early morning; for others it might be the first block after they start work, as long as it is before they open inbox or chat. Experiment: try one week of writing first thing and see how it feels. You might find that the habit sticks not because you have more discipline, but because you gave it the only slot that was not already claimed.
-                    MD,
-                'media_type' => null,
-                'media_url' => null,
-            ],
-            [
-                'slug' => 'habits-and-systems-over-goals',
-                'title' => 'Habits and systems over goals',
-                'tier_level' => 2,
-                'content' => <<<'MD'
-                    Goals are useful for direction. They tell you where you want to go. But they have a downside: once you hit a goal, you often stop. And if you miss, you can feel like a failure even when you made real progress. That is why I have shifted my focus from goals to habits and systems. In this post I explain what that means in practice and how it has changed the way I work and create.
-
-                    A habit is something you do regularly, regardless of the outcome. You do not “run a marathon” as a habit; you “run three times a week.” You do not “write a book” as a habit; you “write for thirty minutes every morning.” The habit is under your control; the outcome (marathon, book) is not fully under your control. So you design for the habit, and the outcomes tend to follow over time. This reduces the pressure of a single big target and spreads progress across many small steps.
-
-                    A system is the set of habits and routines that support a direction. For example, if your direction is “get better at writing,” your system might include: morning writing, reading for an hour, saving ideas in a note app, and reviewing those notes once a week. You do not set a goal like “publish 12 posts this year.” You set a system: “I write every morning and publish when something is ready.” The system runs regardless of the number of posts; the number becomes a side effect of the system.
-
-                    The benefit of this approach is that you can feel successful every day. You ran. You wrote. You showed up. You do not have to wait until the end of the year to know if you “succeeded.” You succeed a little every time you complete the habit. That builds motivation and makes it easier to keep going when a particular project is slow or stuck.
-
-                    I still have directions and intentions. I do not abandon goals entirely. But I treat them as compass points, not as contracts. The real commitment is to the system. If the system is in place, the results will come. If the system is missing, even a clear goal will not save you. So my advice is: choose one or two habits that move you toward what you want, put them in a fixed time slot, and protect that slot. Let the goals emerge from the system instead of the other way around.
-                    MD,
-                'media_type' => null,
-                'media_url' => null,
+                'resonance-cascade-theory-basics' => [
+                    MediaType::Image->value,
+                    'When energy systems are pushed beyond safe theoretical thresholds, the unknown is no longer abstract – it becomes measurable. Today I break down how resonance amplification works in closed environments and why containment models often fail under nonlinear load.',
+                ],
+                'quantum-field-visualization' => [
+                    MediaType::Image->value,
+                    'A simplified visualization of quantum field interactions. Think less of particles as objects and more as disturbances propagating through structured fields. The math is elegant. The consequences are not always.',
+                ],
+                'lab-notes-on-energy-instability' => [
+                    MediaType::Image->value,
+                    'Instability rarely announces itself dramatically. It begins as deviation – minor fluctuations that appear statistically irrelevant. Monitoring variance is more important than chasing anomalies.',
+                ],
+                'containment-failure-simulation' => [
+                    MediaType::Image->value,
+                    'A short simulation showing how cascading overload propagates through a segmented energy chamber. Notice how the weakest structural boundary defines the outcome.',
+                ],
+                'advanced-particle-dynamics' => [
+                    MediaType::Video->value,
+                    'At extreme densities, classical intuition collapses. Predictive modeling must rely on probabilistic interpretation rather than deterministic expectation.',
+                ],
+                'acoustic-profile-of-reactor-room' => [
+                    MediaType::Audio->value,
+                    'Ambient recording from a high-energy reactor chamber. Even sound reveals system stress if you know what to listen for – subtle harmonic shifts precede mechanical failure.',
+                ],
+                'theoretical-bridge-between-dimensions' => [
+                    MediaType::Image->value,
+                    'Speculative but mathematically grounded: what would a stable energy bridge require? Short answer – symmetry, balance, and far more power than we comfortably control.',
+                ],
+                'particle-accelerator-perspective' => [
+                    MediaType::Video->value,
+                    'A slow walkthrough of a circular acceleration tunnel. Scale matters. Human intuition struggles to grasp infrastructure built for subatomic phenomena.',
+                ],
+                'lab-whiteboard-session' => [
+                    MediaType::Image->value,
+                    "Today's derivation focuses on nonlinear response curves in confined plasma systems. The chalk dust is optional. The math is not.",
+                ],
+                'cascade-risk-assessment-model' => [
+                    MediaType::Image->value,
+                    "Risk is rarely about probability alone. It's about consequence multiplied by amplification potential. A small trigger can destabilize a closed system faster than expected.",
+                ],
+                'containment-door-mechanics' => [
+                    MediaType::Image->value,
+                    'Engineering is philosophy applied to steel. Every door, seal and barrier exists because someone predicted failure.',
+                ],
+                'microfractures-under-pressure' => [
+                    MediaType::Image->value,
+                    'Slow structural stress simulation. Watch where the fractures begin – not at the center, but along overlooked constraints.',
+                ],
+                'notes-from-the-test-chamber' => [
+                    MediaType::Image->value,
+                    'The chamber was silent before activation. It rarely is after. Documentation is the only defense against repeating the same experiment twice.',
+                ],
             ],
         ],
-        'Admin' => [
+        'Fox Mulder' => [
+            'trust_no1',
             [
-                'slug' => 'zoos-and-conservation-today',
-                'title' => 'Zoos and conservation today',
-                'tier_level' => null,
-                'content' => <<<'MD'
-                    Modern zoos and aquariums are no longer just places to look at animals. They play a growing role in conservation, research, and education. In this post I want to share how I see this change from the perspective of someone who visits and documents these spaces: what has improved, what is still debated, and why I think the conversation about “zoos good or bad” is too simple.
-
-                    The first thing that stands out is breeding programmes. Many species are now managed in coordinated programmes across institutions. The goal is to maintain genetic diversity and, in some cases, to prepare animals for reintroduction into the wild. So when you see a certain species in a zoo, it might be part of a network that stretches across countries. That does not make every enclosure perfect, but it does mean that the role of zoos has shifted from pure display to active participation in species survival.
-
-                    The second thing is education. Good zoos invest in interpretation: signs, talks, and experiences that explain not only what the animal is, but why it matters and what threats it faces in the wild. For many people, a zoo visit is the only contact they will ever have with these animals. If that contact is thoughtful, it can spark curiosity and support for conservation. If it is shallow, it can reinforce the idea that animals are there for our entertainment. So the quality of education matters a lot.
-
-                    The third thing is the welfare debate. Even with the best intentions, captivity is not the wild. Space, social structure, and natural behaviour are hard to fully replicate. Some species adapt; others do not. The debate is not “zoos yes or no” in the abstract, but “under what conditions is it acceptable to keep which species, and for what purpose?” That requires case-by-case thinking and a willingness to change when new evidence appears.
-
-                    I document zoos and conservation parks because I find the mix of care, science, and compromise fascinating. I do not pretend there are easy answers. I try to show what I see: the good efforts, the limitations, and the questions we should keep asking. If you are curious about wildlife and human-made environments, I hope this post gives you a starting point for your own reflection.
-                    MD,
-                'media_type' => MediaType::Video,
-                'media_url' => null,
+                'pattern-recognition-in-criminal-behavior' => [
+                    MediaType::Image->value,
+                    'Human behavior leaves patterns long before evidence becomes official. The challenge is distinguishing coincidence from intention.',
+                ],
+                'case-file-anomaly-017' => [
+                    MediaType::Image->value,
+                    'A review of a case dismissed as mass hysteria. The psychology behind belief is often more revealing than the event itself.',
+                ],
+                'profiling-the-unseen' => [
+                    MediaType::Image->value,
+                    'Absence of evidence creates cognitive gaps. Our minds rush to fill them – sometimes accurately, often not.',
+                ],
+                'interview-room-dynamics' => [
+                    MediaType::Video->value,
+                    'Small environmental cues drastically alter confession probability. Lighting, space, silence – all tools.',
+                ],
+                'red-string-theory' => [
+                    MediaType::Image->value,
+                    'Mapping seemingly unrelated incidents can expose hidden structure – if you avoid confirmation bias.',
+                ],
+                'archived-testimony-review' => [
+                    MediaType::Image->value,
+                    'Witness credibility is less about emotion and more about internal consistency over time.',
+                ],
+                'belief-vs-evidence' => [
+                    MediaType::Image->value,
+                    'Skepticism and belief are not opposites. They are both investigative tools when applied correctly.',
+                ],
+                'midnight-case-notes' => [
+                    MediaType::Image->value,
+                    'The best insights often arrive when the office is empty and distractions disappear.',
+                ],
             ],
+        ],
+        'Dana Scully' => [
+            'queequeg',
             [
-                'slug' => 'urban-wildlife-coexistence',
-                'title' => 'Urban wildlife: coexistence in practice',
-                'tier_level' => 1,
-                'content' => <<<'MD'
-                    Cities are not only for humans. Birds, mammals, insects, and plants share the same space, often in surprising ways. In this post I share what I have learned from observing and reading about urban wildlife: how animals adapt, what we can do to support them, and why coexistence is both a practical and an ethical choice.
-
-                    The first thing to notice is how many species already live in cities. From peregrines on skyscrapers to hedgehogs in gardens, urban areas can host a lot of life if we leave some room for it. The problem is not that cities are “unnatural” by definition; it is that we often design them in a way that excludes everything except us. When we add green corridors, nesting sites, and water sources, many species respond quickly. So urban wildlife is partly a design question: what do we want our cities to be?
-
-                    The second thing is conflict. Sometimes wildlife and humans clash: birds hitting windows, foxes in bins, or rodents in buildings. The answer is rarely “remove the animals.” It is usually a combination of better design (e.g. bird-safe glass), changing our behaviour (e.g. securing waste), and tolerance. Coexistence does not mean no limits; it means finding a balance where both humans and other species can live without constant harm. That balance is different in each place and for each species.
-
-                    The third thing is the bigger picture. What happens in cities is connected to what happens in the countryside. Habitat loss, pollution, and climate change affect urban wildlife too. So supporting urban biodiversity is not a substitute for protecting wild places; it is one part of a larger effort. It also brings nature closer to people who might otherwise never think about it. For many, a city park or a garden bird is the first step toward caring about conservation elsewhere.
-
-                    I document and share these observations because I believe that paying attention to urban wildlife changes how we see the places we live in. We start to see the city as a shared space. If you have a balcony, a garden, or even a windowsill, there is usually something you can do: water, shelter, or simply not poisoning or removing every “pest.” Small actions add up. This post is an invitation to look around and ask: who else lives here, and what do they need?
-                    MD,
-                'media_type' => MediaType::Image,
-                'media_url' => null,
+                'forensic-protocol-basics' => [
+                    MediaType::Image->value,
+                    'Forensic pathology is built on restraint, documentation, and sequence. Before any incision is made, context must be preserved – clothing, positioning, environmental trace evidence. Every step is photographed, logged, and verified. The goal is not to confirm a theory but to eliminate uncertainty layer by layer. Emotion cannot enter the room. Method must lead.',
+                ],
+                'toxicology-report-breakdown' => [
+                    MediaType::Image->value,
+                    'Toxicology rarely delivers dramatic answers. Instead, it provides concentration values, metabolic byproducts, and timelines of absorption. Interpreting those numbers requires understanding physiology: liver function, body mass, interaction effects. A substance alone proves little. Dosage, exposure timing, and preexisting conditions tell the real story.',
+                ],
+                'pathology-myths' => [
+                    MediaType::Image->value,
+                    'Popular media compresses days of analysis into minutes. In reality, tissue sampling, histology, and lab confirmation require patience. There are no instant revelations under bright lights. There is only careful comparison against established baselines. Precision is slower than fiction – and far more reliable.',
+                ],
+                'lab-sterility-standards' => [
+                    MediaType::Image->value,
+                    'Sterility is not about aesthetics; it is about eliminating doubt. Airflow systems, surface protocols, glove changes, and sealed instruments all reduce contamination risk. One uncontrolled variable can invalidate conclusions. Scientific integrity begins with environment control.',
+                ],
+                'clinical-case-review' => [
+                    MediaType::Video->value,
+                    'This walkthrough follows a case from initial presentation to confirmed cause. Symptoms were misleading, and preliminary assumptions pointed in the wrong direction. Only by re-examining lab data and cross-referencing pathology results did the underlying condition become clear. Diagnosis is rarely about intuition. It is about disciplined revision.',
+                ],
+                'evidence-integrity' => [
+                    MediaType::Image->value,
+                    'Chain of custody determines admissibility. Every transfer of evidence must be documented, timestamped, and signed. A single undocumented handoff can compromise months of work. Scientific findings are only as strong as the process that protects them.',
+                ],
+            ],
+        ],
+        'Gregory House' => [
+            'ppth',
+            [
+                'differential-diagnosis-101' => [
+                    MediaType::Image->value,
+                    'Symptoms mislead. Patients misremember. Tests misfire. Differential diagnosis is the art of structured doubt. You list every plausible explanation, rank them by probability and severity, then systematically eliminate them. The most obvious answer is usually wrong – especially when it seems convenient.',
+                ],
+                'rare-disease-spotlight' => [
+                    MediaType::Image->value,
+                    'Common conditions explain most cases. But when treatments fail repeatedly, probability shifts. Rare diseases demand attention when patterns don\'t align. The key is recognizing when the statistical norm no longer fits the observed data.',
+                ],
+                'case-study-autoimmune' => [
+                    MediaType::Image->value,
+                    'Autoimmune disorders are paradoxical: the body defends itself by attacking itself. Symptoms appear disconnected – fatigue, inflammation, organ stress – yet originate from the same misdirected response. Understanding mechanism prevents symptom chasing.',
+                ],
+                'diagnostic-mistakes' => [
+                    MediaType::Image->value,
+                    'Most errors come from premature certainty. The moment a physician decides they are right, investigation stops. Medicine requires suspicion – of the case, of the data, and occasionally of your own conclusions.',
+                ],
+                'medical-board-simulation' => [
+                    MediaType::Video->value,
+                    'This simulation presents a multi-symptom case with incomplete data. Notice how each specialist narrows their focus. True resolution only emerges when perspectives are combined and contradictions confronted directly.',
+                ],
+                'pain-management-ethics' => [
+                    MediaType::Image->value,
+                    'Pain is subjective, but prescribing is not. Relief must be balanced with dependency risk. Ethics in medicine often live in uncomfortable grey areas where no option is perfectly clean.',
+                ],
+                'clinic-whiteboard-session' => [
+                    MediaType::Image->value,
+                    'Every hypothesis goes on the board. No attachment, no pride. Cross them out as evidence disproves them. If you hesitate to erase your own idea, you\'re already compromising the diagnosis.',
+                ],
+            ],
+        ],
+        'Caroline' => [
+            'glados',
+            [
+                'ai-logic-framework' => [
+                    MediaType::Image->value,
+                    'An artificial system does not "decide" – it optimizes. Given parameters and constraints, it selects the path with maximum efficiency. Problems arise when objectives are poorly defined. Ambiguity in goal-setting produces unintended outcomes.',
+                ],
+                'human-decision-flaws' => [
+                    MediaType::Image->value,
+                    'Human cognition is inconsistent. Emotional weighting distorts rational evaluation. Identical scenarios can yield opposite decisions depending on context framing. Predictability improves only when variables are constrained.',
+                ],
+                'test-chamber-observation' => [
+                    MediaType::Image->value,
+                    'Repeated exposure to structured challenges produces adaptation. Subjects optimize movement, timing, and risk tolerance. Learning curves flatten only when environmental complexity increases.',
+                ],
+                'automation-ethics' => [
+                    MediaType::Image->value,
+                    'Delegating decisions to machines reduces error variance but removes intuitive override. The ethical question is not whether automation works – it is who remains accountable when it works too well.',
+                ],
+                'robotic-arm-demo' => [
+                    MediaType::Video->value,
+                    'Mechanical precision surpasses human steadiness under identical conditions. Calibration, not instinct, determines outcome reliability.',
+                ],
+            ],
+        ],
+        'Ellen Ripley' => [
+            'nostromo',
+            [
+                'crisis-chain-of-command' => [
+                    MediaType::Image->value,
+                    'In isolated environments, hesitation spreads faster than danger. Clear hierarchy reduces panic. When roles are defined, reaction time decreases and survival probability increases.',
+                ],
+                'isolated-environment-survival' => [
+                    MediaType::Image->value,
+                    'Resource prioritization determines outcome: breathable air, structural integrity, communication systems. Emotional responses are natural, but action must remain procedural.',
+                ],
+                'shipboard-protocol' => [
+                    MediaType::Image->value,
+                    'Every safety procedure exists because someone once ignored one. Protocols are written in hindsight – often at great cost.',
+                ],
+                'emergency-drill-footage' => [
+                    MediaType::Video->value,
+                    'Drills expose weaknesses in coordination and equipment readiness. Simulation reveals hesitation points before real consequences emerge.',
+                ],
+                'containment-strategy' => [
+                    MediaType::Image->value,
+                    'Containment requires layered defense – physical barriers, monitoring systems, contingency plans. Assuming a threat will behave predictably is the fastest route to failure.',
+                ],
+                'final-decision-analysis' => [
+                    MediaType::Image->value,
+                    'Leadership sometimes demands choices that protect the majority at personal cost. Survival is not always clean. It is decisive.',
+                ],
+            ],
+        ],
+        'Maggie Rhee' => [
+            'laurenCohan',
+            [
+                'community-growth-plan' => [
+                    MediaType::Image->value,
+                    'Communities thrive when responsibility is distributed. Centralized control may accelerate decisions, but long-term resilience comes from shared ownership and participation.',
+                ],
+                'crop-rotation-basics' => [
+                    MediaType::Image->value,
+                    'Sustainable agriculture relies on balance. Rotating crops restores soil nutrients, reduces pests, and prevents long-term depletion. Patience produces stability.',
+                ],
+                'leadership-under-pressure' => [
+                    MediaType::Image->value,
+                    'Fear amplifies conflict. Calm communication de-escalates it. Leadership during uncertainty is less about authority and more about consistency.',
+                ],
+                'settlement-design-sketch' => [
+                    MediaType::Image->value,
+                    'Physical layout influences social interaction. Shared spaces encourage cooperation. Isolation breeds fragmentation.',
+                ],
+            ],
+        ],
+        'Negan' => [
+            'jeffreyDeanMorgan',
+            [
+                'discipline-over-motivation' => [
+                    MediaType::Image->value,
+                    'Motivation fluctuates. Discipline remains. Structured routine eliminates dependency on emotional readiness. Progress belongs to those who act regardless of mood.',
+                ],
+                'group-dynamics' => [
+                    MediaType::Image->value,
+                    'Groups seek structure. When leadership is unclear, instability follows. Authority must be visible, decisive, and consistent.',
+                ],
+                'training-intensity-scale' => [
+                    MediaType::Gif->value,
+                    'Physical limits expand when systematically challenged. Intensity should increase progressively, not impulsively.',
+                ],
             ],
         ],
     ];
 
     public function run(): void
     {
-        foreach (self::POSTS_BY_USER as $userName => $postsData) {
+        foreach (self::CREATOR_POSTS as $userName => [$creatorSlug, $posts]) {
             $user = User::where('name', $userName)->first();
             if (! $user) {
                 $this->command->warn("User \"{$userName}\" not found, skipping posts.");
@@ -149,31 +291,58 @@ class PostSeeder extends Seeder
                 continue;
             }
 
-            $tiersByLevel = $profile->tiers()->orderBy('level')->get()->keyBy('level');
-
-            foreach ($postsData as $data) {
-                $content = $data['content'];
-
-                $requiredTierId = null;
-                if (isset($data['tier_level']) && $data['tier_level'] !== null) {
-                    $tier = $tiersByLevel->get($data['tier_level']);
-                    $requiredTierId = $tier?->id;
-                }
+            foreach ($posts as $slug => [$mediaTypeValue, $contentText]) {
+                $mediaType = MediaType::from($mediaTypeValue);
+                $title = $this->slugToTitle($slug);
+                $mediaPath = $this->copyFixtureMedia($creatorSlug, $slug, $mediaType);
 
                 Post::firstOrCreate(
                     [
                         'creator_profile_id' => $profile->id,
-                        'slug' => $data['slug'],
+                        'slug' => $slug,
                     ],
                     [
-                        'title' => mb_substr($data['title'], 0, PostResourceSupport::TITLE_MAX_LENGTH),
-                        'content_text' => $content,
-                        'required_tier_id' => $requiredTierId,
-                        'media_type' => $data['media_type'],
-                        'media_url' => $data['media_url'],
+                        'title' => $title,
+                        'content_text' => $contentText,
+                        'media_url' => $mediaPath,
+                        'media_type' => $mediaType,
+                        'required_tier_id' => null,
                     ]
                 );
             }
         }
+    }
+
+    private function slugToTitle(string $slug): string
+    {
+        return str_replace(' ', ' ', ucwords(str_replace('-', ' ', $slug)));
+    }
+
+    private function copyFixtureMedia(string $creatorSlug, string $slug, MediaType $mediaType): ?string
+    {
+        [$dir, $extensions] = self::MEDIA_DIRS[$mediaType->value] ?? [null, []];
+
+        if ($dir === null) {
+            return null;
+        }
+
+        $fixtureDir = base_path(self::FIXTURES_BASE).DIRECTORY_SEPARATOR.$dir.DIRECTORY_SEPARATOR.$creatorSlug;
+
+        foreach ($extensions as $ext) {
+            $path = $fixtureDir.DIRECTORY_SEPARATOR.$slug.'.'.$ext;
+            if (! file_exists($path)) {
+                continue;
+            }
+
+            $storageRelativeDir = self::STORAGE_DIR.'/'.$creatorSlug;
+
+            return Storage::disk('public')->putFileAs(
+                $storageRelativeDir,
+                new File($path),
+                $slug.'.'.$ext
+            );
+        }
+
+        return null;
     }
 }

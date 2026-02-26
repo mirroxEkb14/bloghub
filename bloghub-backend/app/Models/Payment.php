@@ -42,7 +42,7 @@ class Payment extends Model
     {
         $subscription = $this->subscription;
         if (! $subscription) {
-            return '—';
+            return '–';
         }
         $parts = ['#'.$subscription->id];
         if ($subscription->user?->name) {
