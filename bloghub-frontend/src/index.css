@@ -607,6 +607,31 @@ label {
   padding-top: 5rem;
 }
 
+.scroll-to-top-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: background 0.2s, transform 0.2s;
+  z-index: 100;
+}
+
+.scroll-to-top-btn:hover {
+  background: var(--bg-input);
+  transform: translateY(-2px);
+}
+
 @media (max-width: 900px) {
   .profile-container {
     grid-template-columns: 1fr;

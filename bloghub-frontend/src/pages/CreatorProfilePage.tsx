@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   creatorProfilesApi,
@@ -38,6 +38,10 @@ export default function CreatorProfilePage() {
   const [loadingPosts, setLoadingPosts] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [previewPost, setPreviewPost] = useState<Post | null>(null);
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
+  const prevPostsPageRef = useRef(1);
+  const sidebarRef = useRef<HTMLElement | null>(null);
+  const paginationRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!slug) return;
@@ -93,6 +97,32 @@ export default function CreatorProfilePage() {
     })();
     return () => { cancelled = true; };
   }, [slug, postsPage]);
+
+  useEffect(() => {
+    if (postsPage === prevPostsPageRef.current) return;
+    const prev = prevPostsPageRef.current;
+    prevPostsPageRef.current = postsPage;
+    if (postsPage > prev) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      paginationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, [postsPage]);
+
+  useEffect(() => {
+    const el = sidebarRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setShowScrollToTop(!entry.isIntersecting),
+      { threshold: 0, rootMargin: '0px' }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [profile]);
+
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   const closePreview = useCallback(() => setPreviewPost(null), []);
 
@@ -289,7 +319,7 @@ export default function CreatorProfilePage() {
                   })}
                 </ul>
                 {postsMeta && postsMeta.last_page > 1 && (
-                  <div className="post-list-pagination">
+                  <div ref={paginationRef} className="post-list-pagination">
                     <button
                       type="button"
                       className="btn btn-secondary btn-sm"
@@ -315,7 +345,7 @@ export default function CreatorProfilePage() {
             )}
           </section>
         </div>
-        <aside className="profile-sidebar">
+        <aside ref={sidebarRef} className="profile-sidebar">
           <section className="profile-about">
             <h2 className="profile-section-title">
               About {displayName.replace(/\s+.*$/, '')}
@@ -452,6 +482,17 @@ export default function CreatorProfilePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {profile && showScrollToTop && (
+        <button
+          type="button"
+          className="scroll-to-top-btn"
+          onClick={scrollToTop}
+          aria-label="Scroll to top"
+        >
+          ↑
+        </button>
       )}
     </div>
   );
