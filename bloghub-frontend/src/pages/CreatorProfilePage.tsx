@@ -308,7 +308,7 @@ export default function CreatorProfilePage() {
                                   </figure>
                                 )}
                                 {post.media_url && (post.media_type === 'Video' || post.media_type === 'Audio') && (
-                                  <figure className="post-card-media">
+                                  <figure className={`post-card-media${post.media_type === 'Audio' ? ' post-card-media-audio' : ''}`}>
                                     {post.media_type === 'Video' ? (
                                       <video src={post.media_url} controls />
                                     ) : (

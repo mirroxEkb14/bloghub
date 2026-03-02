@@ -1052,6 +1052,11 @@ label {
   aspect-ratio: 16 / 10;
 }
 
+.post-card-media.post-card-media-audio {
+  aspect-ratio: auto;
+  min-height: 0;
+}
+
 .post-card-media img,
 .post-card-media video {
   display: block;
@@ -1063,6 +1068,7 @@ label {
 
 .post-card-media audio {
   width: 100%;
+  display: block;
 }
 
 .post-card-footer {
