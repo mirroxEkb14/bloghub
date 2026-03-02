@@ -259,7 +259,16 @@ export default function CreatorProfilePage() {
                                     {post.content_text}
                                   </div>
                                 )}
-                                <div className="post-card-lock-overlay">
+                                <div
+                                  className={`post-card-lock-overlay${post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') ? ' post-card-lock-overlay-with-image' : ''}`}
+                                >
+                                  {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
+                                    <div
+                                      className="post-card-lock-overlay-bg"
+                                      style={{ backgroundImage: `url(${post.media_url})` }}
+                                      aria-hidden
+                                    />
+                                  )}
                                   <div className="post-card-lock-icon-circle" aria-hidden>
                                     <svg className="post-card-lock-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                                       <rect x="4" y="11" width="16" height="10" rx="2.5" ry="2.5" />

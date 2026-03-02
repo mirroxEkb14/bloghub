@@ -1091,10 +1091,18 @@ label {
 }
 
 /* Locked post */
+.post-card-locked .post-card-header {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1rem;
+  margin-bottom: 0.75rem;
+}
+
 .post-card-locked .post-card-body {
   padding: 0;
   position: relative;
   min-height: 260px;
+  margin-top: 0;
 }
 
 .post-card-preview-blur {
@@ -1119,6 +1127,31 @@ label {
   justify-content: center;
   padding: 2rem 1.5rem;
   text-align: center;
+}
+
+.post-card-lock-overlay-bg {
+  position: absolute;
+  inset: -20px;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(4px);
+}
+
+.post-card-lock-overlay-with-image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 0;
+}
+
+.post-card-lock-overlay-with-image .post-card-lock-icon-circle,
+.post-card-lock-overlay-with-image .post-card-unlock-title,
+.post-card-lock-overlay-with-image .post-card-unlock-desc,
+.post-card-lock-overlay-with-image .post-card-join-btn {
+  position: relative;
+  z-index: 1;
 }
 
 .post-card-lock-icon-circle {
