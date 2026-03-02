@@ -447,8 +447,10 @@ export default function CreatorProfilePage() {
               </button>
             </div>
             <div className="post-preview-meta">
-              {previewPost.required_tier && (
+              {previewPost.required_tier ? (
                 <span className="post-tier-badge">{previewPost.required_tier.tier_name}</span>
+              ) : (
+                <span className="post-tier-badge">Public</span>
               )}
               {previewPost.created_at && (
                 <span className="post-preview-date">
