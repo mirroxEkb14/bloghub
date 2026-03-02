@@ -12,6 +12,21 @@ import {
 
 const POSTS_PAGE_SIZE = 12;
 
+function relativeTime(dateStr: string): string {
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - d.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins} min ago`;
+  if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays < 7) return `${diffDays} days ago`;
+  return d.toLocaleDateString(undefined, { dateStyle: 'medium' });
+}
+
 export default function CreatorProfilePage() {
   const { slug } = useParams<{ slug: string }>();
   const [profile, setProfile] = useState<CreatorProfile | null>(null);
@@ -153,26 +168,131 @@ export default function CreatorProfilePage() {
               <p className="profile-meta">No posts yet</p>
             ) : (
               <>
-                <ul className="post-list">
-                  {posts.map((post) => (
-                    <li key={post.id}>
-                      <button
-                        type="button"
-                        className="post-list-item"
-                        onClick={() => setPreviewPost(post)}
-                      >
-                        <span className="post-list-title">{post.title}</span>
-                        {post.required_tier && (
-                          <span className="post-list-tier">{post.required_tier.tier_name}</span>
-                        )}
-                        {post.created_at && (
-                          <span className="post-list-date">
-                            {new Date(post.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' })}
-                          </span>
-                        )}
-                      </button>
-                    </li>
-                  ))}
+                <ul className="post-card-list">
+                  {posts.map((post) => {
+                    const isLocked = !!post.required_tier;
+                    return (
+                      <li key={post.id} className="post-card-wrapper">
+                        <article className={`post-card ${isLocked ? 'post-card-locked' : ''}`}>
+                          <header className="post-card-header">
+                            {profile.profile_avatar_url ? (
+                              <img
+                                src={profile.profile_avatar_url}
+                                alt=""
+                                className="post-card-avatar"
+                              />
+                            ) : (
+                              <div className="post-card-avatar post-card-avatar-placeholder">
+                                {displayName.charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                            <div className="post-card-header-meta">
+                              <span className="post-card-creator-name">{displayName}</span>
+                              <span className="post-card-visibility">
+                                {isLocked ? (
+                                  <>
+                                    <svg className="post-card-lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                    </svg>
+                                    {post.required_tier?.tier_name} & Above
+                                  </>
+                                ) : (
+                                  'Public'
+                                )}
+                                {post.created_at && (
+                                  <span className="post-card-sep"> • </span>
+                                )}
+                                {post.created_at && (
+                                  <span className="post-card-time">{relativeTime(post.created_at)}</span>
+                                )}
+                              </span>
+                            </div>
+                            <div className="post-card-actions">
+                              <button type="button" className="post-card-menu-btn" aria-label="More options">
+                                ⋮
+                              </button>
+                            </div>
+                          </header>
+                          <div className="post-card-body">
+                            {isLocked ? (
+                              <>
+                                {post.content_text && (
+                                  <div className="post-card-preview-blur" aria-hidden>
+                                    {post.content_text}
+                                  </div>
+                                )}
+                                <div className="post-card-lock-overlay">
+                                  <div className="post-card-lock-icon-circle" aria-hidden>
+                                    <svg className="post-card-lock-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                    </svg>
+                                  </div>
+                                  <h3 className="post-card-unlock-title">Unlock this post</h3>
+                                  <p className="post-card-unlock-desc">
+                                    Join the {post.required_tier?.tier_name} to get instant access to this post
+                                    and other exclusive updates
+                                  </p>
+                                  <button
+                                    type="button"
+                                    className="btn btn-primary post-card-join-btn"
+                                    onClick={() => document.getElementById('profile-tiers')?.scrollIntoView({ behavior: 'smooth' })}
+                                  >
+                                    Join Now
+                                  </button>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                {post.content_text && (
+                                  <div className="post-card-content">
+                                    {post.content_text.split('\n').map((line, i) => (
+                                      <p key={i}>{line || '\u00A0'}</p>
+                                    ))}
+                                  </div>
+                                )}
+                                {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
+                                  <figure className="post-card-media">
+                                    <img src={post.media_url} alt="" />
+                                  </figure>
+                                )}
+                                {post.media_url && (post.media_type === 'Video' || post.media_type === 'Audio') && (
+                                  <figure className="post-card-media">
+                                    {post.media_type === 'Video' ? (
+                                      <video src={post.media_url} controls />
+                                    ) : (
+                                      <audio src={post.media_url} controls />
+                                    )}
+                                  </figure>
+                                )}
+                                <footer className="post-card-footer">
+                                  <span className="post-card-stat">
+                                    <span className="post-card-stat-icon" aria-hidden>♥</span> 0
+                                  </span>
+                                  <span className="post-card-stat">
+                                    <span className="post-card-stat-icon" aria-hidden>💬</span> 0
+                                  </span>
+                                  <span className="post-card-stat post-card-stat-bookmark">
+                                    <span className="post-card-stat-icon" aria-hidden>🔖</span>
+                                  </span>
+                                </footer>
+                                <div className="post-card-view-full">
+                                  <button
+                                    type="button"
+                                    className="btn btn-secondary btn-sm"
+                                    onClick={() => setPreviewPost(post)}
+                                  >
+                                    View full post
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </article>
+                      </li>
+                    );
+                  })}
                 </ul>
                 {postsMeta && postsMeta.last_page > 1 && (
                   <div className="post-list-pagination">
@@ -209,7 +329,7 @@ export default function CreatorProfilePage() {
             {profile.about ? (
               <p className="profile-about-text">{profile.about}</p>
             ) : (
-              <p className="profile-about-text profile-about-empty">No description yet.</p>
+              <p className="profile-about-text profile-about-empty">No description yet</p>
             )}
             {profile.tags && profile.tags.length > 0 && (
               <div className="profile-tag-list">
@@ -226,7 +346,7 @@ export default function CreatorProfilePage() {
             )}
           </section>
           {tiers.length > 0 && (
-            <section className="profile-tiers">
+            <section id="profile-tiers" className="profile-tiers">
               <h2 className="profile-section-title">Subscription Tiers</h2>
               <ul className="tier-list tier-list-sidebar">
                 {tiers.map((tier) => (
