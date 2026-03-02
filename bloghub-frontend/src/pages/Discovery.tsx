@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { creatorProfilesApi, tagsApi, type CreatorProfile, type Tag } from '../api/client';
 
 const TAG_PARAM = 'tag';
+const DISCOVER_SCROLL_KEY = 'discover-scroll';
 
 export default function Discovery() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -14,6 +15,42 @@ export default function Discovery() {
   const [search, setSearch] = useState('');
   const [tagSlug, setTagSlug] = useState<string | null>(tagFromUrl);
   const [meta, setMeta] = useState<{ current_page: number; last_page: number; total: number } | null>(null);
+  const savedScrollRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const y = sessionStorage.getItem(DISCOVER_SCROLL_KEY);
+    if (y !== null) {
+      sessionStorage.removeItem(DISCOVER_SCROLL_KEY);
+      savedScrollRef.current = parseInt(y, 10);
+    }
+  }, []);
+
+  useEffect(() => {
+    let tick: ReturnType<typeof setTimeout> | null = null;
+    const saveScroll = () => {
+      sessionStorage.setItem(DISCOVER_SCROLL_KEY, String(window.scrollY));
+    };
+    const onScroll = () => {
+      if (tick !== null) clearTimeout(tick);
+      tick = setTimeout(saveScroll, 100);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (tick !== null) clearTimeout(tick);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!loading && savedScrollRef.current !== null) {
+      const y = savedScrollRef.current;
+      savedScrollRef.current = null;
+      const id = setTimeout(() => {
+        window.scrollTo(0, y);
+      }, 50);
+      return () => clearTimeout(id);
+    }
+  }, [loading]);
 
   useEffect(() => {
     setTagSlug(tagFromUrl);

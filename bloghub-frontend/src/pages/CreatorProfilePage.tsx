@@ -44,6 +44,10 @@ export default function CreatorProfilePage() {
   const paginationRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [slug]);
+
+  useEffect(() => {
     if (!slug) return;
     let cancelled = false;
     (async () => {
