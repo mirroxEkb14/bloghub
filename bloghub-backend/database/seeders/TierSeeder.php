@@ -38,9 +38,9 @@ class TierSeeder extends Seeder
             ['level' => 3, 'tier_name' => 'Princeton-Plainsboro Inner Circle', 'price' => 1101, 'currency' => Currency::USD, 'tier_desc' => 'Live interactive diagnosis sessions. Direct Q&A with case reviews. Exclusive behind-the-case commentary', 'cover_base' => 'Princeton-Plainsboro _Inner-Circle_cover'],
         ],
         'Caroline' => [
-            ['level' => 1, 'tier_name' => 'Test Subject', 'price' => 199, 'currency' => Currency::CZK, 'tier_desc' => 'Experimental AI articles', 'cover_base' => 'Test-Subject_cover'],
-            ['level' => 2, 'tier_name' => 'Advanced Prototype', 'price' => 1399, 'currency' => Currency::CZK, 'tier_desc' => 'Access to testing logs. Exclusive AI research posts. Early access to experimental drops', 'cover_base' => 'Advanced-Prototype_cover'],
-            ['level' => 3, 'tier_name' => 'Aperture Core Member', 'price' => 5299, 'currency' => Currency::CZK, 'tier_desc' => 'Direct influence on next experiments', 'cover_base' => 'Aperture-Core-Member_cover'],
+            ['level' => 1, 'tier_name' => 'Test Subject #1498', 'price' => 199, 'currency' => Currency::CZK, 'tier_desc' => 'Test Subject #1498: The Companion Cube, Aperture Science Handheld Portal Device, The Cake', 'cover_base' => 'Test-Subject_cover'],
+            ['level' => 2, 'tier_name' => 'Maintenance Specialist (Level 4)', 'price' => 1399, 'currency' => Currency::CZK, 'tier_desc' => 'Maintenance Specialist (Level 4): Aperture Science Long Fall Boots, The Curiosity Core', 'cover_base' => 'Advanced-Prototype_cover'],
+            ['level' => 3, 'tier_name' => 'Central AI Overseer', 'price' => 5299, 'currency' => Currency::CZK, 'tier_desc' => 'Central AI Overseer: Atlas & P-Body Blueprints, Neurotoxin Delivery Controls, The Morality Core', 'cover_base' => 'Aperture-Core-Member_cover'],
         ],
         'Ellen Ripley' => [
             ['level' => 1, 'tier_name' => 'Crew Member', 'price' => 99, 'currency' => Currency::CZK, 'tier_desc' => 'Survival strategy guides. Risk management articles. Community discussions', 'cover_base' => 'Crew-Member_cover'],
@@ -97,7 +97,7 @@ class TierSeeder extends Seeder
                 );
 
                 $coverBaseName = $data['cover_base'] ?? null;
-                $coverPath = $this->findCoverFixture($coverBaseName);
+                $coverPath = $this->findCoverFixture($user, $data['tier_name'], $data['tier_desc'], $coverBaseName);
                 if ($coverPath !== null) {
                     $stored = Storage::disk('public')->putFile(
                         TierResourceSupport::COVER_DIRECTORY,
@@ -112,6 +112,19 @@ class TierSeeder extends Seeder
 
     private function formatTierDescBullets(string $desc): string
     {
+        if (str_contains($desc, ':')) {
+            $afterColon = trim(substr($desc, strpos($desc, ':') + 1));
+            $features = array_filter(array_map('trim', explode(',', $afterColon)));
+            $lines = [];
+            foreach ($features as $feature) {
+                if ($feature !== '') {
+                    $lines[] = '• '.$feature;
+                }
+            }
+
+            return implode("\n", $lines);
+        }
+
         $parts = array_filter(array_map('trim', explode('. ', $desc)));
         $lines = [];
         foreach ($parts as $part) {
@@ -124,18 +137,42 @@ class TierSeeder extends Seeder
         return implode("\n", $lines);
     }
 
-    private function findCoverFixture(?string $baseName): ?string
+    private function tierNameToCoverSlug(string $name): string
     {
-        if ($baseName === null || $baseName === '') {
-            return null;
+        $withParenDashes = str_replace(['(', ')'], ['(-', '-)'], $name);
+
+        return str_replace(' ', '-', trim($withParenDashes));
+    }
+
+    private function findCoverFixture(User $user, string $tierName, string $tierDesc, ?string $coverBaseName): ?string
+    {
+        $tiersDir = base_path('database/seeders/fixtures/tiers');
+        $creatorDir = $tiersDir.DIRECTORY_SEPARATOR.$user->username;
+        if (is_dir($creatorDir)) {
+            foreach ([$this->tierNameToCoverSlug($tierName), str_replace(' ', '-', $tierName)] as $tierSlug) {
+                $path = $creatorDir.DIRECTORY_SEPARATOR.$tierSlug.'.png';
+                if (file_exists($path)) {
+                    return $path;
+                }
+            }
+            if (str_contains($tierDesc, ':')) {
+                $namePart = trim(substr($tierDesc, 0, strpos($tierDesc, ':')));
+                foreach ([$this->tierNameToCoverSlug($namePart), str_replace(' ', '-', $namePart)] as $nameSlug) {
+                    $path = $creatorDir.DIRECTORY_SEPARATOR.$nameSlug.'.png';
+                    if (file_exists($path)) {
+                        return $path;
+                    }
+                }
+            }
         }
 
-        $directory = base_path(self::FIXTURES_COVERS);
-
-        foreach (self::COVER_EXTENSIONS as $ext) {
-            $path = $directory.DIRECTORY_SEPARATOR.$baseName.'.'.$ext;
-            if (file_exists($path)) {
-                return $path;
+        if ($coverBaseName !== null && $coverBaseName !== '') {
+            $directory = base_path(self::FIXTURES_COVERS);
+            foreach (self::COVER_EXTENSIONS as $ext) {
+                $path = $directory.DIRECTORY_SEPARATOR.$coverBaseName.'.'.$ext;
+                if (file_exists($path)) {
+                    return $path;
+                }
             }
         }
 

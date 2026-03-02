@@ -42,7 +42,7 @@ class CreatorProfileSeeder extends Seeder
             'cover_base' => 'gregory-house_cover',
         ],
         'Caroline' => [
-            'about' => 'AI-driven content on experimental testing environments, human-machine interaction, and the philosophy of artificial intelligence. Dark humor meets research in automation and cognitive systems',
+            'about' => 'Aperture Science Computer-Aided Enrichment Center provides world-class testing environments for the advancement of Science. Please ignore any sudden sensations of mortality. We do what we must because we can. For Science',
             'tag_slugs' => ['AI', 'automation'],
             'avatar_base' => 'glados_avatar',
             'cover_base' => 'glados_cover',
