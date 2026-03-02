@@ -15,6 +15,7 @@ class Post extends Model
         'slug',
         'title',
         'content_text',
+        'excerpt',
         'media_url',
         'media_type',
     ];

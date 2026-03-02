@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import LoadingPage from '../components/LoadingPage';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Home() {
@@ -18,11 +19,7 @@ export default function Home() {
   }
 
   if (loading) {
-    return (
-      <div className="page-center">
-        <p className="form-subtitle">Loading...</p>
-      </div>
-    );
+    return <LoadingPage />;
   }
 
   if (!user) {

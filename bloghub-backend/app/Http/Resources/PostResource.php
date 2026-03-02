@@ -20,6 +20,7 @@ class PostResource extends JsonResource
             'slug' => $this->slug,
             'title' => $this->title,
             'content_text' => $this->content_text,
+            'excerpt' => $this->excerpt,
             'media_url' => $mediaUrl,
             'media_type' => $this->media_type?->value,
             'required_tier' => $this->whenLoaded('requiredTier', fn () => [
