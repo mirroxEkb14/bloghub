@@ -997,18 +997,25 @@ label {
   position: relative;
 }
 
-.post-card-content {
-  line-height: 1.6;
-  color: var(--text);
+.post-card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
   margin-bottom: 1rem;
 }
 
-.post-card-content p {
-  margin: 0 0 0.5rem 0;
+.post-card-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
 }
 
-.post-card-content p:last-child {
-  margin-bottom: 0;
+.post-card-title-row .btn {
+  flex-shrink: 0;
 }
 
 .post-card-media {
@@ -1056,10 +1063,6 @@ label {
 
 .post-card-stat-bookmark {
   margin-left: auto;
-}
-
-.post-card-view-full {
-  margin-top: 0.75rem;
 }
 
 /* Locked post */

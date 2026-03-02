@@ -245,13 +245,16 @@ export default function CreatorProfilePage() {
                               </>
                             ) : (
                               <>
-                                {post.content_text && (
-                                  <div className="post-card-content">
-                                    {post.content_text.split('\n').map((line, i) => (
-                                      <p key={i}>{line || '\u00A0'}</p>
-                                    ))}
-                                  </div>
-                                )}
+                                <div className="post-card-title-row">
+                                  <h3 className="post-card-title">{post.title}</h3>
+                                  <button
+                                    type="button"
+                                    className="btn btn-secondary btn-sm"
+                                    onClick={() => setPreviewPost(post)}
+                                  >
+                                    Preview
+                                  </button>
+                                </div>
                                 {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
                                   <figure className="post-card-media">
                                     <img src={post.media_url} alt="" />
@@ -277,15 +280,6 @@ export default function CreatorProfilePage() {
                                     <span className="post-card-stat-icon" aria-hidden>🔖</span>
                                   </span>
                                 </footer>
-                                <div className="post-card-view-full">
-                                  <button
-                                    type="button"
-                                    className="btn btn-secondary btn-sm"
-                                    onClick={() => setPreviewPost(post)}
-                                  >
-                                    View full post
-                                  </button>
-                                </div>
                               </>
                             )}
                           </div>
@@ -432,9 +426,11 @@ export default function CreatorProfilePage() {
               )}
               {previewPost.content_text && (
                 <div className="post-preview-content">
-                  {previewPost.content_text.split('\n').map((line, i) => (
-                    <p key={i}>{line || '\u00A0'}</p>
-                  ))}
+                  <p style={{ whiteSpace: 'pre-line' }}>
+                    {previewPost.content_text.length > 300
+                      ? `${previewPost.content_text.slice(0, 300)}...`
+                      : previewPost.content_text}
+                  </p>
                 </div>
               )}
             </div>
