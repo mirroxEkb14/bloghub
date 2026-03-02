@@ -9,6 +9,7 @@ import {
   type Post,
   type Tier,
 } from '../api/client';
+import LoadingPage from '../components/LoadingPage';
 
 const POSTS_PAGE_SIZE = 12;
 
@@ -42,10 +43,30 @@ export default function CreatorProfilePage() {
   const prevPostsPageRef = useRef(1);
   const sidebarRef = useRef<HTMLElement | null>(null);
   const paginationRef = useRef<HTMLDivElement | null>(null);
+  const savedScrollRef = useRef<number | null>(null);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    if (!slug) return;
+    const key = `creator-scroll-${slug}`;
+    const y = sessionStorage.getItem(key);
+    if (y !== null) {
+      sessionStorage.removeItem(key);
+      savedScrollRef.current = parseInt(y, 10);
+    } else {
+      window.scrollTo(0, 0);
+    }
   }, [slug]);
+
+  useEffect(() => {
+    if (!loading && savedScrollRef.current !== null) {
+      const y = savedScrollRef.current;
+      savedScrollRef.current = null;
+      const id = setTimeout(() => {
+        window.scrollTo(0, y);
+      }, 50);
+      return () => clearTimeout(id);
+    }
+  }, [loading]);
 
   useEffect(() => {
     if (!slug) return;
@@ -140,11 +161,7 @@ export default function CreatorProfilePage() {
   }, [previewPost, closePreview]);
 
   if (loading) {
-    return (
-      <div className="page-center">
-        <p className="form-subtitle">Loading...</p>
-      </div>
-    );
+    return <LoadingPage message="Loading creator..." />;
   }
 
   if (error || !profile) {
@@ -493,7 +510,10 @@ export default function CreatorProfilePage() {
               <Link
                 to={`/creator/${slug}/post/${previewPost.slug}`}
                 className="btn btn-primary"
-                onClick={closePreview}
+                onClick={() => {
+                  if (slug) sessionStorage.setItem(`creator-scroll-${slug}`, String(window.scrollY));
+                  closePreview();
+                }}
               >
                 View full post
               </Link>

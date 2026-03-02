@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import {
   creatorProfilesApi,
   tagsApi,
   type CreatorProfile,
   type Tag,
 } from '../api/client';
+import LoadingPage from '../components/LoadingPage';
+import { useAuth } from '../contexts/AuthContext';
 
 type Props = {
   mode: 'create' | 'edit';
@@ -239,11 +240,7 @@ export default function CreatorProfileForm({ mode }: Props) {
   };
 
   if (authLoading || (mode === 'edit' && profileLoading)) {
-    return (
-      <div className="page-center">
-        <p className="form-subtitle">Loading...</p>
-      </div>
-    );
+    return <LoadingPage message={mode === 'edit' ? 'Loading profile...' : undefined} />;
   }
 
   if (!user) return null;

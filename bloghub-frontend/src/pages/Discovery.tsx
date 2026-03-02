@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { creatorProfilesApi, tagsApi, type CreatorProfile, type Tag } from '../api/client';
+import LoadingPage from '../components/LoadingPage';
 
 const TAG_PARAM = 'tag';
 const DISCOVER_SCROLL_KEY = 'discover-scroll';
@@ -130,9 +131,7 @@ export default function Discovery() {
       </div>
 
       {loading ? (
-        <div className="page-center">
-          <p className="form-subtitle">Loading...</p>
-        </div>
+        <LoadingPage message="Discovering creators..." />
       ) : profiles.length === 0 ? (
         <div className="discovery-empty">
           <p>No creators found. Try another search or tag</p>

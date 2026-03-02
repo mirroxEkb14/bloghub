@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { postsApi, type Post } from '../api/client';
+import LoadingPage from '../components/LoadingPage';
 
 export default function PostPage() {
   const { slug, postSlug } = useParams<{ slug: string; postSlug: string }>();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [slug, postSlug]);
 
   useEffect(() => {
     if (!slug || !postSlug) return;
@@ -27,11 +32,7 @@ export default function PostPage() {
   }, [slug, postSlug]);
 
   if (loading) {
-    return (
-      <div className="page-center">
-        <p className="form-subtitle">Loading...</p>
-      </div>
-    );
+    return <LoadingPage message="Loading post..." />;
   }
 
   if (error || !post) {
