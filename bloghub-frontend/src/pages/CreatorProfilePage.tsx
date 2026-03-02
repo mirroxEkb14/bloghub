@@ -214,9 +214,13 @@ export default function CreatorProfilePage() {
             {profile.tags && profile.tags.length > 0 && (
               <div className="profile-tag-list">
                 {profile.tags.map((t) => (
-                  <span key={t.id} className="creator-tag creator-tag-pill">
+                  <Link
+                    key={t.id}
+                    to={`/discover?tag=${encodeURIComponent(t.slug)}`}
+                    className="creator-tag creator-tag-pill creator-tag-link"
+                  >
                     {t.name}
-                  </span>
+                  </Link>
                 ))}
               </div>
             )}

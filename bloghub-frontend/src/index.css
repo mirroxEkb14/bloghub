@@ -682,6 +682,16 @@ label {
   font-size: 0.85rem;
 }
 
+.creator-tag-link {
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.creator-tag-link:hover {
+  background: rgba(124, 58, 237, 0.35);
+  color: var(--text);
+}
+
 .profile-section-title {
   margin: 0 0 0.5rem 0;
   font-size: 0.9rem;

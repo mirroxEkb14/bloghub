@@ -1,14 +1,23 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { creatorProfilesApi, tagsApi, type CreatorProfile, type Tag } from '../api/client';
 
+const TAG_PARAM = 'tag';
+
 export default function Discovery() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tagFromUrl = searchParams.get(TAG_PARAM);
+
   const [profiles, setProfiles] = useState<CreatorProfile[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [tagSlug, setTagSlug] = useState<string | null>(null);
+  const [tagSlug, setTagSlug] = useState<string | null>(tagFromUrl);
   const [meta, setMeta] = useState<{ current_page: number; last_page: number; total: number } | null>(null);
+
+  useEffect(() => {
+    setTagSlug(tagFromUrl);
+  }, [tagFromUrl]);
 
   useEffect(() => {
     let cancelled = false;
@@ -37,6 +46,15 @@ export default function Discovery() {
     return () => { cancelled = true; };
   }, [search, tagSlug]);
 
+  const setTagFilter = (slug: string | null) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (slug) next.set(TAG_PARAM, slug);
+      else next.delete(TAG_PARAM);
+      return next;
+    });
+  };
+
   return (
     <div className="discovery-page">
       <div className="discovery-header">
@@ -57,7 +75,7 @@ export default function Discovery() {
           <button
             type="button"
             className={`tag-chip ${tagSlug === null ? 'active' : ''}`}
-            onClick={() => setTagSlug(null)}
+            onClick={() => setTagFilter(null)}
           >
             All
           </button>
@@ -66,7 +84,7 @@ export default function Discovery() {
               key={tag.id}
               type="button"
               className={`tag-chip ${tagSlug === tag.slug ? 'active' : ''}`}
-              onClick={() => setTagSlug(tagSlug === tag.slug ? null : tag.slug)}
+              onClick={() => setTagFilter(tagSlug === tag.slug ? null : tag.slug)}
             >
               {tag.name}
             </button>
