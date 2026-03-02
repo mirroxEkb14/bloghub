@@ -395,7 +395,7 @@ export default function CreatorProfilePage() {
                           : `${tier.tier_currency ?? ''} ${tier.price}`}
                       </p>
                       <button type="button" className="btn btn-secondary btn-sm tier-card-join" disabled>
-                        Join {tier.tier_name.replace(/\s+.*$/, '')}
+                        Join {tier.tier_name.startsWith('Black Mesa') ? 'Black Mesa' : tier.tier_name.replace(/\s+.*$/, '')}
                       </button>
                     </div>
                   </li>
@@ -454,12 +454,14 @@ export default function CreatorProfilePage() {
                   )}
                 </figure>
               )}
-              {previewPost.content_text && (
+              {(previewPost.excerpt ?? previewPost.content_text) && (
                 <div className="post-preview-content">
                   <p style={{ whiteSpace: 'pre-line' }}>
-                    {previewPost.content_text.length > 300
-                      ? `${previewPost.content_text.slice(0, 300)}...`
-                      : previewPost.content_text}
+                    {previewPost.excerpt
+                      ? previewPost.excerpt
+                      : previewPost.content_text!.length > 300
+                        ? `${previewPost.content_text!.slice(0, 300)}...`
+                        : previewPost.content_text}
                   </p>
                 </div>
               )}

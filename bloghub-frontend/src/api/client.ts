@@ -154,6 +154,7 @@ export type Post = {
   slug: string;
   title: string;
   content_text: string | null;
+  excerpt: string | null;
   media_url: string | null;
   media_type: 'Image' | 'Gif' | 'Audio' | 'Video' | null;
   required_tier?: PostRequiredTier | null;
