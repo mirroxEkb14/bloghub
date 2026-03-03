@@ -33,9 +33,9 @@ class TierSeeder extends Seeder
             ['level' => 3, 'tier_name' => 'The One Free Man', 'price' => 200, 'currency' => Currency::EUR, 'tier_desc' => 'The One Free Man: G-Man\'s non-linear "Slow-Teleport" phenomenon observations, Contact reports with Vortigaunt', 'cover_base' => 'Black-Mesa-Patron_cover'],
         ],
         'Gregory House' => [
-            ['level' => 1, 'tier_name' => 'Differential Thinker', 'price' => 7, 'currency' => Currency::USD, 'tier_desc' => 'Weekly diagnostic puzzles. Medical case summaries. Access to discussion threads', 'cover_base' => 'Differential-Thinker_cover'],
-            ['level' => 2, 'tier_name' => 'Diagnostic Team', 'price' => 31, 'currency' => Currency::USD, 'tier_desc' => 'Full case walkthrough videos. Rare disease breakdowns. Monthly clinical reasoning workshop', 'cover_base' => 'Diagnostic-Team_cover'],
-            ['level' => 3, 'tier_name' => 'Princeton-Plainsboro Inner Circle', 'price' => 1101, 'currency' => Currency::USD, 'tier_desc' => 'Live interactive diagnosis sessions. Direct Q&A with case reviews. Exclusive behind-the-case commentary', 'cover_base' => 'Princeton-Plainsboro _Inner-Circle_cover'],
+            ['level' => 1, 'tier_name' => 'The Placebo', 'price' => 7, 'currency' => Currency::USD, 'tier_desc' => 'The Placebo: TBA', 'cover_base' => 'Differential-Thinker_cover'],
+            ['level' => 2, 'tier_name' => 'The Pathogen', 'price' => 31, 'currency' => Currency::USD, 'tier_desc' => 'The Pathogen: TBA', 'cover_base' => 'Diagnostic-Team_cover'],
+            ['level' => 3, 'tier_name' => 'The Cure', 'price' => 1101, 'currency' => Currency::USD, 'tier_desc' => 'The Cure: TBA', 'cover_base' => 'Princeton-Plainsboro _Inner-Circle_cover'],
         ],
         'Caroline' => [
             ['level' => 1, 'tier_name' => 'Test Subject #1498', 'price' => 199, 'currency' => Currency::CZK, 'tier_desc' => 'Test Subject #1498: The Companion Cube, Aperture Science Handheld Portal Device, The Cake', 'cover_base' => 'Test-Subject_cover'],

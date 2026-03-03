@@ -106,36 +106,7 @@ class PostSeeder extends Seeder
         ],
         'Gregory House' => [
             'ppth',
-            [
-                'differential-diagnosis-101' => [
-                    MediaType::Image->value,
-                    'Symptoms mislead. Patients misremember. Tests misfire. Differential diagnosis is the art of structured doubt. You list every plausible explanation, rank them by probability and severity, then systematically eliminate them. The most obvious answer is usually wrong – especially when it seems convenient.',
-                ],
-                'rare-disease-spotlight' => [
-                    MediaType::Image->value,
-                    'Common conditions explain most cases. But when treatments fail repeatedly, probability shifts. Rare diseases demand attention when patterns don\'t align. The key is recognizing when the statistical norm no longer fits the observed data.',
-                ],
-                'case-study-autoimmune' => [
-                    MediaType::Image->value,
-                    'Autoimmune disorders are paradoxical: the body defends itself by attacking itself. Symptoms appear disconnected – fatigue, inflammation, organ stress – yet originate from the same misdirected response. Understanding mechanism prevents symptom chasing.',
-                ],
-                'diagnostic-mistakes' => [
-                    MediaType::Image->value,
-                    'Most errors come from premature certainty. The moment a physician decides they are right, investigation stops. Medicine requires suspicion – of the case, of the data, and occasionally of your own conclusions.',
-                ],
-                'medical-board-simulation' => [
-                    MediaType::Video->value,
-                    'This simulation presents a multi-symptom case with incomplete data. Notice how each specialist narrows their focus. True resolution only emerges when perspectives are combined and contradictions confronted directly.',
-                ],
-                'pain-management-ethics' => [
-                    MediaType::Image->value,
-                    'Pain is subjective, but prescribing is not. Relief must be balanced with dependency risk. Ethics in medicine often live in uncomfortable grey areas where no option is perfectly clean.',
-                ],
-                'clinic-whiteboard-session' => [
-                    MediaType::Image->value,
-                    'Every hypothesis goes on the board. No attachment, no pride. Cross them out as evidence disproves them. If you hesitate to erase your own idea, you\'re already compromising the diagnosis.',
-                ],
-            ],
+            [],
         ],
         'Caroline' => [
             'glados',

@@ -30,7 +30,7 @@ class CreatorProfileSeeder extends Seeder
             'tag_slugs' => ['physics', 'science', 'research'],
         ],
         'Gregory House' => [
-            'about' => 'Diagnostic medicine specialist breaking down rare diseases, complex symptoms, and medical reasoning. Analytical case studies with a focus on logic, misdiagnosis, and unconventional thinking',
+            'about' => 'Board-certified Diagnosticist and Nephrologist. My specialty is the anomaly—the symptoms that don\'t fit, the history that doesn\'t track, and the \'rare\' diseases that are usually just common idiocy',
             'tag_slugs' => ['healthcare', 'medicine'],
         ],
         'Caroline' => [
