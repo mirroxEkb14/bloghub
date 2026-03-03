@@ -26,7 +26,7 @@ class CreatorProfileSeeder extends Seeder
             'tag_slugs' => ['medicine', 'science', 'skepticism'],
         ],
         'Gordon Freeman' => [
-            'about' => 'Theoretical physicist discussing quantum theory, anomalous phenomena, and high-risk experimental science. Content covers physics concepts, research ethics, and speculative science scenarios',
+            'about' => 'Ph.D. from MIT in Theoretical Physics. Specialist in Anomalous Materials and Sub-surface Resonate Research. A Research Associate with focus on the Anti-Mass Spectrometer',
             'tag_slugs' => ['physics', 'science', 'research'],
         ],
         'Gregory House' => [

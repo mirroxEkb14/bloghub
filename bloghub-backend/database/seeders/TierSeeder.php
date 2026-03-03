@@ -28,9 +28,9 @@ class TierSeeder extends Seeder
             ['level' => 3, 'tier_name' => 'FBI Liaison', 'price' => 170, 'currency' => Currency::USD, 'tier_desc' => 'FBI Liaison: Concepts for the "The Syndicate" and government cover-ups, Briefings on "The Great Conspiracy"', 'cover_base' => 'Evidence-Council_cover'],
         ],
         'Gordon Freeman' => [
-            ['level' => 1, 'tier_name' => 'Lab Access', 'price' => 6, 'currency' => Currency::EUR, 'tier_desc' => 'Physics concept explainers', 'cover_base' => 'Lab-Access_cover'],
-            ['level' => 2, 'tier_name' => 'Resonance Member', 'price' => 18, 'currency' => Currency::EUR, 'tier_desc' => 'Advanced quantum theory breakdowns', 'cover_base' => 'Resonance-Member_cover'],
-            ['level' => 3, 'tier_name' => 'Black Mesa Patron', 'price' => 200, 'currency' => Currency::EUR, 'tier_desc' => 'Early access to experimental content', 'cover_base' => 'Black-Mesa-Patron_cover'],
+            ['level' => 1, 'tier_name' => 'Research Associate (Clearance 3)', 'price' => 6, 'currency' => Currency::EUR, 'tier_desc' => 'Research Associate (Clearance 3): GG-3883 (Xen) crystal lab notes, Anti-Mass Spectrometer insights, H.E.V. mark IV diagrams', 'cover_base' => 'Lab-Access_cover'],
+            ['level' => 2, 'tier_name' => 'The Anti-Citizen', 'price' => 18, 'currency' => Currency::EUR, 'tier_desc' => 'The Anti-Citizen: Gravity Gun usage guide, Combine tech insights, Headcrab & Gonarch lab reports', 'cover_base' => 'Resonance-Member_cover'],
+            ['level' => 3, 'tier_name' => 'The One Free Man', 'price' => 200, 'currency' => Currency::EUR, 'tier_desc' => 'The One Free Man: G-Man\'s non-linear "Slow-Teleport" phenomenon observations, Contact reports with Vortigaunt', 'cover_base' => 'Black-Mesa-Patron_cover'],
         ],
         'Gregory House' => [
             ['level' => 1, 'tier_name' => 'Differential Thinker', 'price' => 7, 'currency' => Currency::USD, 'tier_desc' => 'Weekly diagnostic puzzles. Medical case summaries. Access to discussion threads', 'cover_base' => 'Differential-Thinker_cover'],
