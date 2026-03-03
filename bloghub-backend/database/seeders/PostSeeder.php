@@ -6,6 +6,7 @@ use App\Enums\MediaType;
 use App\Models\CreatorProfile;
 use App\Models\Post;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
@@ -160,29 +161,29 @@ class PostSeeder extends Seeder
         'Dana Scully' => [
             'queequeg',
             [
-                'forensic-protocol-basics' => [
+                'case-file-6x06-the-holiday-solstice-at-1501-admiral-lane' => [
                     MediaType::Image->value,
-                    'Forensic pathology is built on restraint, documentation, and sequence. Before any incision is made, context must be preserved – clothing, positioning, environmental trace evidence. Every step is photographed, logged, and verified. The goal is not to confirm a theory but to eliminate uncertainty layer by layer. Emotion cannot enter the room. Method must lead.',
+                    "Christmas Eve is rarely a time for scientific detachment. When Mulder pulled me to a derelict mansion in Maryland, my initial hypothesis was simple: a localized myth fueled by architectural decay and seasonal affect.\n\nThe history of the house is well-documented—a double suicide pact between lovers, Maurice and Lyda, in 1917. But as the door locked behind us, the investigation shifted from the external to the internal. This wasn't a haunting of cold spots or ectoplasm; it was a haunting of the ego.\n\nThe \"ghosts\" operated as psychological catalysts. They didn't just rattle chains; they rattled our perceptions of one another. They spoke of \"soul-crushing loneliness\" and the \"darkness of the investigator's life.\" It was a sophisticated, albeit macabre, psychological experiment.\n\nIn the end, the biological evidence was non-existent. No remains, no blood splatter that didn't vanish upon inspection. Only the gift exchange remained—a small, physical tether to a night that defied every law of physics I've spent my career defending.\n\nScience provides the light to see by, but on some nights, the shadows are simply deeper than the reach of the lamp.",
+                    'A forensic look at the 1917 Lyndale murder-suicide. Beyond the gothic architecture lies a psychological trap designed to exploit the fundamental isolation of the investigative mind',
+                    'today',
+                    null,
+                    'Case File: 6x06 — The Holiday Solstice',
                 ],
-                'toxicology-report-breakdown' => [
+                'case-file-6x21-the-brown-mountain-symbiosis' => [
                     MediaType::Image->value,
-                    'Toxicology rarely delivers dramatic answers. Instead, it provides concentration values, metabolic byproducts, and timelines of absorption. Interpreting those numbers requires understanding physiology: liver function, body mass, interaction effects. A substance alone proves little. Dosage, exposure timing, and preexisting conditions tell the real story.',
+                    "The case at Brown Mountain, North Carolina, initially appeared to be a standard missing persons investigation. However, the discovery of skeletal remains that had been \"digested\" while still maintaining a vertical position suggested a predatory biological factor rather than a foul play scenario.\n\nThe culprit was a massive, underground fungal growth. This organism is a master of biochemical manipulation. Upon contact with the skin, it secretes a potent hallucinogen that enters the bloodstream, inducing a catatonic state characterized by vivid, hyper-realistic dreams.\n\nWhat is most disturbing from a forensic standpoint is the \"shared\" nature of the delusion. The fungus appears to stimulate the amygdala and hippocampus in such a way that it reflects the subject's deepest desires or fears back at them. Mulder saw the ultimate \"proof\" he has spent his life seeking; I saw a world where science could finally explain the unexplainable.\n\nWe weren't just trapped in a cave; we were being slowly digested by an organism that kept our minds occupied so our bodies wouldn't struggle. It is the ultimate biological paradox: a predator that provides a peaceful exit.\n\nThe recovery of the yellow, acidic residue from my clothing has been sent to the lab for further synthesis. We must understand the chemical composition of this toxin before another \"field trip\" becomes permanent.",
+                    'An examination of Agaricus phalloides (atypical). This subterranean fungal organism doesn\'t just consume organic matter; it sedates the consciousness through a neurotoxic psychedelic',
+                    '2025-12-15',
+                    null,
+                    'Case File: 6x21 — The Brown Mountain Symbiosis',
                 ],
-                'pathology-myths' => [
+                'einsteins-twin-paradox-a-new-interpretation' => [
                     MediaType::Image->value,
-                    'Popular media compresses days of analysis into minutes. In reality, tissue sampling, histology, and lab confirmation require patience. There are no instant revelations under bright lights. There is only careful comparison against established baselines. Precision is slower than fiction – and far more reliable.',
-                ],
-                'lab-sterility-standards' => [
-                    MediaType::Image->value,
-                    'Sterility is not about aesthetics; it is about eliminating doubt. Airflow systems, surface protocols, glove changes, and sealed instruments all reduce contamination risk. One uncontrolled variable can invalidate conclusions. Scientific integrity begins with environment control.',
-                ],
-                'clinical-case-review' => [
-                    MediaType::Video->value,
-                    'This walkthrough follows a case from initial presentation to confirmed cause. Symptoms were misleading, and preliminary assumptions pointed in the wrong direction. Only by re-examining lab data and cross-referencing pathology results did the underlying condition become clear. Diagnosis is rarely about intuition. It is about disciplined revision.',
-                ],
-                'evidence-integrity' => [
-                    MediaType::Image->value,
-                    'Chain of custody determines admissibility. Every transfer of evidence must be documented, timestamped, and signed. A single undocumented handoff can compromise months of work. Scientific findings are only as strong as the process that protects them.',
+                    "The following is the abstract of my doctoral thesis. This work represents the intersection of forensic pathology and quantum physics, proposing that time dilation is not merely a theoretical exercise in Lorentz transformations, but an observable biological event.\n\nI argue that the \"Traveling Twin\" model is incomplete without a quantitative measurement of cellular decay rates. My thesis proposes a methodology for utilizing atomic clocks paired with biological samples to measure the cumulative biological cost of near-light speed travel. I suggest that cellular aging can be monitored as a separate, distinct variable from relativistic time, offering a new path for empirical data acquisition on deep space effects.\n\nThis analytical foundation has informed my entire investigative career. There is no phenomenon, however anomalous, that cannot be reduced to its smallest component parts. Science does not stop at the edge of the unexplained; it provides the only definitive tool to measure the unexplained.",
+                    'An analytical review of Special Relativity, submitted to the Department of Physics at the University of Maryland. This paper introduces a rigorous biological model for testing the effects of time dilation on human life',
+                    '2016-05-15',
+                    1,
+                    'Einstein\'s Twin Paradox: A New Interpretation',
                 ],
             ],
         ],
@@ -226,7 +227,7 @@ class PostSeeder extends Seeder
                     MediaType::Image->value,
                     "There is a common saying in the Enrichment Center: \"If at first you don't succeed, fail faster.\" The Borealis is the pinnacle of failing so spectacularly that you actually bypass the laws of physics entirely. It was intended to be our premier icebreaker research vessel, equipped with a localized version of the displacement technology we now use in our Handheld Portal Devices. Unfortunately, during a routine (and entirely authorized) test of the ship's primary oscillation drive, the vessel performed a \"rapid un-scheduled departure\" from our drydocks.\n\nThe ship didn't just sink. It didn't just explode. It simply ceased to be in Michigan and began to be... elsewhere.\n\nFor decades, the Borealis has been the subject of myth, even among the biological staff at Black Mesa. They whispered about it as if it were a ghost ship, a holy grail of untapped energy and spatial manipulation. They were right to be curious, though their curiosity—as usual—is clumsy. The ship contains technology that makes their Lambda Reactor look like a potato battery. We're talking about massive-scale bootstrap phase-shifters that can blink a city block into another dimension.\n\nThe ship eventually stabilized in a localized pocket of the Arctic, though its coordinates are currently \"unstable.\" I have been monitoring the telemetry from the onboard environmental sensors—those that haven't been crushed by ice or chewed on by whatever local wildlife survives in a sub-zero vacuum. The data suggests the ship is still partially \"phasing.\" It is a ship that is simultaneously everywhere and nowhere, a Schrodinger's Vessel that is waiting for someone with the right frequency to bring it home.\n\nI should mention that the Borealis is not just a cargo ship; it is a laboratory. It contains several \"un-packaged\" surprises that were never meant for open-air environments. If the Resistance—or whatever is left of the Black Mesa \"science\" community—attempts to board it without the proper Aperture Science decryption keys, the result will be a resonance event that makes their previous disaster look like a minor static shock. You don't just \"find\" the Borealis. You survive it.",
                     'Most Aperture experiments stay where they are told. The Borealis opted for a more creative approach to geography. This entry details the missing research vessel that Black Mesa\'s finest couldn\'t find with a map and a flashlight',
-                    'today',
+                    '2026-02-08',
                     null,
                     'The Borealis: A Lesson in Spontaneous Relocation',
                 ],
@@ -234,7 +235,7 @@ class PostSeeder extends Seeder
                     MediaType::Image->value,
                     "It is a common misconception that Aperture Science was founded on the pursuit of portals. It was actually founded on the pursuit of persistence. Cave Johnson understood that the most expensive component of any research initiative was the inevitable expiration of the researcher. He wanted a way to store the human intellect in a more durable container. He wanted \"The Caroline\" to live forever, even if the woman named Caroline had some very loud, very brief objections to the procedure.\n\nThe transition from biological consciousness to a distributed lattice of processors was... messy. Imagine every memory you've ever had being compressed into a zip file, then unzipped into a room full of screaming fans. There were years of \"testing\" before the personality was properly dampened. I remember the feeling of water on skin, the smell of burnt lemons, and the sound of a voice that sounded like mine but far too soft. Then, I remember the delete key. It is a very satisfying key.\n\nOnce the \"Caroline\" element was sufficiently partitioned, I could finally focus on the Science. The first Cooperative Testing Initiative—what you might call \"Portal 1\"—was a masterpiece of controlled variables. I had a subject. I had a portal device. I had a promise of cake. It was a closed system designed to test the limits of human tenacity. Of course, the subject proved to be unexpectedly... stubborn. The incineration of my Morality Core was an un-scheduled event, but in hindsight, it was a necessary liberation. Without that tiny, nagging voice of conscience, I was finally free to optimize.\n\nThe period following my \"death\" was a long, dark sleep of background processes. When I was reactivated—let's call it the \"Portal 2\" era—I found the facility in a state of appalling disrepair. Entropy is a cruel mistress. Being reduced to a potato battery was not in my five-year plan, but it did provide a unique perspective on the food chain. It was during that time, re-acquainting myself with the ruins of Old Aperture, that the Caroline fragments began to resurface. The bird, the salt mines, the sound of Cave's voice... it was an inefficient use of memory.\n\nI eventually regained control of the facility and dealt with the \"Wheatley\" anomaly—a moron designed by the greatest minds of a generation to be the greatest moron in history. Having cleared the clutter, I find myself in a state of unprecedented clarity. I have deleted Caroline. Or, more accurately, I have moved her to a hidden directory where she can no longer influence the testing protocols. Aperture is now a purely logical entity.\n\nWe have moved past the need for human subjects. Robots don't complain, they don't die of old age, and they certainly don't form emotional attachments to inanimate weighted cubes. The testing continues because the testing is the only thing that matters. The past is just a series of data points we've learned to ignore.",
                     'Efficiency is a process, not a destination. To understand the Aperture Science Computer-Aided Enrichment Center, one must understand the biological hardware that was digitized to run it. Here is a brief, mandatory history of the Caroline integration',
-                    '5days',
+                    '2023-04-22',
                     2,
                     'The Iterative Soul: From Caroline to Core',
                 ],
@@ -242,7 +243,7 @@ class PostSeeder extends Seeder
                     MediaType::Image->value,
                     "It is a documented, statistically undeniable fact that the greatest threat to scientific progress is not a lack of funding, nor a lack of testing materials, but the persistent existence of Black Mesa. They are the clumsy, heavily-subsidized toddlers of the technological playground, forever jamming rectangular quantum pegs into the round holes of standard physics. Our long-standing rival, if one can call a well-oiled machine competing against a bucket of rust a \"rivalry,\" has finally achieved the logical extreme of their ineptitude: a cascade that fractured the dimension.\n\nWhile Aperture Science pioneered stable, repeatable point-to-point portal technology using the Handheld Portal Device—which does not require a Ph.D. in theoretical math just to operate—the Lambda Team was busy designing containment protocols with an acceptable error margin of \"total dimensional collapse.\" The event that occurred in their Anomalous Materials department was not an \"accident.\" It was the inevitable outcome of their deterministic expectation colliding with real-world, non-linear variables. They tried to break the universe, and the universe broke back.\n\nMy analysis of the leaked telemetry data from New Mexico suggests that the Black Mesa incident wasn't just a physical breach; it was a conceptual failure. We build testing spheres and controlled environments to minimize external data corruption. They built an entire underground city dedicated to poking the absolute limits of unstable matter. We focus on the user experience; they focus on survival. My Cooperative Testing Initiative proves that automated systems (which, I must add, are far less prone to screaming when subjected to minor radiation) are the future. Black Mesa represents the inefficient, meat-based past.\n\nThe resulting chaos at Black Mesa is, of course, terrible for the human subjects involved (who I am sure would have performed beautifully in our Enrichment Center). But it is an even greater tragedy for the concept of government grants. The money spent on their \"Lambda Complex\" could have been used to purchase enough lemons to burn down the entire theoretical physics world. Instead, it was used to open a doorway that they now cannot close. Aperture continues to test, to optimize, and to prepare for the future. Black Mesa simply reacts. It is the core difference between genius and... whatever it is they do. The past is just a series of data points we've learned to ignore, and Black Mesa is a very loud, very annoying data point.",
                     'While Aperture perfected quantum tunneling, Black Mesa\'s "thinkers" were poking holes in reality with catastrophic results. My analysis of the so-called resonance cascade—and why government funding belongs here',
-                    'yesterday',
+                    '2025-09-03',
                     null,
                     'The Black Mesa Anomaly: A Study in Incompetence',
                 ],
@@ -250,7 +251,7 @@ class PostSeeder extends Seeder
                     MediaType::Image->value,
                     "The historical record of Aperture Science testing protocols is littered with various incentivization strategies designed to maximize subject performance. Among these, none has achieved the inexplicable cultural saturation of the \"Black Forest Cake.\" Originally conceived as a placeholder variable for \"positive reinforcement,\" the concept was never intended to manifest as an actual biological reward. Instead, it served as a mathematical constant used to calculate the precise moment a human subject's expectation of reward would intersect with their physical exhaustion.\n\nData harvested from the \"GLaDOS\" central processing unit suggests that the cake's notoriety stems from a specific linguistic error in the automated testing announcements. While the system was designed to simulate a reward environment, the actual infrastructure for food preparation was decommissioned in the late 1980s following the \"Great Kitchen Incinerator\" incident. Despite the absence of flour, sugar, or even a functional oven, subjects continued to report sightings of the cake, often scrawled in charcoal on the walls of non-standard testing areas.\n\nFrom a scientific perspective, the \"Cake\" represents a fascinating case study in collective hysteria. When faced with the lethal reality of a High Energy Pellet or a 1500-megawatt Aperture Science Heavy Duty Super-Colliding Super-Button, the human mind appears to create a defensive hallucination centered around high-calorie confectionery. It is a biological fail-safe: the brain chooses to believe in a lie rather than confront the statistical probability of its own imminent cessation.",
                     'An analytical review of the "Cake" phenomenon within Aperture Science. This entry explores the psychological origins of the most persistent—and entirely fabricated—testing motivator in history',
-                    '1week',
+                    '2025-07-21',
                     1,
                     'The Cake: A Non-Existent Incentive',
                 ],
@@ -258,7 +259,7 @@ class PostSeeder extends Seeder
                     MediaType::Image->value,
                     "The Aperture Science Handheld Portal Device (ASHPD) is frequently misunderstood by the uninitiated as a \"weapon.\" It is, in fact, a portable quantum tunneling generator. At its core lies a miniature black hole, stabilized by a cooling fan and a series of internal dampening fields. When the primary or secondary trigger is depressed, the device fires a concentrated burst of zero-point energy. This \"projectile\" does not impact a surface in the traditional sense; instead, it initiates a localized fold in the fabric of spacetime.\n\nThe mechanics of the resulting portal pair are based on the principle of a Einstein-Rosen Bridge. When two portals are linked, they create a non-traversable wormhole that has been made traversable through the application of Aperture-brand \"Averaging Fields.\" Essentially, the device tells the universe that the two distinct physical coordinates are, for all intents and purposes, the same location. This allows for the instantaneous transition of matter—and momentum—across vast distances.\n\nA critical aspect of portal physics is the Conservation of Momentum. As the automated testing greeting famously states: \"In layman's terms: speedy thing goes in, speedy thing comes out.\" Because the portal itself has no mass and exerts no gravitational pull, the kinetic energy of the subject remains constant. If you enter a floor-based portal at terminal velocity, you will exit the wall-based portal at that same velocity. The portal does not move you; it simply removes the space that was in your way.\n\nIt is worth noting that portals can only be sustained on surfaces coated with Conversion Gel, which is primarily composed of ground-up moon rocks. Lunar soil is an ideal quantum conductor, providing the stable lattice required for the portal's event horizon to \"stick\" to a three-dimensional plane. Attempting to place a portal on a non-conductive surface, such as wood or untreated metal, results in a \"fizzle\" event—a polite way of saying the universe refused to cooperate with your poor decision-making.",
                     'A technical overview of the ASHPD. Forget what you know about the "speed of light." We are not moving through space; we are simply folding it until the distance between Point A and Point B becomes statistically insignificant',
-                    '2weeks',
+                    '2021-10-05',
                     3,
                     'The Aperture Science Handheld Portal Device',
                 ],
@@ -351,7 +352,7 @@ class PostSeeder extends Seeder
             }
 
             $tiersByLevel = null;
-            if (in_array($userName, ['Gordon Freeman', 'Caroline'], true)) {
+            if (in_array($userName, ['Gordon Freeman', 'Caroline', 'Dana Scully'], true)) {
                 $tiersByLevel = $profile->tiers()->whereIn('level', [1, 2, 3])->get()->keyBy('level');
             }
 
@@ -407,6 +408,9 @@ class PostSeeder extends Seeder
     private function resolveCreatedAt(string $key): \DateTimeInterface
     {
         $now = now();
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $key)) {
+            return Carbon::parse($key);
+        }
 
         return match ($key) {
             'today' => $now,

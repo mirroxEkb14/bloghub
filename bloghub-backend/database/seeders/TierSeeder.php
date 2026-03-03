@@ -23,9 +23,9 @@ class TierSeeder extends Seeder
             ['level' => 3, 'tier_name' => 'X-Archive Elite', 'price' => 120, 'currency' => Currency::USD, 'tier_desc' => 'Private research briefings. Direct topic voting', 'cover_base' => 'X-Archive-Elite_cover'],
         ],
         'Dana Scully' => [
-            ['level' => 1, 'tier_name' => 'Clinical Observer', 'price' => 4, 'currency' => Currency::USD, 'tier_desc' => 'Medical myth debunking articles. Access to archive content', 'cover_base' => 'Clinical-Observer_cover'],
-            ['level' => 2, 'tier_name' => 'Forensic Analyst', 'price' => 12, 'currency' => Currency::USD, 'tier_desc' => 'Detailed autopsy case simulations', 'cover_base' => 'Forensic-Analyst_cover'],
-            ['level' => 3, 'tier_name' => 'Evidence Council', 'price' => 170, 'currency' => Currency::USD, 'tier_desc' => 'Private webinars. Advanced clinical case breakdowns', 'cover_base' => 'Evidence-Council_cover'],
+            ['level' => 1, 'tier_name' => 'Agent', 'price' => 4, 'currency' => Currency::USD, 'tier_desc' => 'Field Agent: Insights on solved X-Files cases, Mysterious UFOs explanations', 'cover_base' => 'Clinical-Observer_cover'],
+            ['level' => 2, 'tier_name' => 'Investigator', 'price' => 12, 'currency' => Currency::USD, 'tier_desc' => 'Senior Investigator: Breakdowns of "paranormal" unsolved cases', 'cover_base' => 'Forensic-Analyst_cover'],
+            ['level' => 3, 'tier_name' => 'FBI Liaison', 'price' => 170, 'currency' => Currency::USD, 'tier_desc' => 'FBI Liaison: Concepts for the "The Syndicate" and government cover-ups, Briefings on "The Great Conspiracy"', 'cover_base' => 'Evidence-Council_cover'],
         ],
         'Gordon Freeman' => [
             ['level' => 1, 'tier_name' => 'Lab Access', 'price' => 6, 'currency' => Currency::EUR, 'tier_desc' => 'Physics concept explainers', 'cover_base' => 'Lab-Access_cover'],

@@ -24,7 +24,7 @@ class CreatorProfileSeeder extends Seeder
             'cover_base' => 'fox-mulder_cover',
         ],
         'Dana Scully' => [
-            'about' => 'Medical doctor and forensic pathologist sharing insights into forensic medicine, scientific skepticism, and evidence-based investigation. Autopsy analysis, pathology basics, and medical myth debunking',
+            'about' => 'Medical Doctor. FBI Special Agent. I\'m here to provide a scientific pivot for the unexplainable. The truth is out there, but it usually has a biological explanation',
             'tag_slugs' => ['medicine', 'science', 'skepticism'],
             'avatar_base' => 'dana-scully_avatar',
             'cover_base' => 'dana-scully_cover',
