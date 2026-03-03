@@ -53,8 +53,9 @@ class TierSeeder extends Seeder
             ['level' => 3, 'tier_name' => 'The Bricks Leader', 'price' => 19, 'currency' => Currency::USD, 'tier_desc' => 'The Bricks Leader: Deep-dives into inter-community diplomacy and mutual defense pacts', 'cover_base' => 'Council-Member_cover'],
         ],
         'Negan' => [
-            ['level' => 1, 'tier_name' => 'Rookie', 'price' => 13, 'currency' => Currency::EUR, 'tier_desc' => 'Training routines. Discipline challenges', 'cover_base' => 'Rookie_cover'],
-            ['level' => 2, 'tier_name' => 'Field Leader', 'price' => 47, 'currency' => Currency::EUR, 'tier_desc' => 'Private coaching sessions. Authority-building frameworks. Direct Q&A and feedback', 'cover_base' => 'Field-Leader_cover'],
+            ['level' => 1, 'tier_name' => 'The Sanctuary Savior', 'price' => 13, 'currency' => Currency::EUR, 'tier_desc' => 'The Sanctuary Savior: Breakdown on internal economy based on contribution and fear', 'cover_base' => 'Rookie_cover'],
+            ['level' => 2, 'tier_name' => 'The Alexandria Prisoner', 'price' => 47, 'currency' => Currency::EUR, 'tier_desc' => 'The Alexandria Prisoner: Lessons on maintaining a sense of self when you\'ve lost everything but a window', 'cover_base' => 'Field-Leader_cover'],
+            ['level' => 3, 'tier_name' => 'The Burazi Leader', 'price' => 120, 'currency' => Currency::EUR, 'tier_desc' => 'The Burazi Leader: Guide on when it\'s time to put the mask back', 'cover_base' => 'Field-Leader_cover'],
         ],
     ];
 

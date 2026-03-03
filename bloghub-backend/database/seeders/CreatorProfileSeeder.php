@@ -46,7 +46,7 @@ class CreatorProfileSeeder extends Seeder
             'tag_slugs' => ['community', 'sustainability', 'leadership'],
         ],
         'Negan' => [
-            'about' => 'Former physical education teacher exploring discipline, group dynamics, and authority structures. Content mixes motivational leadership, behavioral control theory, and physical training insights',
+            'about' => 'People are a resource. That was the first rule. But resources are messy, they\'re emotional, and they\'re usually one bad day away from a mutiny',
             'tag_slugs' => ['physical-education', 'motivation'],
         ],
     ];

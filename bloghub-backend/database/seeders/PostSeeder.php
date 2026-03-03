@@ -198,17 +198,13 @@ class PostSeeder extends Seeder
         'Negan' => [
             'jeffreyDeanMorgan',
             [
-                'discipline-over-motivation' => [
+                'a-retrospective-on-staying-alive' => [
                     MediaType::Image->value,
-                    'Motivation fluctuates. Discipline remains. Structured routine eliminates dependency on emotional readiness. Progress belongs to those who act regardless of mood.',
-                ],
-                'group-dynamics' => [
-                    MediaType::Image->value,
-                    'Groups seek structure. When leadership is unclear, instability follows. Authority must be visible, decisive, and consistent.',
-                ],
-                'training-intensity-scale' => [
-                    MediaType::Gif->value,
-                    'Physical limits expand when systematically challenged. Intensity should increase progressively, not impulsively.',
+                    "When I started the Saviors, I didn't just build a gang; I built an ecosystem. The Sanctuary wasn't a home; it was a factory of human potential. We had the Points System because people need to know exactly what they're worth—down to the calorie. I put walkers on the spikes not just to keep the dead out, but to remind the living that there's a hell of a lot worse things than following my rules. It was loud, it was heavy, and it worked until the world decided it wanted to be 'civilized' again.\n\nThen came the basement. Seven years in a hole. You'd think that would break a man, but it actually sharpens the blade. When you've got nothing but a window and a stack of books, you start to see the cracks in everyone else's 'perfect' little communities. I watched Alexandria from a distance and realized something: their walls were pretty, but their foundations were soft. I learned the Art of the Pivot. I learned how to wait. Because a predator who knows how to be patient? That's the most dangerous thing in the room.\n\nNow, we're in the big city. New York isn't like the woods; it's a vertical nightmare. If you want to rule the sky, you've gotta understand Methane and Zip-lines. The Croat—my old protege—he took my lessons and turned the volume up to eleven. But he forgot the one thing I always knew: you don't just kill people to kill them. You do it to send a message. In the Dead City, the message is clear: the higher you climb, the further you have to fall.\n\nI've worn the leather, I've worn the orange, and now I'm wearing the grit of the city. The game hasn't changed—just the skyline.",
+                    'Looking back, it\'s funny how people talk about \'phases.\' Like I was one guy behind a bat and another guy behind bars. The truth? It\'s all the same math. It\'s about leverage',
+                    '2015-09-01',
+                    null,
+                    'A Retrospective on Staying Alive',
                 ],
             ],
         ],
