@@ -18,7 +18,7 @@ class CreatorProfileSeeder extends Seeder
 
     private const PROFILES = [
         'Fox Mulder' => [
-            'about' => 'Criminal psychology specialist focused on behavioral profiling and unexplained cases. I explore patterns behind extreme crimes, conspiracy narratives, and the psychology of belief. Deep dives, case breakdowns, and analytical commentary',
+            'about' => 'Behavioral Science Unit (BSU). Oxford-educated psychologist and pioneer in serial killer profiling. Currently assigned to the Unsolved Case Files (X-Division)',
             'tag_slugs' => ['psychology', 'conspiracy-theory', 'true-crime'],
         ],
         'Dana Scully' => [

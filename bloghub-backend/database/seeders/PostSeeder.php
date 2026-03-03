@@ -124,37 +124,21 @@ class PostSeeder extends Seeder
         'Fox Mulder' => [
             'trust_no1',
             [
-                'pattern-recognition-in-criminal-behavior' => [
+                'the-blackwood-anomaly-and-the-texas-bio-lobby' => [
                     MediaType::Image->value,
-                    'Human behavior leaves patterns long before evidence becomes official. The challenge is distinguishing coincidence from intention.',
+                    "The events in North Texas didn't begin with a conspiracy; they began with a boy and a hole in the ground. What we found in the desert was the ultimate forensic \"cold case\"—remains that had been waiting for 35,000 years to be rediscovered.\n\nThis wasn't just a discovery of ancient life; it was a discovery of a Purity—the sentient petroleum. This \"Black Oil\" is more than a pathogen; it is a colonizing force. When it enters a human host, it doesn't just gestate; it gestates a new, extra-biological entity using the host as raw material.\n\nThe destruction of the federal building in Dallas was a tactical distraction—a \"controlled burn\" of evidence. But the trail led us somewhere the Bureau couldn't redact: the Antarctic ice.\n\nSeeing that craft rise from the snow was the final proof I needed. It confirmed the \"Great Conspiracy\" isn't just about government secrets; it's about a secret treaty to cede the Earth to its original inhabitants.\n\nThey aren't just hiding the truth; they are managing the transition. They are the collaborators in our own extinction.\n\nThe emergence of a weak but viable \"weakened\" strain of the virus suggests a resistance is possible. But in a system where the doctors are the conspirators, who can you trust with the cure?\n\nI saw the pods. I saw the thousands of \"units\" waiting for the signal. This isn't about \"lights in the sky\" anymore. It's about the air we breathe and the soil beneath our feet.",
+                    'From the bones in North Texas to the ice of Antarctica. A forensic audit of the moment the Syndicate\'s endgame was finally unmasked. The truth is no longer just a theory; it\'s a virus',
+                    '2010-10-12',
+                    null,
+                    'The Blackwood Anomaly and the Texas Bio-Lobby',
                 ],
-                'case-file-anomaly-017' => [
+                'the-mechanics-of-abduction-and-lost-time' => [
                     MediaType::Image->value,
-                    'A review of a case dismissed as mass hysteria. The psychology behind belief is often more revealing than the event itself.',
-                ],
-                'profiling-the-unseen' => [
-                    MediaType::Image->value,
-                    'Absence of evidence creates cognitive gaps. Our minds rush to fill them – sometimes accurately, often not.',
-                ],
-                'interview-room-dynamics' => [
-                    MediaType::Video->value,
-                    'Small environmental cues drastically alter confession probability. Lighting, space, silence – all tools.',
-                ],
-                'red-string-theory' => [
-                    MediaType::Image->value,
-                    'Mapping seemingly unrelated incidents can expose hidden structure – if you avoid confirmation bias.',
-                ],
-                'archived-testimony-review' => [
-                    MediaType::Image->value,
-                    'Witness credibility is less about emotion and more about internal consistency over time.',
-                ],
-                'belief-vs-evidence' => [
-                    MediaType::Image->value,
-                    'Skepticism and belief are not opposites. They are both investigative tools when applied correctly.',
-                ],
-                'midnight-case-notes' => [
-                    MediaType::Image->value,
-                    'The best insights often arrive when the office is empty and distractions disappear.',
+                    "To understand the abductee experience, one must first accept the reality of \"Missing Time.\" It is the primary forensic marker—a chronological gap in the victim's life that cannot be accounted for by physiological sleep or dissociative fugue.\n\nI know this gap. I have lived inside it.\n\nOn November 27, 1973, the room didn't just fill with light; it filled with a weight that defied gravity. My own experience years later in the forests of the Pacific Northwest confirmed the pattern. It is a sensory overload designed to paralyze the prefrontal cortex, ensuring the subject remains a passive observer to their own violation.\n\nThe forensic evidence we've recovered from dozens of \"contactees\" reveals a recurring biological signature:\n- The Nasal Implant: A sophisticated, microscopic device typically located near the pineal gland. It acts as both a tracking beacon and a biological monitor.\n- Smallpox Vaccination Scarring: A systemic oversight by the Department of Health. The scars serve as a physical ledger for a clandestine census, marking those \"selected\" for the program.\n\nWe are being farmed. We are being tagged like migratory animals. The trauma isn't just in the taking; it's in the realization that our governments have not only allowed this but have facilitated the logistics of our disappearance.\n\nThe truth isn't just out there—it's under our skin.",
+                    'An analysis of the "Abduction Profile." Beyond the bright lights lies a systematic process of biological tagging and psychological displacement. This isn\'t a myth; it\'s a protocol',
+                    '2008-12-07',
+                    1,
+                    'The Mechanics of Abduction and Lost Time',
                 ],
             ],
         ],
@@ -352,7 +336,7 @@ class PostSeeder extends Seeder
             }
 
             $tiersByLevel = null;
-            if (in_array($userName, ['Gordon Freeman', 'Caroline', 'Dana Scully', 'Ellen Ripley'], true)) {
+            if (in_array($userName, ['Gordon Freeman', 'Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder'], true)) {
                 $tiersByLevel = $profile->tiers()->whereIn('level', [1, 2, 3])->get()->keyBy('level');
             }
 

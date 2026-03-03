@@ -18,9 +18,9 @@ class TierSeeder extends Seeder
 
     private const TIERS_BY_USER = [
         'Fox Mulder' => [
-            ['level' => 1, 'tier_name' => 'The Believer', 'price' => 5, 'currency' => Currency::USD, 'tier_desc' => 'Access to weekly case breakdowns', 'cover_base' => 'The-Believer_cover'],
-            ['level' => 2, 'tier_name' => 'Behavioral Insider', 'price' => 15, 'currency' => Currency::USD, 'tier_desc' => 'Deep psychological profiling reports. Live Q&A on unsolved cases', 'cover_base' => 'Behavioral-Insider_cover'],
-            ['level' => 3, 'tier_name' => 'X-Archive Elite', 'price' => 120, 'currency' => Currency::USD, 'tier_desc' => 'Private research briefings. Direct topic voting', 'cover_base' => 'X-Archive-Elite_cover'],
+            ['level' => 1, 'tier_name' => 'The Believer', 'price' => 5, 'currency' => Currency::USD, 'tier_desc' => 'The Believer: Breakdowns of UFO sightings, Declassified reports from Nevada desert', 'cover_base' => 'The-Believer_cover'],
+            ['level' => 2, 'tier_name' => 'The Abductee', 'price' => 15, 'currency' => Currency::USD, 'tier_desc' => 'The Abductee: Diagrams of the "nasal implants" (Smallpox)', 'cover_base' => 'Behavioral-Insider_cover'],
+            ['level' => 3, 'tier_name' => 'The Conspirator', 'price' => 120, 'currency' => Currency::USD, 'tier_desc' => 'The Conspirator: Black Oil deep-dive, Profiles on "First Elders", Uncensored documents on Colonists', 'cover_base' => 'X-Archive-Elite_cover'],
         ],
         'Dana Scully' => [
             ['level' => 1, 'tier_name' => 'Agent', 'price' => 4, 'currency' => Currency::USD, 'tier_desc' => 'Field Agent: Insights on solved X-Files cases, Mysterious UFOs explanations', 'cover_base' => 'Clinical-Observer_cover'],
