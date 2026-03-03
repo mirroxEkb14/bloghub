@@ -216,7 +216,31 @@ export default function CreatorProfilePage() {
             {loadingPosts ? (
               <p className="profile-meta">Loading posts...</p>
             ) : posts.length === 0 ? (
-              <p className="profile-meta">No posts yet</p>
+              <div className="profile-posts-empty" role="status" aria-live="polite">
+                <div className="profile-posts-empty-icon" aria-hidden>
+                  <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 8v32M36 8v32M8 12h32M8 36h32" />
+                    <rect x="14" y="14" width="10" height="10" rx="1" />
+                    <rect x="24" y="24" width="10" height="10" rx="1" />
+                  </svg>
+                </div>
+                <h3 className="profile-posts-empty-title">No posts yet</h3>
+                <p className="profile-posts-empty-desc">
+                  {displayName} hasn’t published anything here. Check back later or explore their subscription tiers below
+                </p>
+                {tiers.length > 0 && (
+                  <a
+                    href="#profile-tiers"
+                    className="btn btn-secondary btn-sm profile-posts-empty-cta"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('profile-tiers')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                  >
+                    View tiers
+                  </a>
+                )}
+              </div>
             ) : (
               <>
                 <ul className="post-card-list">

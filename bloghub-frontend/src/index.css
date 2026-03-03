@@ -775,6 +775,52 @@ label {
   margin: 0;
 }
 
+/* Profile: Posts empty state */
+.profile-posts-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  margin-top: 0.5rem;
+  background: var(--bg-card);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+}
+
+.profile-posts-empty-icon {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 1rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.profile-posts-empty-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.profile-posts-empty-title {
+  margin: 0 0 0.35rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.profile-posts-empty-desc {
+  margin: 0 0 1.25rem 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  max-width: 320px;
+}
+
+.profile-posts-empty-cta {
+  flex-shrink: 0;
+}
+
 /* Profile: Tiers */
 .profile-tiers {
   margin-bottom: 1.5rem;
