@@ -48,9 +48,9 @@ class TierSeeder extends Seeder
             ['level' => 3, 'tier_name' => 'The Alien', 'price' => 1999, 'currency' => Currency::CZK, 'tier_desc' => 'The Alien: Breakdowns of the XX121 organism', 'cover_base' => 'Command-Authority_cover'],
         ],
         'Maggie Rhee' => [
-            ['level' => 1, 'tier_name' => 'Community Supporter', 'price' => 3, 'currency' => Currency::USD, 'tier_desc' => 'Leadership insights. Sustainable community guides', 'cover_base' => 'Community-Supporter_cover'],
-            ['level' => 2, 'tier_name' => 'Settlement Builder', 'price' => 11, 'currency' => Currency::USD, 'tier_desc' => 'Advanced agriculture strategies', 'cover_base' => 'Settlement-Builder_cover'],
-            ['level' => 3, 'tier_name' => 'Council Member', 'price' => 19, 'currency' => Currency::USD, 'tier_desc' => 'Private community planning sessions', 'cover_base' => 'Council-Member_cover'],
+            ['level' => 1, 'tier_name' => 'Alexandria Survivor', 'price' => 3, 'currency' => Currency::USD, 'tier_desc' => 'Alexandria Survivor: Engineering blueprints for expanded perimeters', 'cover_base' => 'Community-Supporter_cover'],
+            ['level' => 2, 'tier_name' => 'Hilltop Chosen', 'price' => 11, 'currency' => Currency::USD, 'tier_desc' => 'Hilltop Chosen: Strategies for large-scale crop rotation and livestock management', 'cover_base' => 'Settlement-Builder_cover'],
+            ['level' => 3, 'tier_name' => 'The Bricks Leader', 'price' => 19, 'currency' => Currency::USD, 'tier_desc' => 'The Bricks Leader: Deep-dives into inter-community diplomacy and mutual defense pacts', 'cover_base' => 'Council-Member_cover'],
         ],
         'Negan' => [
             ['level' => 1, 'tier_name' => 'Rookie', 'price' => 13, 'currency' => Currency::EUR, 'tier_desc' => 'Training routines. Discipline challenges', 'cover_base' => 'Rookie_cover'],

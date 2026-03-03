@@ -42,7 +42,7 @@ class CreatorProfileSeeder extends Seeder
             'tag_slugs' => ['space', 'leadership', 'survival'],
         ],
         'Maggie Rhee' => [
-            'about' => 'Community builder and survival strategist focused on resilience, leadership under pressure, and rebuilding systems after crisis. Lessons on cooperation, agriculture basics, and sustainable communities',
+            'about' => 'The end of the world was just the beginning of the work. For years, I\'ve walked through the mud, the blood, and the silence of a collapsed society. We don\'t just survive; we rebuild. Documenting the blueprint for the next world',
             'tag_slugs' => ['community', 'sustainability', 'leadership'],
         ],
         'Negan' => [

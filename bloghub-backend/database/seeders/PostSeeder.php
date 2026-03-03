@@ -185,21 +185,13 @@ class PostSeeder extends Seeder
         'Maggie Rhee' => [
             'laurenCohan',
             [
-                'community-growth-plan' => [
+                'from-survivor-to-architect' => [
                     MediaType::Image->value,
-                    'Communities thrive when responsibility is distributed. Centralized control may accelerate decisions, but long-term resilience comes from shared ownership and participation.',
-                ],
-                'crop-rotation-basics' => [
-                    MediaType::Image->value,
-                    'Sustainable agriculture relies on balance. Rotating crops restores soil nutrients, reduces pests, and prevents long-term depletion. Patience produces stability.',
-                ],
-                'leadership-under-pressure' => [
-                    MediaType::Image->value,
-                    'Fear amplifies conflict. Calm communication de-escalates it. Leadership during uncertainty is less about authority and more about consistency.',
-                ],
-                'settlement-design-sketch' => [
-                    MediaType::Image->value,
-                    'Physical layout influences social interaction. Shared spaces encourage cooperation. Isolation breeds fragmentation.',
+                    "Sovereignty begins with structure. This path didn't start with crops; it started with the forensic analysis of a collapsing society. The time at Alexandria, a community defined by its rigid, pre-apocalypse suburban walls, was a training ground for governance and internal stability. This tier analyzes the development of the \"Social Contract\"—the logistics of supply runs and the development of internal laws for a sheltered population.\n\nSustainability is sovereignty. The move to Hilltop marked the crucial transition from scavenging to harvesting. Here, large-scale Crop Rotation and Livestock Management was optimized, establishing the settlement as the agricultural engine of the allied network. The focus was on establishing manual, renewable technologies—like the blacksmith forge—and securing trade routes for mutual aid.\n\nIndustry is resilience. 'The Bricks' represents the apex of community reconstruction. This phase is no longer about survival, but about Urban Recovery and the rebirth of industrial infrastructure. This tier provides a deep-dive into the complex logistics of inter-community diplomacy, advanced masonry, and Mutual Defense Pacts, utilizing reclaimed urban centers and advanced filtration systems to build a unified, sprawling network.",
+                    'We don\'t just survive; we rebuild. A forensic audit of leadership trajectory, from fortification ethics at Alexandria to the industrial rebirth of \'The Bricks\'. This is the blueprint for the next world',
+                    '2019-06-21',
+                    null,
+                    'From Survivor to Architect',
                 ],
             ],
         ],
