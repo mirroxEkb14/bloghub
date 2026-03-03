@@ -20,50 +20,34 @@ class CreatorProfileSeeder extends Seeder
         'Fox Mulder' => [
             'about' => 'Criminal psychology specialist focused on behavioral profiling and unexplained cases. I explore patterns behind extreme crimes, conspiracy narratives, and the psychology of belief. Deep dives, case breakdowns, and analytical commentary',
             'tag_slugs' => ['psychology', 'conspiracy-theory', 'true-crime'],
-            'avatar_base' => 'fox-mulder_avatar',
-            'cover_base' => 'fox-mulder_cover',
         ],
         'Dana Scully' => [
             'about' => 'Medical Doctor. FBI Special Agent. I\'m here to provide a scientific pivot for the unexplainable. The truth is out there, but it usually has a biological explanation',
             'tag_slugs' => ['medicine', 'science', 'skepticism'],
-            'avatar_base' => 'dana-scully_avatar',
-            'cover_base' => 'dana-scully_cover',
         ],
         'Gordon Freeman' => [
             'about' => 'Theoretical physicist discussing quantum theory, anomalous phenomena, and high-risk experimental science. Content covers physics concepts, research ethics, and speculative science scenarios',
             'tag_slugs' => ['physics', 'science', 'research'],
-            'avatar_base' => 'gordon-freeman_avatar',
-            'cover_base' => 'gordon-freeman_cover',
         ],
         'Gregory House' => [
             'about' => 'Diagnostic medicine specialist breaking down rare diseases, complex symptoms, and medical reasoning. Analytical case studies with a focus on logic, misdiagnosis, and unconventional thinking',
             'tag_slugs' => ['healthcare', 'medicine'],
-            'avatar_base' => 'gregory-house_avatar',
-            'cover_base' => 'gregory-house_cover',
         ],
         'Caroline' => [
             'about' => 'Aperture Science Computer-Aided Enrichment Center provides world-class testing environments for the advancement of Science. Please ignore any sudden sensations of mortality. We do what we must because we can. For Science',
             'tag_slugs' => ['AI', 'automation'],
-            'avatar_base' => 'glados_avatar',
-            'cover_base' => 'glados_cover',
         ],
         'Ellen Ripley' => [
-            'about' => 'Space operations specialist sharing survival strategies, risk management principles, and crisis leadership insights. Practical breakdowns of high-stakes decision-making in hostile environments',
+            'about' => 'Warrant Officer on USCSS Nostromo. Sole survivor of the Nostromo incident. Dedicated to the documentation of "Special Order 937" and the atmospheric analysis of LV-426',
             'tag_slugs' => ['space', 'leadership', 'survival'],
-            'avatar_base' => 'ellen-ripley_avatar',
-            'cover_base' => 'ellen-ripley_cover',
         ],
         'Maggie Rhee' => [
             'about' => 'Community builder and survival strategist focused on resilience, leadership under pressure, and rebuilding systems after crisis. Lessons on cooperation, agriculture basics, and sustainable communities',
             'tag_slugs' => ['community', 'sustainability', 'leadership'],
-            'avatar_base' => 'maggie-rhee_avatar',
-            'cover_base' => 'maggie-rhee_cover',
         ],
         'Negan' => [
             'about' => 'Former physical education teacher exploring discipline, group dynamics, and authority structures. Content mixes motivational leadership, behavioral control theory, and physical training insights',
             'tag_slugs' => ['physical-education', 'motivation'],
-            'avatar_base' => 'negan_avatar',
-            'cover_base' => 'negan_cover',
         ],
     ];
 
@@ -96,7 +80,7 @@ class CreatorProfileSeeder extends Seeder
             );
 
             $basePath = base_path(self::FIXTURES_BASE);
-            $avatarPath = $this->findFixtureFile($basePath.'/avatars', $data['avatar_base'] ?? null);
+            $avatarPath = $this->findFixtureFile($basePath.'/avatars', $user->username.'_avatar');
             if ($avatarPath !== null) {
                 $stored = Storage::disk('public')->putFile(
                     CreatorProfileResourceSupport::AVATAR_DIRECTORY,
@@ -105,7 +89,7 @@ class CreatorProfileSeeder extends Seeder
                 $profile->profile_avatar_path = $stored;
             }
 
-            $coverPath = $this->findFixtureFile($basePath.'/covers', $data['cover_base'] ?? null);
+            $coverPath = $this->findFixtureFile($basePath.'/covers', $user->username.'_cover');
             if ($coverPath !== null) {
                 $stored = Storage::disk('public')->putFile(
                     CreatorProfileResourceSupport::COVER_DIRECTORY,

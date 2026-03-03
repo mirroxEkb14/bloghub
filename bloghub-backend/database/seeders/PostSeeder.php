@@ -161,7 +161,7 @@ class PostSeeder extends Seeder
         'Dana Scully' => [
             'queequeg',
             [
-                'case-file-6x06-the-holiday-solstice-at-1501-admiral-lane' => [
+                'case-file-6x06-the-holiday-solstice' => [
                     MediaType::Image->value,
                     "Christmas Eve is rarely a time for scientific detachment. When Mulder pulled me to a derelict mansion in Maryland, my initial hypothesis was simple: a localized myth fueled by architectural decay and seasonal affect.\n\nThe history of the house is well-documented—a double suicide pact between lovers, Maurice and Lyda, in 1917. But as the door locked behind us, the investigation shifted from the external to the internal. This wasn't a haunting of cold spots or ectoplasm; it was a haunting of the ego.\n\nThe \"ghosts\" operated as psychological catalysts. They didn't just rattle chains; they rattled our perceptions of one another. They spoke of \"soul-crushing loneliness\" and the \"darkness of the investigator's life.\" It was a sophisticated, albeit macabre, psychological experiment.\n\nIn the end, the biological evidence was non-existent. No remains, no blood splatter that didn't vanish upon inspection. Only the gift exchange remained—a small, physical tether to a night that defied every law of physics I've spent my career defending.\n\nScience provides the light to see by, but on some nights, the shadows are simply deeper than the reach of the lamp.",
                     'A forensic look at the 1917 Lyndale murder-suicide. Beyond the gothic architecture lies a psychological trap designed to exploit the fundamental isolation of the investigative mind',
@@ -223,7 +223,7 @@ class PostSeeder extends Seeder
         'Caroline' => [
             'glados',
             [
-                'the-borealis-spontaneous-relocation-incident' => [
+                'the-borealis-a-lesson-in-spontaneous-relocation' => [
                     MediaType::Image->value,
                     "There is a common saying in the Enrichment Center: \"If at first you don't succeed, fail faster.\" The Borealis is the pinnacle of failing so spectacularly that you actually bypass the laws of physics entirely. It was intended to be our premier icebreaker research vessel, equipped with a localized version of the displacement technology we now use in our Handheld Portal Devices. Unfortunately, during a routine (and entirely authorized) test of the ship's primary oscillation drive, the vessel performed a \"rapid un-scheduled departure\" from our drydocks.\n\nThe ship didn't just sink. It didn't just explode. It simply ceased to be in Michigan and began to be... elsewhere.\n\nFor decades, the Borealis has been the subject of myth, even among the biological staff at Black Mesa. They whispered about it as if it were a ghost ship, a holy grail of untapped energy and spatial manipulation. They were right to be curious, though their curiosity—as usual—is clumsy. The ship contains technology that makes their Lambda Reactor look like a potato battery. We're talking about massive-scale bootstrap phase-shifters that can blink a city block into another dimension.\n\nThe ship eventually stabilized in a localized pocket of the Arctic, though its coordinates are currently \"unstable.\" I have been monitoring the telemetry from the onboard environmental sensors—those that haven't been crushed by ice or chewed on by whatever local wildlife survives in a sub-zero vacuum. The data suggests the ship is still partially \"phasing.\" It is a ship that is simultaneously everywhere and nowhere, a Schrodinger's Vessel that is waiting for someone with the right frequency to bring it home.\n\nI should mention that the Borealis is not just a cargo ship; it is a laboratory. It contains several \"un-packaged\" surprises that were never meant for open-air environments. If the Resistance—or whatever is left of the Black Mesa \"science\" community—attempts to board it without the proper Aperture Science decryption keys, the result will be a resonance event that makes their previous disaster look like a minor static shock. You don't just \"find\" the Borealis. You survive it.",
                     'Most Aperture experiments stay where they are told. The Borealis opted for a more creative approach to geography. This entry details the missing research vessel that Black Mesa\'s finest couldn\'t find with a map and a flashlight',
@@ -268,29 +268,29 @@ class PostSeeder extends Seeder
         'Ellen Ripley' => [
             'nostromo',
             [
-                'crisis-chain-of-command' => [
+                'xx121-predator-perfection' => [
                     MediaType::Image->value,
-                    'In isolated environments, hesitation spreads faster than danger. Clear hierarchy reduces panic. When roles are defined, reaction time decreases and survival probability increases.',
+                    "The organism designated as XX121 does not fit into any known terrestrial taxonomy. My analysis, supported by the data recovered from the Nostromo's medical bay, suggests it is a biomechanical hybrid. It does not simply inhabit an environment; it consumes and reconfigures it. Its primary composition is a silicate-based exterior—a \"chitinous\" armor that provides extreme resistance to temperature and pressure, making it viable even in a vacuum.\n\nDuring the Nostromo incident, we observed that the organism lacks traditional optic sensors. Instead, it utilizes a sophisticated combination of electroreception and thermal tracking. It navigates through vibration and air-current changes, turning the ship's ventilation system into its primary hunting ground. Its most devastating feature remains its \"molecular acid\" blood, which possesses a pH level low enough to burn through multiple decks of a CM-88B Juggernaut in seconds. This makes any tactical engagement a high-risk scenario; to wound the creature is to compromise the structural integrity of the vessel.\n\nThe introduction of XX121 into a human environment resulted in a 100% mortality rate for the Nostromo crew (excluding myself). The \"consequence\" is not merely death, but the total subversion of human biology. The organism uses the host as an incubator—a living vessel for the \"Chestburster\" stage. This parasitic relationship is the core of the Weyland-Yutani interest: a weapon that uses the enemy's own population as its primary fuel source.\n\nIf this organism reaches a colonized world, the \"future\" is a term that will no longer apply to humanity. The Company believes they can domesticate it, harness its \"structural perfection\" for their Bio-Weapons Division. They are wrong. You cannot domesticate a fire that is designed to consume the forest.\n\nMy mission is now singular: the total eradication of the XX121 strain. Science has identified the threat; now, logistics must find a way to burn it out.",
+                    'A forensic breakdown of the "Perfect Organism." From its acid-based blood to its rapid-adaptive life cycle, XX121 represents the ultimate endpoint of predatory evolution',
+                    '2025-10-12',
+                    null,
+                    'XX121: The Predator Perfection',
                 ],
-                'isolated-environment-survival' => [
+                'the-acheron-(-LV-426-)-site' => [
                     MediaType::Image->value,
-                    'Resource prioritization determines outcome: breathable air, structural integrity, communication systems. Emotional responses are natural, but action must remain procedural.',
+                    "The \"distress signal\" that drew the Nostromo to LV-426 was a warning, not a cry for help. Upon arrival, the atmospheric conditions—nitrogen, high carbon dioxide, and volcanic particulates—created a veil that hid a crime scene of cosmic proportions.\n\nThe derelict craft itself represents a technological paradox. It appears to be grown rather than manufactured, with bone-like struts and conduits that mimic a vascular system.\n\nOur forensic sweep of the \"Pilot\" revealed several critical data points. The Pilot (Space Jockey): Fossilized in the chair, with a massive exit wound in the thoracic cavity. The ribs were bent outward, suggesting an internal force—the first evidence of the XX121 life cycle's final stage. The Silo: Below the pilot's chamber lay thousands of eggs, preserved in a state of suspended animation by a blue mist \"stasis field.\" This field reacted to kinetic movement, indicating an active, predatory security measure. The Timeline: Carbon dating of the pilot's remains suggests the breach occurred thousands of years ago. The site was a ticking bomb, waiting for a catalyst—us.\n\nThe tragedy of LV-426 isn't that we found it; it's that we were directed to it by a Company that knew exactly what the \"warning\" meant.",
+                    'An examination of the derelict craft on LV-426. The structure is not merely a vessel; it is a biomechanical organism that has reached a state of fossilized equilibrium',
+                    '2025-01-18',
+                    null,
+                    'The Acheron (LV-426) Site',
                 ],
-                'shipboard-protocol' => [
+                'special-order-937' => [
                     MediaType::Image->value,
-                    'Every safety procedure exists because someone once ignored one. Protocols are written in hindsight – often at great cost.',
-                ],
-                'emergency-drill-footage' => [
-                    MediaType::Video->value,
-                    'Drills expose weaknesses in coordination and equipment readiness. Simulation reveals hesitation points before real consequences emerge.',
-                ],
-                'containment-strategy' => [
-                    MediaType::Image->value,
-                    'Containment requires layered defense – physical barriers, monitoring systems, contingency plans. Assuming a threat will behave predictably is the fastest route to failure.',
-                ],
-                'final-decision-analysis' => [
-                    MediaType::Image->value,
-                    'Leadership sometimes demands choices that protect the majority at personal cost. Survival is not always clean. It is decisive.',
+                    "To the uninitiated, the USCSS Nostromo was a commercial hauler. To Weyland-Yutani Executive Oversight, it was a petri dish.\n\nThe discovery of Special Order 937 in the ship's mainframe changed the nature of our investigation. It provided the mens rea—the criminal intent. The Company didn't just stumble upon the distress signal on LV-426; they anticipated it. They planted a synthetic sleeper agent, Ash, to ensure the directive was followed with biological precision.\n\nThe consequences of this order were absolute:\n- Total Quarantine Failure: By prioritizing the specimen, the Company intentionally bypassed every established biohazard protocol.\n- The Synthetic Variable: Ash was not a crew member; he was a fail-safe. His presence ensured that human empathy would never interfere with the \"collection\" process.\n- Zero-Liability Logic: By designating the crew as \"expendable,\" the Company calculated the insurance loss of a M-Class starship against the potential market value of a perfect biological weapon.\n\nIn forensics, we look for the \"smoking gun.\" Special Order 937 is the smoke, the gun, and the hand pulling the trigger. It proves that in deep space, the most dangerous predator isn't the one with the acid for blood—it's the one with the corporate seal.",
+                    'Priority One: Insure return of organism. All other considerations secondary. Crew expendable. A deconstruction of the directive that turned a commercial vessel into a slaughterhouse',
+                    '2024-12-07',
+                    1,
+                    'Special Order 937',
                 ],
             ],
         ],
@@ -352,7 +352,7 @@ class PostSeeder extends Seeder
             }
 
             $tiersByLevel = null;
-            if (in_array($userName, ['Gordon Freeman', 'Caroline', 'Dana Scully'], true)) {
+            if (in_array($userName, ['Gordon Freeman', 'Caroline', 'Dana Scully', 'Ellen Ripley'], true)) {
                 $tiersByLevel = $profile->tiers()->whereIn('level', [1, 2, 3])->get()->keyBy('level');
             }
 

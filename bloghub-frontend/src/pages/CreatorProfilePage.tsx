@@ -28,14 +28,6 @@ function relativeTime(dateStr: string): string {
   return d.toLocaleDateString(undefined, { dateStyle: 'medium' });
 }
 
-function joinButtonLabel(tierName: string): string {
-  if (tierName.startsWith('Black Mesa')) return 'Black Mesa';
-  if (tierName.startsWith('Test Subject')) return 'Test Subject';
-  if (tierName.includes('Specialist')) return 'Specialist';
-  if (tierName.includes('Overseer')) return 'Overseer';
-  return tierName.replace(/\s+.*$/, '');
-}
-
 export default function CreatorProfilePage() {
   const { slug } = useParams<{ slug: string }>();
   const [profile, setProfile] = useState<CreatorProfile | null>(null);
@@ -441,7 +433,7 @@ export default function CreatorProfilePage() {
                           : `${tier.tier_currency ?? ''} ${tier.price}`}
                       </p>
                       <button type="button" className="btn btn-secondary btn-sm tier-card-join" disabled>
-                        Join {joinButtonLabel(tier.tier_name)}
+                        Join
                       </button>
                     </div>
                   </li>

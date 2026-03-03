@@ -43,9 +43,9 @@ class TierSeeder extends Seeder
             ['level' => 3, 'tier_name' => 'Central AI Overseer', 'price' => 5299, 'currency' => Currency::CZK, 'tier_desc' => 'Central AI Overseer: Atlas & P-Body Blueprints, Neurotoxin Delivery Controls, The Morality Core', 'cover_base' => 'Aperture-Core-Member_cover'],
         ],
         'Ellen Ripley' => [
-            ['level' => 1, 'tier_name' => 'Crew Member', 'price' => 99, 'currency' => Currency::CZK, 'tier_desc' => 'Survival strategy guides. Risk management articles. Community discussions', 'cover_base' => 'Crew-Member_cover'],
-            ['level' => 2, 'tier_name' => 'Flight Officer', 'price' => 499, 'currency' => Currency::CZK, 'tier_desc' => 'Monthly tactical briefings', 'cover_base' => 'Flight-Officer_cover'],
-            ['level' => 3, 'tier_name' => 'Command Authority', 'price' => 1999, 'currency' => Currency::CZK, 'tier_desc' => 'High-risk case analyses', 'cover_base' => 'Command-Authority_cover'],
+            ['level' => 1, 'tier_name' => 'Sole Survivor', 'price' => 99, 'currency' => Currency::CZK, 'tier_desc' => 'Sole Survivor: Insights on the Nostromo\'s flight path, LV-426 landing reports', 'cover_base' => 'Crew-Member_cover'],
+            ['level' => 2, 'tier_name' => 'The Captain', 'price' => 499, 'currency' => Currency::CZK, 'tier_desc' => 'The Captain: Breakdowns of the "Facehugger" anatomy, Reconstruction of Nostromo crew\'s fate, Reports on Weyland-Yutani ROs', 'cover_base' => 'Flight-Officer_cover'],
+            ['level' => 3, 'tier_name' => 'The Alien', 'price' => 1999, 'currency' => Currency::CZK, 'tier_desc' => 'The Alien: Breakdowns of the XX121 organism', 'cover_base' => 'Command-Authority_cover'],
         ],
         'Maggie Rhee' => [
             ['level' => 1, 'tier_name' => 'Community Supporter', 'price' => 3, 'currency' => Currency::USD, 'tier_desc' => 'Leadership insights. Sustainable community guides', 'cover_base' => 'Community-Supporter_cover'],
