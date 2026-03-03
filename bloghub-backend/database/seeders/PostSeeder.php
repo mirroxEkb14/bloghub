@@ -52,6 +52,22 @@ class PostSeeder extends Seeder
                     null,
                     'Borderworld Xen',
                 ],
+                'resonance-cascade-event-video-insight' => [
+                    MediaType::Video->value,
+                    "The following footage serves as a forensic visualization of the Sector C Containment Failure. As the Anti-Mass Spectrometer was pushed to 105% capacity, the insertion of the anomalous sample GG-3883 triggered a non-standard spontaneous resonance.\n\nIn the video, you can observe the precise moment of Dimensional Intersection. The brilliant emerald-green light signifies the \"harmonic lock-on\" between Earth and the Xen border world. Note the immediate structural deformation: the warping of concrete bulkheads and the instantaneous fusion of bioluminescent alien flora into the facility's architecture.\n\nThis sequence captures the birth of the Portal Storms—a chaotic event that bypassed traditional physics and initiated the planetary-scale crisis now known as Zero Day.",
+                    'A visual reconstruction of the "Resonance Cascade" incident at Black Mesa Research Facility',
+                    '2025-11-01',
+                    null,
+                    'Resonance Cascade Event – Video Insight',
+                ],
+                'xenocrystal-bloom' => [
+                    MediaType::Audio->value,
+                    'Shimmering, crystalline chimes provide a sharp contrast to the low-end drones, while distant, reverb-heavy screeches and the leathery flutter of wings evoke the presence of unseen predators. Wet, rhythmic squelches and granular clicks that simulate bioluminescent life.',
+                    'A high-fidelity atmospheric journey into a non-terrestrial ecosystem',
+                    '2025-11-06',
+                    null,
+                    '"Xenocrystal Bloom"',
+                ],
             ],
         ],
         'Fox Mulder' => [
