@@ -39,13 +39,13 @@ class PostResourceTable
                     ->label(__('filament.posts.table.columns.title'))
                     ->searchable()
                     ->sortable()
-                    ->limit(40),
+                    ->limit(30),
                 TextColumn::make('media_type')
                     ->label(__('filament.posts.table.columns.media_type'))
                     ->formatStateUsing(fn ($state) => $state?->value ?? $state)
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('requiredTier.tier_name')
+                TextColumn::make('requiredTier.level')
                     ->label(__('filament.posts.table.columns.required_tier'))
                     ->sortable()
                     ->toggleable(),

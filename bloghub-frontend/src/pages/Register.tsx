@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ValidationError } from '../api/client';
+import InputWithIcon from '../components/InputWithIcon';
+import PasswordField from '../components/PasswordField';
 import { useAuth } from '../contexts/AuthContext';
+
+type FormKey = 'name' | 'username' | 'email' | 'password' | 'password_confirmation';
 
 export default function Register() {
   const { register, error, clearError } = useAuth();
@@ -13,27 +18,34 @@ export default function Register() {
     password_confirmation: '',
   });
   const [submitting, setSubmitting] = useState(false);
-  const [passwordMismatch, setPasswordMismatch] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<FormKey, string>>>({});
 
   useEffect(() => {
     clearError();
   }, [clearError]);
 
-  function update(f: keyof typeof form, value: string) {
+  function update(f: FormKey, value: string) {
     setForm((prev) => ({ ...prev, [f]: value }));
-    if (f === 'password' || f === 'password_confirmation') {
-      setPasswordMismatch(false);
-    }
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+      delete next[f];
+      return next;
+    });
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     clearError();
-    setPasswordMismatch(false);
+    setFieldErrors({});
+
     if (form.password !== form.password_confirmation) {
-      setPasswordMismatch(true);
+      setFieldErrors({
+        password: 'Passwords do not match',
+        password_confirmation: 'Passwords do not match',
+      });
       return;
     }
+
     setSubmitting(true);
     try {
       await register({
@@ -44,8 +56,19 @@ export default function Register() {
         password_confirmation: form.password_confirmation,
       });
       navigate('/', { replace: true });
-    } catch {
-      // error set in context
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        const next: Partial<Record<FormKey, string>> = {};
+        for (const [key, messages] of Object.entries(err.errors)) {
+          const k = key as FormKey;
+          if (messages?.length && (k === 'name' || k === 'username' || k === 'email' || k === 'password' || k === 'password_confirmation')) {
+            next[k] = messages[0];
+          }
+        }
+        setFieldErrors(next);
+        clearError();
+      }
+      throw err;
     } finally {
       setSubmitting(false);
     }
@@ -58,73 +81,68 @@ export default function Register() {
         <p className="form-subtitle">Join BlogHub</p>
 
         {error && <div className="auth-error">{error}</div>}
-        {passwordMismatch && (
-          <div className="auth-error">Passwords do not match</div>
-        )}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="name">Name</label>
-            <input
-              id="name"
-              type="text"
-              value={form.name}
-              onChange={(e) => update('name', e.target.value)}
-              placeholder="Fox Mulder"
-              required
-              autoComplete="name"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
-            <input
-              id="username"
-              type="text"
-              value={form.username}
-              onChange={(e) => update('username', e.target.value)}
-              placeholder="trust_no1"
-              required
-              autoComplete="username"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={form.email}
-              onChange={(e) => update('email', e.target.value)}
-              placeholder="trust_no1@gmail.com"
-              required
-              autoComplete="email"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              value={form.password}
-              onChange={(e) => update('password', e.target.value)}
-              placeholder="••••••••"
-              required
-              minLength={8}
-              autoComplete="new-password"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password_confirmation">Confirm password</label>
-            <input
-              id="password_confirmation"
-              type="password"
-              value={form.password_confirmation}
-              onChange={(e) => update('password_confirmation', e.target.value)}
-              placeholder="••••••••"
-              required
-              minLength={8}
-              autoComplete="new-password"
-            />
-          </div>
+          <InputWithIcon
+            id="name"
+            label="Name"
+            icon="user"
+            type="text"
+            value={form.name}
+            onChange={(e) => update('name', e.target.value)}
+            placeholder="Fox Mulder"
+            required
+            maxLength={100}
+            autoComplete="name"
+            error={fieldErrors.name}
+          />
+          <InputWithIcon
+            id="username"
+            label="Username"
+            icon="user"
+            type="text"
+            value={form.username}
+            onChange={(e) => update('username', e.target.value)}
+            placeholder="trust_no1"
+            required
+            maxLength={50}
+            autoComplete="username"
+            error={fieldErrors.username}
+          />
+          <InputWithIcon
+            id="email"
+            label="Email"
+            icon="email"
+            type="email"
+            value={form.email}
+            onChange={(e) => update('email', e.target.value)}
+            placeholder="trust_no1@gmail.com"
+            required
+            autoComplete="email"
+            error={fieldErrors.email}
+          />
+          <PasswordField
+            id="password"
+            label="Password"
+            value={form.password}
+            onChange={(v) => update('password', v)}
+            placeholder="qWerty123456!"
+            required
+            minLength={8}
+            autoComplete="new-password"
+            error={fieldErrors.password}
+          />
+          <PasswordField
+            id="password_confirmation"
+            label="Confirm password"
+            value={form.password_confirmation}
+            onChange={(v) => update('password_confirmation', v)}
+            placeholder="qWerty123456!"
+            required
+            minLength={8}
+            autoComplete="new-password"
+            error={fieldErrors.password_confirmation}
+          />
           <div className="form-actions">
             <button type="submit" className="btn btn-primary" disabled={submitting}>
               {submitting ? 'Creating account...' : 'Register'}

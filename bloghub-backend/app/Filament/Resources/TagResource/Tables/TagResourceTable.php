@@ -35,6 +35,8 @@ class TagResourceTable
                     ->sortable(),
                 TextColumn::make('creator_profiles_label')
                     ->label(__('filament.tags.table.columns.creator_profiles'))
+                    ->limit(50)
+                    ->extraCellAttributes(['style' => 'max-width: 280px;'])
                     ->toggleable(),
                 TextColumn::make('created_at')
                     ->label(__('filament.tags.table.columns.created_at'))

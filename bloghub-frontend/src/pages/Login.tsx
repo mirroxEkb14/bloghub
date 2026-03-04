@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import InputWithIcon from '../components/InputWithIcon';
+import PasswordField from '../components/PasswordField';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
@@ -36,30 +38,26 @@ export default function Login() {
         {error && <div className="auth-error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              required
-              autoComplete="email"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              autoComplete="current-password"
-            />
-          </div>
+          <InputWithIcon
+            id="email"
+            label="Email"
+            icon="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            required
+            autoComplete="email"
+          />
+          <PasswordField
+            id="password"
+            label="Password"
+            value={password}
+            onChange={setPassword}
+            placeholder="qWerty123456!"
+            required
+            autoComplete="current-password"
+          />
           <div className="form-actions">
             <button type="submit" className="btn btn-primary" disabled={submitting}>
               {submitting ? 'Signing in...' : 'Log in'}

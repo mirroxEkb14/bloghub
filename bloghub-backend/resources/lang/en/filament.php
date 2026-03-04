@@ -89,7 +89,7 @@ return [
                 'title' => 'Title',
                 'content_text' => 'Content',
                 'media_type' => 'Media type',
-                'required_tier' => 'Required tier',
+                'required_tier' => 'Tier',
                 'comments_count' => 'Comments',
                 'created_at' => 'Created',
             ],

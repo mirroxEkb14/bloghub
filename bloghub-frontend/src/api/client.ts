@@ -1,5 +1,15 @@
 export const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 
+export class ValidationError extends Error {
+  readonly errors: Record<string, string[]>;
+
+  constructor(message: string, errors: Record<string, string[]>) {
+    super(message);
+    this.name = 'ValidationError';
+    this.errors = errors;
+  }
+}
+
 function getToken(): string | null {
   return localStorage.getItem('auth_token');
 }
@@ -22,9 +32,15 @@ export async function api<T>(
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
-    const msg = data.message ?? (typeof data.errors === 'object'
-      ? Object.values(data.errors as Record<string, string[]>).flat().join(' ')
+    const errorsObj = res.status === 422 && data.errors && typeof data.errors === 'object'
+      ? (data.errors as Record<string, string[]>)
+      : null;
+    const msg = data.message ?? (errorsObj
+      ? Object.values(errorsObj).flat().join(' ')
       : data.errors) ?? `Request failed: ${res.status}`;
+    if (errorsObj) {
+      throw new ValidationError(typeof msg === 'string' ? msg : 'Validation failed', errorsObj);
+    }
     throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
   }
   return data as T;
