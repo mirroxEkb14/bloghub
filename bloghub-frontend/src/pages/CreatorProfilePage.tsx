@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   creatorProfilesApi,
   postsApi,
+  subscriptionsApi,
   tiersApi,
   type CreatorProfile,
   type PaginatedMeta,
   type Post,
+  type SubscriptionStatusResponse,
   type Tier,
 } from '../api/client';
+import { useAuth } from '../contexts/AuthContext';
 import LoadingPage from '../components/LoadingPage';
 
 const POSTS_PAGE_SIZE = 12;
@@ -30,6 +33,9 @@ function relativeTime(dateStr: string): string {
 
 export default function CreatorProfilePage() {
   const { slug } = useParams<{ slug: string }>();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [profile, setProfile] = useState<CreatorProfile | null>(null);
   const [tiers, setTiers] = useState<Tier[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -40,6 +46,12 @@ export default function CreatorProfilePage() {
   const [error, setError] = useState<string | null>(null);
   const [previewPost, setPreviewPost] = useState<Post | null>(null);
   const [showScrollToTop, setShowScrollToTop] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatusResponse | null>(null);
+  const [subscribingTierId, setSubscribingTierId] = useState<number | null>(null);
+  const [subscriptionError, setSubscriptionError] = useState<{ tierId: number; message: string } | null>(null);
+  const [subscriptionSuccess, setSubscriptionSuccess] = useState<string | null>(null);
+  const [highlightTierId, setHighlightTierId] = useState<number | null>(null);
+  const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevPostsPageRef = useRef(1);
   const sidebarRef = useRef<HTMLElement | null>(null);
   const paginationRef = useRef<HTMLDivElement | null>(null);
@@ -99,6 +111,36 @@ export default function CreatorProfilePage() {
     })();
     return () => { cancelled = true; };
   }, [slug]);
+
+  useEffect(() => {
+    if (!slug || !user) {
+      setSubscriptionStatus(null);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const status = await subscriptionsApi.getStatusByCreator(slug);
+        if (!cancelled) setSubscriptionStatus(status);
+      } catch {
+        if (!cancelled) setSubscriptionStatus({ subscribed: false, active_subscription: null });
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [slug, user]);
+
+  useEffect(() => {
+    if (highlightTierId === null) return;
+    highlightTimeoutRef.current = setTimeout(() => {
+      setHighlightTierId(null);
+    }, 1500);
+    return () => {
+      if (highlightTimeoutRef.current) {
+        clearTimeout(highlightTimeoutRef.current);
+        highlightTimeoutRef.current = null;
+      }
+    };
+  }, [highlightTierId]);
 
   useEffect(() => {
     if (!slug) return;
@@ -435,38 +477,144 @@ export default function CreatorProfilePage() {
             <section id="profile-tiers" className="profile-tiers">
               <h2 className="profile-section-title">Subscription Tiers</h2>
               <ul className="tier-list tier-list-sidebar">
-                {tiers.map((tier) => (
-                  <li key={tier.id} className="tier-card tier-card-stacked">
-                    {tier.tier_cover_url ? (
-                      <div className="tier-card-cover tier-card-cover-img">
-                        <img src={tier.tier_cover_url} alt="" />
-                      </div>
-                    ) : (
-                      <div className="tier-card-cover tier-card-cover-placeholder" />
-                    )}
-                    <div className="tier-card-body">
-                      <h3 className="tier-card-name">{tier.tier_name}</h3>
-                      {tier.tier_desc && (
-                        <p className="tier-card-desc" style={{ whiteSpace: 'pre-line' }}>
-                          {tier.tier_desc}
-                        </p>
+                {tiers.map((tier) => {
+                  const isSubscribed = subscriptionStatus?.subscribed && subscriptionStatus?.active_subscription?.tier_id === tier.id;
+                  const isSubscribing = subscribingTierId === tier.id;
+                  const tierHighlighted = highlightTierId === tier.id;
+                  const handleJoin = async () => {
+                    if (!user) {
+                      navigate('/login', { state: { from: location.pathname } });
+                      return;
+                    }
+                    setSubscriptionError(null);
+                    setSubscriptionSuccess(null);
+                    setSubscribingTierId(tier.id);
+                    try {
+                      await subscriptionsApi.subscribe(tier.id);
+                      const status = await subscriptionsApi.getStatusByCreator(slug!);
+                      setSubscriptionStatus(status);
+                      setSubscriptionSuccess(tier.tier_name);
+                    } catch (e) {
+                      setSubscriptionError({
+                        tierId: tier.id,
+                        message: e instanceof Error ? e.message : 'Failed to subscribe',
+                      });
+                      setHighlightTierId(tier.id);
+                    } finally {
+                      setSubscribingTierId(null);
+                    }
+                  };
+                  return (
+                    <li
+                      key={tier.id}
+                      className={`tier-card tier-card-stacked${tierHighlighted ? ' tier-card-error' : ''}`}
+                    >
+                      {tier.tier_cover_url ? (
+                        <div className="tier-card-cover tier-card-cover-img">
+                          <img src={tier.tier_cover_url} alt="" />
+                        </div>
+                      ) : (
+                        <div className="tier-card-cover tier-card-cover-placeholder" />
                       )}
-                      <p className="tier-card-price">
-                        {tier.price === 0
-                          ? 'Free'
-                          : `${tier.tier_currency ?? ''} ${tier.price}`}
-                      </p>
-                      <button type="button" className="btn btn-secondary btn-sm tier-card-join" disabled>
-                        Join
-                      </button>
-                    </div>
-                  </li>
-                ))}
+                      <div className="tier-card-body">
+                        <h3 className="tier-card-name">{tier.tier_name}</h3>
+                        {tier.tier_desc && (
+                          <p className="tier-card-desc" style={{ whiteSpace: 'pre-line' }}>
+                            {tier.tier_desc}
+                          </p>
+                        )}
+                        <p className="tier-card-price">
+                          {tier.price === 0
+                            ? 'Free'
+                            : `${tier.tier_currency ?? ''} ${tier.price}`}
+                        </p>
+                        {user ? (
+                          isSubscribed ? (
+                            <span className="btn btn-secondary btn-sm tier-card-join" style={{ opacity: 0.9, cursor: 'default' }}>
+                              Subscribed
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              className="btn btn-secondary btn-sm tier-card-join"
+                              disabled={isSubscribing}
+                              onClick={handleJoin}
+                            >
+                              {isSubscribing ? 'Joining…' : 'Join'}
+                            </button>
+                          )
+                        ) : (
+                          <button
+                            type="button"
+                            className="btn btn-secondary btn-sm tier-card-join"
+                            onClick={() => navigate('/login', { state: { from: location.pathname } })}
+                          >
+                            Log in to subscribe
+                          </button>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             </section>
           )}
         </aside>
       </div>
+
+      {subscriptionSuccess && (
+        <div
+          className="subscription-toast subscription-toast-success"
+          role="status"
+          aria-live="polite"
+          aria-label="Subscribed"
+        >
+          <span className="subscription-toast-icon subscription-toast-icon-success" aria-hidden>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="2" />
+              <path d="M6 10l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
+          <p className="subscription-toast-msg">
+            Subscribed to {subscriptionSuccess}
+          </p>
+          <button
+            type="button"
+            className="subscription-toast-close"
+            onClick={() => setSubscriptionSuccess(null)}
+            aria-label="Dismiss"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {subscriptionError && (
+        <div
+          className="subscription-toast subscription-toast-error"
+          role="status"
+          aria-live="polite"
+          aria-label="Subscription notice"
+        >
+          <span className="subscription-toast-icon subscription-toast-icon-error" aria-hidden>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="2" />
+              <path d="M10 6v4M10 13v1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </span>
+          <p className="subscription-toast-msg">
+            You're already subscribed to {subscriptionStatus?.active_subscription?.tier?.tier_name ?? 'this creator'}
+          </p>
+          <button
+            type="button"
+            className="subscription-toast-close"
+            onClick={() => setSubscriptionError(null)}
+            aria-label="Dismiss"
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       {previewPost && (
         <div

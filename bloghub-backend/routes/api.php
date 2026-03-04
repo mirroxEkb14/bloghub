@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CreatorProfileController;
 use App\Http\Controllers\Api\CreatorProfilePostController;
 use App\Http\Controllers\Api\CreatorProfileTierController;
 use App\Http\Controllers\Api\CreatorProfileUploadController;
+use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\TagController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,4 +28,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/creator-profiles/upload-avatar', [CreatorProfileUploadController::class, 'avatar']);
     Route::post('/creator-profiles/upload-cover', [CreatorProfileUploadController::class, 'cover']);
     Route::put('/creator-profiles/{creatorProfile}', [CreatorProfileController::class, 'update']);
+
+    Route::get('/me/subscriptions', [SubscriptionController::class, 'index']);
+    Route::post('/subscriptions', [SubscriptionController::class, 'store']);
+    Route::get('/creator-profiles/{slug}/subscription-status', [SubscriptionController::class, 'statusByCreator']);
+    Route::patch('/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel']);
 });

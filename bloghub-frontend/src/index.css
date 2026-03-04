@@ -1092,6 +1092,19 @@ label {
   width: 100%;
 }
 
+.tier-card-error,
+.tier-card-error:hover {
+  border: 2px solid var(--color-error, #dc2626);
+  box-shadow: 0 0 0 1px var(--color-error, #dc2626);
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.tier-card-error-msg {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-error, #dc2626);
+}
+
 /* Profile: Posts list */
 .profile-posts {
   margin-bottom: 1.5rem;
@@ -1530,6 +1543,70 @@ label {
 
 .post-page-content p:last-child {
   margin-bottom: 0;
+}
+
+/* Subscription toasts */
+.subscription-toast {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+  max-width: 360px;
+}
+
+.subscription-toast-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.subscription-toast-icon-success {
+  color: #22c55e;
+}
+
+.subscription-toast-icon-error {
+  color: var(--accent-muted);
+}
+
+.subscription-toast-msg {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.35;
+  flex: 1;
+  min-width: 0;
+}
+
+.subscription-toast-close {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, background 0.2s;
+}
+
+.subscription-toast-close:hover {
+  color: var(--text);
+  background: var(--bg-input);
 }
 
 /* Post preview modal (Creator Profile) */

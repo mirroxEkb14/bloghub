@@ -328,3 +328,56 @@ export const tiersApi = {
     ).then((r) => (Array.isArray(r) ? r : (r as { data: Tier[] }).data ?? []));
   },
 };
+
+export type SubscriptionCreator = {
+  id: number;
+  slug: string;
+  display_name: string;
+  profile_avatar_url: string | null;
+};
+
+export type SubscriptionWithTier = {
+  id: number;
+  user_id: number;
+  tier_id: number;
+  start_date: string | null;
+  end_date: string | null;
+  sub_status: string;
+  created_at: string | null;
+  updated_at: string | null;
+  tier: Tier;
+  creator: SubscriptionCreator;
+};
+
+export type SubscriptionStatusResponse = {
+  subscribed: boolean;
+  active_subscription: SubscriptionWithTier | null;
+};
+
+export const subscriptionsApi = {
+  list() {
+    return api<{ data: SubscriptionWithTier[] } | SubscriptionWithTier[]>(
+      '/api/me/subscriptions'
+    ).then((r) => (Array.isArray(r) ? r : (r as { data: SubscriptionWithTier[] }).data ?? []));
+  },
+
+  subscribe(tierId: number) {
+    return api<SubscriptionWithTier | { data: SubscriptionWithTier }>(
+      '/api/subscriptions',
+      { method: 'POST', body: JSON.stringify({ tier_id: tierId }) }
+    ).then(unwrapData);
+  },
+
+  getStatusByCreator(creatorSlug: string) {
+    return api<SubscriptionStatusResponse>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/subscription-status`
+    );
+  },
+
+  cancel(subscriptionId: number) {
+    return api<{ message: string; subscription: SubscriptionWithTier }>(
+      `/api/subscriptions/${subscriptionId}/cancel`,
+      { method: 'PATCH' }
+    );
+  },
+};
