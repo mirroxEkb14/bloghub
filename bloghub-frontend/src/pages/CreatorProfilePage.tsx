@@ -51,6 +51,8 @@ export default function CreatorProfilePage() {
   const [subscriptionError, setSubscriptionError] = useState<{ tierId: number; message: string } | null>(null);
   const [subscriptionSuccess, setSubscriptionSuccess] = useState<string | null>(null);
   const [highlightTierId, setHighlightTierId] = useState<number | null>(null);
+  const [openMenuPostId, setOpenMenuPostId] = useState<number | null>(null);
+  const [shareToast, setShareToast] = useState(false);
   const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevPostsPageRef = useRef(1);
   const sidebarRef = useRef<HTMLElement | null>(null);
@@ -141,6 +143,35 @@ export default function CreatorProfilePage() {
       }
     };
   }, [highlightTierId]);
+
+  useEffect(() => {
+    if (openMenuPostId === null) return;
+    const close = () => setOpenMenuPostId(null);
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [openMenuPostId]);
+
+  useEffect(() => {
+    if (!shareToast) return;
+    const t = setTimeout(() => setShareToast(false), 2000);
+    return () => clearTimeout(t);
+  }, [shareToast]);
+
+  const getPostUrl = useCallback((creatorSlug: string, postSlug: string) => {
+    return `${typeof window !== 'undefined' ? window.location.origin : ''}/creator/${creatorSlug}/post/${postSlug}`;
+  }, []);
+
+  async function handleSharePost(post: Post) {
+    if (!slug) return;
+    const url = getPostUrl(slug, post.slug);
+    setOpenMenuPostId(null);
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareToast(true);
+    } catch {
+      // ignore
+    }
+  }
 
   useEffect(() => {
     if (!slug) return;
@@ -332,10 +363,32 @@ export default function CreatorProfilePage() {
                                 )}
                               </span>
                             </div>
-                            <div className="post-card-actions">
-                              <button type="button" className="post-card-menu-btn" aria-label="More options">
+                            <div
+                              className="post-card-actions post-card-menu-wrap"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <button
+                                type="button"
+                                className="post-card-menu-btn"
+                                aria-label="More options"
+                                aria-expanded={openMenuPostId === post.id}
+                                aria-haspopup="true"
+                                onClick={() => setOpenMenuPostId((prev) => (prev === post.id ? null : post.id))}
+                              >
                                 ⋮
                               </button>
+                              {openMenuPostId === post.id && (
+                                <div className="post-card-dropdown" role="menu">
+                                  <button
+                                    type="button"
+                                    role="menuitem"
+                                    className="post-card-dropdown-item"
+                                    onClick={() => handleSharePost(post)}
+                                  >
+                                    Share
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           </header>
                           <div className="post-card-body">
@@ -561,6 +614,31 @@ export default function CreatorProfilePage() {
           )}
         </aside>
       </div>
+
+      {shareToast && (
+        <div
+          className="subscription-toast subscription-toast-success"
+          role="status"
+          aria-live="polite"
+          aria-label="Link copied"
+        >
+          <span className="subscription-toast-icon subscription-toast-icon-success" aria-hidden>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="2" />
+              <path d="M6 10l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
+          <p className="subscription-toast-msg">Link copied to clipboard</p>
+          <button
+            type="button"
+            className="subscription-toast-close"
+            onClick={() => setShareToast(false)}
+            aria-label="Dismiss"
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       {subscriptionSuccess && (
         <div
