@@ -98,7 +98,7 @@ class PostSeeder extends Seeder
                     MediaType::Image->value,
                     "Christmas Eve is rarely a time for scientific detachment. When Mulder pulled me to a derelict mansion in Maryland, my initial hypothesis was simple: a localized myth fueled by architectural decay and seasonal affect.\n\nThe history of the house is well-documented—a double suicide pact between lovers, Maurice and Lyda, in 1917. But as the door locked behind us, the investigation shifted from the external to the internal. This wasn't a haunting of cold spots or ectoplasm; it was a haunting of the ego.\n\nThe \"ghosts\" operated as psychological catalysts. They didn't just rattle chains; they rattled our perceptions of one another. They spoke of \"soul-crushing loneliness\" and the \"darkness of the investigator's life.\" It was a sophisticated, albeit macabre, psychological experiment.\n\nIn the end, the biological evidence was non-existent. No remains, no blood splatter that didn't vanish upon inspection. Only the gift exchange remained—a small, physical tether to a night that defied every law of physics I've spent my career defending.\n\nScience provides the light to see by, but on some nights, the shadows are simply deeper than the reach of the lamp.",
                     'A forensic look at the 1917 Lyndale murder-suicide. Beyond the gothic architecture lies a psychological trap designed to exploit the fundamental isolation of the investigative mind',
-                    'today',
+                    '2025-02-26',
                     null,
                     'Case File: 6x06 — The Holiday Solstice',
                 ],
@@ -243,10 +243,7 @@ class PostSeeder extends Seeder
                 continue;
             }
 
-            $tiersByLevel = null;
-            if (in_array($userName, ['Gordon Freeman', 'Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder'], true)) {
-                $tiersByLevel = $profile->tiers()->whereIn('level', [1, 2, 3])->get()->keyBy('level');
-            }
+            $tiersByLevel = $profile->tiers()->whereIn('level', [1, 2, 3])->get()->keyBy('level');
 
             foreach ($posts as $slug => $postData) {
                 $isExtended = count($postData) >= 5;
@@ -273,10 +270,11 @@ class PostSeeder extends Seeder
                     $createdAtKey = $postData[3];
                     $tierLevel = $postData[4];
                     $attributes['excerpt'] = $excerpt;
-                    if ($tierLevel !== null && $tiersByLevel !== null) {
+                    if ($tierLevel !== null) {
                         $tier = $tiersByLevel->get($tierLevel);
                         $attributes['required_tier_id'] = $tier?->id;
                     }
+                    $attributes['created_at'] = Carbon::parse($createdAtKey);
                 }
 
                 $post = Post::firstOrCreate(
@@ -286,45 +284,16 @@ class PostSeeder extends Seeder
                     ],
                     $attributes
                 );
-                if ($isExtended) {
-                    if (! $post->wasRecentlyCreated) {
-                        $post->update($attributes);
-                    }
-                    $post->created_at = $this->resolveCreatedAt($createdAtKey);
-                    $post->save();
+                if ($isExtended && ! $post->wasRecentlyCreated) {
+                    $post->update($attributes);
                 }
             }
         }
     }
 
-    private function resolveCreatedAt(string $key): \DateTimeInterface
-    {
-        $now = now();
-        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $key)) {
-            return Carbon::parse($key);
-        }
-
-        return match ($key) {
-            'today' => $now,
-            'yesterday', '1day' => $now->copy()->subDay(),
-            '3days' => $now->copy()->subDays(3),
-            '5days' => $now->copy()->subDays(5),
-            '1week' => $now->copy()->subWeek(),
-            '2weeks' => $now->copy()->subWeeks(2),
-            '3weeks' => $now->copy()->subWeeks(3),
-            '2months' => $now->copy()->subMonths(2),
-            '4months' => $now->copy()->subMonths(4),
-            '6months' => $now->copy()->subMonths(6),
-            '1year' => $now->copy()->subYear(),
-            '2years' => $now->copy()->subYears(2),
-            '3years' => $now->copy()->subYears(3),
-            default => $now,
-        };
-    }
-
     private function slugToTitle(string $slug): string
     {
-        return str_replace(' ', ' ', ucwords(str_replace('-', ' ', $slug)));
+        return ucwords(str_replace('-', ' ', $slug));
     }
 
     private function copyFixtureMedia(string $creatorSlug, string $slug, MediaType $mediaType): ?string
