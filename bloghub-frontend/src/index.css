@@ -514,6 +514,16 @@ label {
   font-size: 0.95rem;
 }
 
+/* Home welcome card */
+.home-card {
+  min-width: 0;
+}
+.home-card .form-title,
+.home-card .form-subtitle {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
 .form-group {
   margin-bottom: 1.25rem;
 }
@@ -673,6 +683,7 @@ label {
 .creator-card-body {
   padding: 1rem 1.25rem;
   position: relative;
+  min-width: 0;
 }
 
 .creator-card-avatar {
@@ -700,6 +711,9 @@ label {
   margin: 0 0 0.15rem 0;
   font-size: 1.1rem;
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .creator-card-username {
@@ -707,6 +721,9 @@ label {
   font-size: 0.85rem;
   color: var(--text-muted);
   margin-bottom: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .creator-card-about {
@@ -718,6 +735,8 @@ label {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .creator-card-tags {
@@ -837,17 +856,25 @@ label {
 
 .profile-heading {
   padding-bottom: 0.5rem;
+  min-width: 0;
 }
 
 .profile-name {
   margin: 0 0 0.2rem 0;
   font-size: 1.75rem;
   font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .profile-username {
   font-size: 1rem;
   color: var(--text-muted);
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .profile-about {
@@ -856,6 +883,7 @@ label {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1.25rem 1.5rem;
+  min-width: 0;
 }
 
 .profile-about .profile-tag-list {
@@ -890,12 +918,17 @@ label {
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .profile-about-text {
   margin: 0;
   line-height: 1.6;
   color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .profile-tag-list {

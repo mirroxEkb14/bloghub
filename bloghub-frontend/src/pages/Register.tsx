@@ -92,6 +92,7 @@ export default function Register() {
             onChange={(e) => update('name', e.target.value)}
             placeholder="Fox Mulder"
             required
+            maxLength={100}
             autoComplete="name"
             error={fieldErrors.name}
           />
@@ -104,6 +105,7 @@ export default function Register() {
             onChange={(e) => update('username', e.target.value)}
             placeholder="trust_no1"
             required
+            maxLength={50}
             autoComplete="username"
             error={fieldErrors.username}
           />

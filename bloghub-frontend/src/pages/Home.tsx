@@ -28,7 +28,7 @@ export default function Home() {
 
   return (
     <div className="page-center">
-      <div className="card" style={{ maxWidth: 480 }}>
+      <div className="card home-card" style={{ maxWidth: 480 }}>
         <h1 className="form-title">Welcome, {user.name || user.username}</h1>
         <p className="form-subtitle">
           You're logged in as <strong>{user.email}</strong>
