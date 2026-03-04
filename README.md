@@ -37,6 +37,7 @@ Projekt je rozdělen na backend (**Laravel** + **Filament**) a frontend (**React
 bloghub/
 ├── bloghub-backend/
 │   ├── app/
+│   │   ├── Contracts/
 │   │   ├── Enums/
 │   │   ├── Filament/
 │   │   │   ├── Pages/
