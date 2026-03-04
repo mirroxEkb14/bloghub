@@ -11,7 +11,7 @@ export default function SubscriptionsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cancelingId, setCancelingId] = useState<number | null>(null);
-  const [cancelToast, setCancelToast] = useState<boolean>(false);
+  const [cancelToastMessage, setCancelToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -40,10 +40,10 @@ export default function SubscriptionsPage() {
   const TOAST_DURATION_MS = 4000;
 
   useEffect(() => {
-    if (!cancelToast) return;
-    const t = setTimeout(() => setCancelToast(false), TOAST_DURATION_MS);
+    if (!cancelToastMessage) return;
+    const t = setTimeout(() => setCancelToastMessage(null), TOAST_DURATION_MS);
     return () => clearTimeout(t);
-  }, [cancelToast]);
+  }, [cancelToastMessage]);
 
   async function handleCancel(sub: SubscriptionWithTier) {
     setError(null);
@@ -53,7 +53,10 @@ export default function SubscriptionsPage() {
       setSubscriptions((prev) =>
         prev.map((s) => (s.id === sub.id ? res.subscription : s))
       );
-      setCancelToast(true);
+      const label = res.subscription?.tier?.tier_name && res.subscription?.creator?.display_name
+        ? `${res.subscription.creator.display_name} – ${res.subscription.tier.tier_name}`
+        : 'Subscription';
+      setCancelToastMessage(`${label} canceled`);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to cancel subscription');
     } finally {
@@ -67,8 +70,9 @@ export default function SubscriptionsPage() {
 
   return (
     <div className="page-center" style={{ padding: '2rem 1rem' }}>
-      {cancelToast && (
+      {cancelToastMessage && (
         <div
+          key={cancelToastMessage}
           className="subscription-toast subscription-toast-success"
           role="status"
           aria-live="polite"
@@ -82,12 +86,12 @@ export default function SubscriptionsPage() {
             </svg>
           </span>
           <p className="subscription-toast-msg">
-            Subscription canceled
+            {cancelToastMessage}
           </p>
           <button
             type="button"
             className="subscription-toast-close"
-            onClick={() => setCancelToast(false)}
+            onClick={() => setCancelToastMessage(null)}
             aria-label="Dismiss"
           >
             ×
