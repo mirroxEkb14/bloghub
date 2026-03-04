@@ -166,25 +166,26 @@ export default function CreatorProfilePage() {
     return () => document.removeEventListener('click', close);
   }, [openMenuPostId]);
 
-  const TOAST_DURATION_MS = 4000;
+  const TOAST_BAR_S = 4;
+  const TOAST_VISIBLE_MS = 4100;
 
   useEffect(() => {
     if (!shareToast) return;
-    const t = setTimeout(() => setShareToast(false), TOAST_DURATION_MS);
+    const t = setTimeout(() => setShareToast(false), TOAST_VISIBLE_MS);
     return () => clearTimeout(t);
   }, [shareToast]);
 
   useEffect(() => {
-    if (!subscriptionSuccess) return;
-    const t = setTimeout(() => setSubscriptionSuccess(null), TOAST_DURATION_MS);
+    if (!subscriptionSuccess || loading) return;
+    const t = setTimeout(() => setSubscriptionSuccess(null), TOAST_VISIBLE_MS);
     return () => clearTimeout(t);
-  }, [subscriptionSuccess]);
+  }, [subscriptionSuccess, loading]);
 
   useEffect(() => {
-    if (!subscriptionError) return;
-    const t = setTimeout(() => setSubscriptionError(null), TOAST_DURATION_MS);
+    if (!subscriptionError || loading) return;
+    const t = setTimeout(() => setSubscriptionError(null), TOAST_VISIBLE_MS);
     return () => clearTimeout(t);
-  }, [subscriptionError]);
+  }, [subscriptionError, loading]);
 
   const getPostUrl = useCallback((creatorSlug: string, postSlug: string) => {
     return `${typeof window !== 'undefined' ? window.location.origin : ''}/creator/${creatorSlug}/post/${postSlug}`;
@@ -656,7 +657,7 @@ export default function CreatorProfilePage() {
           role="status"
           aria-live="polite"
           aria-label="Link copied"
-          style={{ ['--toast-duration' as string]: '4s' }}
+          style={{ ['--toast-duration' as string]: `${TOAST_BAR_S}s` }}
         >
           <span className="subscription-toast-icon subscription-toast-icon-success" aria-hidden>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -683,7 +684,7 @@ export default function CreatorProfilePage() {
           role="status"
           aria-live="polite"
           aria-label="Subscribed"
-          style={{ ['--toast-duration' as string]: '4s' }}
+          style={{ ['--toast-duration' as string]: `${TOAST_BAR_S}s` }}
         >
           <span className="subscription-toast-icon subscription-toast-icon-success" aria-hidden>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -712,7 +713,7 @@ export default function CreatorProfilePage() {
           role="status"
           aria-live="polite"
           aria-label="Subscription notice"
-          style={{ ['--toast-duration' as string]: '4s' }}
+          style={{ ['--toast-duration' as string]: `${TOAST_BAR_S}s` }}
         >
           <span className="subscription-toast-icon subscription-toast-icon-error" aria-hidden>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -37,11 +37,12 @@ export default function SubscriptionsPage() {
     return () => { cancelled = true; };
   }, [user]);
 
-  const TOAST_DURATION_MS = 4000;
+  const TOAST_BAR_S = 4;
+  const TOAST_VISIBLE_MS = 4100;
 
   useEffect(() => {
     if (!cancelToastMessage) return;
-    const t = setTimeout(() => setCancelToastMessage(null), TOAST_DURATION_MS);
+    const t = setTimeout(() => setCancelToastMessage(null), TOAST_VISIBLE_MS);
     return () => clearTimeout(t);
   }, [cancelToastMessage]);
 
@@ -77,7 +78,7 @@ export default function SubscriptionsPage() {
           role="status"
           aria-live="polite"
           aria-label="Canceled"
-          style={{ ['--toast-duration' as string]: '4s' }}
+          style={{ ['--toast-duration' as string]: `${TOAST_BAR_S}s` }}
         >
           <span className="subscription-toast-icon subscription-toast-icon-success" aria-hidden>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
