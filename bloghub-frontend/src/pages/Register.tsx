@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import InputWithIcon from '../components/InputWithIcon';
+import PasswordField from '../components/PasswordField';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Register() {
@@ -63,68 +65,59 @@ export default function Register() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="name">Name</label>
-            <input
-              id="name"
-              type="text"
-              value={form.name}
-              onChange={(e) => update('name', e.target.value)}
-              placeholder="Fox Mulder"
-              required
-              autoComplete="name"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
-            <input
-              id="username"
-              type="text"
-              value={form.username}
-              onChange={(e) => update('username', e.target.value)}
-              placeholder="trust_no1"
-              required
-              autoComplete="username"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={form.email}
-              onChange={(e) => update('email', e.target.value)}
-              placeholder="trust_no1@gmail.com"
-              required
-              autoComplete="email"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              value={form.password}
-              onChange={(e) => update('password', e.target.value)}
-              placeholder="••••••••"
-              required
-              minLength={8}
-              autoComplete="new-password"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password_confirmation">Confirm password</label>
-            <input
-              id="password_confirmation"
-              type="password"
-              value={form.password_confirmation}
-              onChange={(e) => update('password_confirmation', e.target.value)}
-              placeholder="••••••••"
-              required
-              minLength={8}
-              autoComplete="new-password"
-            />
-          </div>
+          <InputWithIcon
+            id="name"
+            label="Name"
+            icon="user"
+            type="text"
+            value={form.name}
+            onChange={(e) => update('name', e.target.value)}
+            placeholder="Fox Mulder"
+            required
+            autoComplete="name"
+          />
+          <InputWithIcon
+            id="username"
+            label="Username"
+            icon="user"
+            type="text"
+            value={form.username}
+            onChange={(e) => update('username', e.target.value)}
+            placeholder="trust_no1"
+            required
+            autoComplete="username"
+          />
+          <InputWithIcon
+            id="email"
+            label="Email"
+            icon="email"
+            type="email"
+            value={form.email}
+            onChange={(e) => update('email', e.target.value)}
+            placeholder="trust_no1@gmail.com"
+            required
+            autoComplete="email"
+          />
+          <PasswordField
+            id="password"
+            label="Password"
+            value={form.password}
+            onChange={(v) => update('password', v)}
+            placeholder="qWerty123456!"
+            required
+            minLength={8}
+            autoComplete="new-password"
+          />
+          <PasswordField
+            id="password_confirmation"
+            label="Confirm password"
+            value={form.password_confirmation}
+            onChange={(v) => update('password_confirmation', v)}
+            placeholder="qWerty123456!"
+            required
+            minLength={8}
+            autoComplete="new-password"
+          />
           <div className="form-actions">
             <button type="submit" className="btn btn-primary" disabled={submitting}>
               {submitting ? 'Creating account...' : 'Register'}

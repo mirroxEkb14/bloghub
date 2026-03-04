@@ -65,6 +65,106 @@ input:focus {
   border-color: var(--accent-muted);
 }
 
+/* Password field */
+.password-field {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  transition: border-color 0.2s;
+}
+.password-field:focus-within {
+  border-color: var(--accent-muted);
+}
+.password-field-icon-lock {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1rem;
+  color: var(--text-secondary);
+}
+.password-field-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0.75rem 0.5rem 0.75rem 0.5rem;
+  margin: 0;
+}
+.password-field-input::placeholder {
+  color: var(--text-secondary);
+}
+.password-field-input:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+.password-field-toggle {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  transition: color 0.2s, background 0.2s;
+}
+.password-field-toggle:hover {
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+}
+.password-field-toggle:focus {
+  outline: none;
+}
+.password-field-toggle:focus-visible {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Text/email input */
+.input-with-icon {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  transition: border-color 0.2s;
+}
+.input-with-icon:focus-within {
+  border-color: var(--accent-muted);
+}
+.input-with-icon-left {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1rem;
+  color: var(--text-secondary);
+}
+.input-with-icon-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0.75rem 1rem 0.75rem 0.5rem;
+  margin: 0;
+}
+.input-with-icon-input::placeholder {
+  color: var(--text-secondary);
+}
+.input-with-icon-input:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
 textarea.form-textarea {
   width: 100%;
   padding: 0.75rem 1rem;
