@@ -27,7 +27,7 @@ export default function Layout() {
               {user ? (
                 <>
                   <Link to="/creator/edit" className={location.pathname === '/creator/edit' ? 'active' : ''}>
-                    My profile
+                    Creator
                   </Link>
                   <Link to="/subscriptions" className={location.pathname === '/subscriptions' ? 'active' : ''}>
                     Subscriptions
