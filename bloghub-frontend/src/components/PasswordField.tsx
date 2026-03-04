@@ -65,6 +65,7 @@ type PasswordFieldProps = {
   minLength?: number;
   autoComplete?: 'current-password' | 'new-password';
   label: string;
+  error?: string;
 };
 
 export default function PasswordField({
@@ -76,13 +77,14 @@ export default function PasswordField({
   minLength,
   autoComplete = 'current-password',
   label,
+  error,
 }: PasswordFieldProps) {
   const [visible, setVisible] = useState(false);
 
   return (
     <div className="form-group">
       <label htmlFor={id}>{label}</label>
-      <div className="password-field">
+      <div className={`password-field${error ? ' has-error' : ''}`}>
         <span className="password-field-icon password-field-icon-lock" aria-hidden>
           <LockIcon />
         </span>
@@ -96,6 +98,8 @@ export default function PasswordField({
           minLength={minLength}
           autoComplete={autoComplete}
           className="password-field-input"
+          aria-invalid={!!error}
+          aria-describedby={error ? `${id}-error` : undefined}
         />
         <button
           type="button"
@@ -108,6 +112,11 @@ export default function PasswordField({
           {visible ? <EyeOffIcon /> : <EyeIcon />}
         </button>
       </div>
+      {error && (
+        <p id={`${id}-error`} className="field-error" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

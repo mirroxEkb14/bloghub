@@ -102,6 +102,15 @@ input:focus {
   border: none;
   box-shadow: none;
 }
+.password-field-input:-webkit-autofill,
+.password-field-input:-webkit-autofill:hover,
+.password-field-input:-webkit-autofill:focus,
+.password-field-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-input) inset;
+  box-shadow: 0 0 0 1000px var(--bg-input) inset;
+  -webkit-text-fill-color: var(--text);
+  transition: background-color 5000s ease-in-out 0s;
+}
 .password-field-toggle {
   flex-shrink: 0;
   display: flex;
@@ -163,6 +172,15 @@ input:focus {
   outline: none;
   border: none;
   box-shadow: none;
+}
+.input-with-icon-input:-webkit-autofill,
+.input-with-icon-input:-webkit-autofill:hover,
+.input-with-icon-input:-webkit-autofill:focus,
+.input-with-icon-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-input) inset;
+  box-shadow: 0 0 0 1000px var(--bg-input) inset;
+  -webkit-text-fill-color: var(--text);
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 textarea.form-textarea {
@@ -530,6 +548,23 @@ label {
   color: #fca5a5;
   font-size: 0.9rem;
   margin-bottom: 1rem;
+}
+
+/* Field-level validation error */
+.field-error {
+  margin: 0.35rem 0 0 0;
+  font-size: 0.85rem;
+  color: #fca5a5;
+}
+
+.input-with-icon.has-error,
+.password-field.has-error {
+  border-color: rgba(239, 68, 68, 0.6);
+  background: rgba(239, 68, 68, 0.06);
+}
+.input-with-icon.has-error:focus-within,
+.password-field.has-error:focus-within {
+  border-color: rgba(239, 68, 68, 0.8);
 }
 
 /* Discovery */
