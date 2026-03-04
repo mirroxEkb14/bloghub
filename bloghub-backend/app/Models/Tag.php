@@ -13,6 +13,10 @@ class Tag extends Model
         'name',
     ];
 
+    protected $appends = [
+        'creator_profiles_label',
+    ];
+
     protected static function booted(): void
     {
         static::saving(function (Tag $tag): void {

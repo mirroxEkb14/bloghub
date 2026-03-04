@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\TagResource\Schemas;
 
 use App\Support\TagResourceSupport;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -28,6 +29,25 @@ class TagResourceForm
                     ->unique(ignoreRecord: true)
                     ->maxLength(TagResourceSupport::SLUG_MAX_LENGTH)
                     ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/'),
+                Textarea::make('creator_profiles_label')
+                    ->label(__('filament.tags.table.columns.creator_profiles'))
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->formatStateUsing(function ($state, $record) {
+                        if (! $record) {
+                            return $state;
+                        }
+                        $profiles = $record->creatorProfiles;
+                        if ($profiles->isEmpty()) {
+                            return '';
+                        }
+
+                        return $profiles->map(fn ($p) => "#{$p->id} · " . ($p->display_name ?? ''))->join(', ');
+                    })
+                    ->placeholder('—')
+                    ->rows(3)
+                    ->columnSpanFull()
+                    ->visible(fn ($record) => $record !== null),
             ]);
     }
 }
