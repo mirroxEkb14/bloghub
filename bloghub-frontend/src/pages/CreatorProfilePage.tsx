@@ -132,6 +132,21 @@ export default function CreatorProfilePage() {
   }, [slug, user]);
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const subscribeResult = params.get('subscribe');
+    if (!slug || subscribeResult === null) return;
+    if (subscribeResult === 'success') {
+      setSubscriptionSuccess('Subscription active. Thank you for subscribing.');
+      subscriptionsApi.getStatusByCreator(slug).then(setSubscriptionStatus).catch(() => {});
+      window.history.replaceState({}, '', `${location.pathname}`);
+    }
+    if (subscribeResult === 'cancel') {
+      setSubscriptionError({ tierId: 0, message: 'Checkout was canceled' });
+      window.history.replaceState({}, '', `${location.pathname}`);
+    }
+  }, [slug, location.search]);
+
+  useEffect(() => {
     if (highlightTierId === null) return;
     highlightTimeoutRef.current = setTimeout(() => {
       setHighlightTierId(null);
@@ -557,10 +572,16 @@ export default function CreatorProfilePage() {
                     setSubscriptionSuccess(null);
                     setSubscribingTierId(tier.id);
                     try {
-                      await subscriptionsApi.subscribe(tier.id);
-                      const status = await subscriptionsApi.getStatusByCreator(slug!);
-                      setSubscriptionStatus(status);
-                      setSubscriptionSuccess(tier.tier_name);
+                      const result = await subscriptionsApi.createCheckoutSession(tier.id);
+                      if (result.type === 'checkout' && result.checkout_url) {
+                        window.location.href = result.checkout_url;
+                        return;
+                      }
+                      if (result.type === 'free' && result.subscription) {
+                        const status = await subscriptionsApi.getStatusByCreator(slug!);
+                        setSubscriptionStatus(status);
+                        setSubscriptionSuccess(`Subscribed to ${tier.tier_name}.`);
+                      }
                     } catch (e) {
                       setSubscriptionError({
                         tierId: tier.id,
@@ -671,7 +692,7 @@ export default function CreatorProfilePage() {
             </svg>
           </span>
           <p className="subscription-toast-msg">
-            Subscribed to {subscriptionSuccess}
+            {subscriptionSuccess}
           </p>
           <button
             type="button"
@@ -700,7 +721,7 @@ export default function CreatorProfilePage() {
             </svg>
           </span>
           <p className="subscription-toast-msg">
-            You're already subscribed to {subscriptionStatus?.active_subscription?.tier?.tier_name ?? 'this creator'}
+            {subscriptionError.message}
           </p>
           <button
             type="button"

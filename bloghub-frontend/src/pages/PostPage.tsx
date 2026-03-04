@@ -1,13 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { postsApi, type Post } from '../api/client';
+import { ApiError, postsApi, type Post } from '../api/client';
 import LoadingPage from '../components/LoadingPage';
+
+type SubscriptionRequiredBody = {
+  requires_subscription?: boolean;
+  required_tier?: { id: number; tier_name: string; level: number };
+};
 
 export default function PostPage() {
   const { slug, postSlug } = useParams<{ slug: string; postSlug: string }>();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [subscriptionRequired, setSubscriptionRequired] = useState<{ tierName: string } | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -19,11 +25,20 @@ export default function PostPage() {
     (async () => {
       setLoading(true);
       setError(null);
+      setSubscriptionRequired(null);
       try {
         const data = await postsApi.getBySlug(slug, postSlug);
         if (!cancelled) setPost(data);
       } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load post');
+        if (cancelled) return;
+        if (e instanceof ApiError && e.status === 403) {
+          const body = e.body as SubscriptionRequiredBody | undefined;
+          if (body?.requires_subscription && body?.required_tier) {
+            setSubscriptionRequired({ tierName: body.required_tier.tier_name });
+            return;
+          }
+        }
+        setError(e instanceof Error ? e.message : 'Failed to load post');
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -33,6 +48,24 @@ export default function PostPage() {
 
   if (loading) {
     return <LoadingPage message="Loading post..." />;
+  }
+
+  if (subscriptionRequired) {
+    return (
+      <div className="page-center">
+        <div className="card" style={{ maxWidth: 420 }}>
+          <h1 className="form-title">Subscriber-only post</h1>
+          <p className="form-subtitle">
+            This post is for <strong>{subscriptionRequired.tierName}</strong> subscribers. Subscribe to this creator to read it
+          </p>
+          {slug && (
+            <Link to={`/creator/${slug}#profile-tiers`} className="btn btn-primary" style={{ display: 'inline-block', marginTop: '1rem' }}>
+              View subscription tiers
+            </Link>
+          )}
+        </div>
+      </div>
+    );
   }
 
   if (error || !post) {

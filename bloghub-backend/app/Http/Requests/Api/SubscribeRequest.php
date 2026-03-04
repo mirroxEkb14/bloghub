@@ -34,7 +34,7 @@ class SubscribeRequest extends FormRequest
             }
             $user = $this->user();
             if ($user && $this->hasActiveSubscriptionToThisCreator()) {
-                $validator->errors()->add('tier_id', __('You already have an active subscription to this creator.'));
+                $validator->errors()->add('tier_id', __('You already have an active subscription to this creator'));
             }
         });
     }

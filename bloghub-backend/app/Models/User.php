@@ -27,6 +27,7 @@ class User extends Authenticatable implements FilamentUser
         'is_creator',
         'terms_accepted_at',
         'privacy_accepted_at',
+        'stripe_customer_id',
     ];
 
     protected $hidden = [

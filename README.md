@@ -140,6 +140,38 @@ Projekt běží v následujících kontejnerech:
 
 ---
 
+## 💸 Stripe
+
+Pro simulaci procesu plateb projekt používá platební bránu  <a href='https://stripe.com/en-cz'>Stripe</a> v testovacím řežimu. Obecný návod na připojení Stripu je:
+- Zaregistrovat se na stránkách Stripu a přejít do <a href='https://dashboard.stripe.com/'>Dashboardu</a>.
+- Zkopírovat <b>Publishable key</b> a <b>Secret key</b> do `.env` souboru a uložit do příslušných proměnných prostředí (příslušně <b>STRIPE_KEY</b> a <b>STRIPE_SECRET</b>):
+    - (kdyby klíče nebyly dostupné na dashboard stránce, tak v záložce <b>Developers</b> -> <b>API keys</b>),
+    - z dashboardu přejít do <b>Develoeprs</b> -> <b>Webhooks</b> -> <b>Add destination</b>:
+        - API version: `.clover`,
+        - Events: `checkout.session.completed`,
+    - <b>Webhook endpoint</b>:
+        - Destination name: <b>BlogHub local webhook</b>,
+        - Endpoint URL:
+            - nainstalovat <a href='https://ngrok.com/download/windows'>ngrok</a> (via .zip) a zaregistrovat se e-mailem,
+            - umístit `ngrok.exe` do `C:\ngrok-v3` adresáře,
+            - volitelně, lze přidat tuto cestu do Proměnných Prostředí ve Windows,
+            - otevřit .exe a zadat <b>Authtoken</b> z <a href='https://dashboard.ngrok.com/'>ngrok dashboardu</a>:
+            ```bash
+            ngrok config add-authtoken $YOUR_AUTHTOKEN
+            ```
+            - spustit ngrok a zkopírovat public URL (`https://...ngrok-free.dev`) z řádku <b>Forwarding</b>:
+            ```bash
+            ngrok http 8080
+            ```
+            - přidat <b>POST</b> endpoint z kontrolleru (`/api/webhooks/stripe`):
+            - `https://...ngrok-free.dev/api/webhooks/stripe`
+        - Description (optional): <b>Local dev – checkout.session.completed</b>
+    - ze stránky nově vytveřeného Destination, zkopírovat <b>Signing secret</b> (`whsec_`) a uložit do <b>STRIPE_WEBHOOK_SECRET</b>.
+
+<b>Poznámka</b>: na stránce `checkout.stripe.com` se pak používá jedna z testovacích Stripe karet, tj. <b>4242 4242 4242 4242</b>. Seznam veškerých karet lze nalézt na stránkách <a href='https://docs.stripe.com/testing'>Stripe Docs</a>.
+
+---
+
 ## 🔐 Přístup do admin panelu
 
 Výchozí účty (z `.env`):
