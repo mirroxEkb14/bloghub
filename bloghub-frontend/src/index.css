@@ -1078,7 +1078,6 @@ label {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 4.2em;
 }
 
 .tier-card-price {
@@ -1260,6 +1259,10 @@ label {
   flex-shrink: 0;
 }
 
+.post-card-menu-wrap {
+  position: relative;
+}
+
 .post-card-menu-btn {
   background: none;
   border: none;
@@ -1273,6 +1276,39 @@ label {
 
 .post-card-menu-btn:hover {
   color: var(--text);
+  background: var(--bg-input);
+}
+
+.post-card-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.25rem;
+  min-width: 8rem;
+  background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+    linear-gradient(135deg, var(--accent-muted) 0%, var(--accent) 100%) border-box;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  z-index: 50;
+  padding: 0.25rem 0;
+}
+
+.post-card-dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 0;
+  font-family: inherit;
+}
+
+.post-card-dropdown-item:hover {
   background: var(--bg-input);
 }
 
@@ -1560,6 +1596,28 @@ label {
   border-radius: var(--radius);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
   max-width: 360px;
+  overflow: hidden;
+}
+
+.subscription-toast-timer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-muted) 0%, var(--accent) 100%);
+  border-radius: 0 0 var(--radius) var(--radius);
+  transform-origin: left;
+  animation: subscription-toast-timer-shrink var(--toast-duration, 4s) linear forwards;
+}
+
+@keyframes subscription-toast-timer-shrink {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
 }
 
 .subscription-toast-icon {

@@ -38,13 +38,19 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request): JsonResponse
     {
-        if (! Auth::guard('web')->attempt($request->only('email', 'password'))) {
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user) {
             throw ValidationException::withMessages([
-                'email' => [__('auth.failed')],
+                'email' => [__('auth.email_not_found')],
             ]);
         }
 
-        $user = User::where('email', $request->email)->firstOrFail();
+        if (! Auth::guard('web')->attempt($request->only('email', 'password'))) {
+            throw ValidationException::withMessages([
+                'password' => [__('auth.wrong_password')],
+            ]);
+        }
 
         $user->tokens()->delete();
 

@@ -37,6 +37,14 @@ export default function SubscriptionsPage() {
     return () => { cancelled = true; };
   }, [user]);
 
+  const TOAST_DURATION_MS = 4000;
+
+  useEffect(() => {
+    if (!cancelToast) return;
+    const t = setTimeout(() => setCancelToast(false), TOAST_DURATION_MS);
+    return () => clearTimeout(t);
+  }, [cancelToast]);
+
   async function handleCancel(sub: SubscriptionWithTier) {
     setError(null);
     setCancelingId(sub.id);
@@ -65,6 +73,7 @@ export default function SubscriptionsPage() {
           role="status"
           aria-live="polite"
           aria-label="Canceled"
+          style={{ ['--toast-duration' as string]: '4s' }}
         >
           <span className="subscription-toast-icon subscription-toast-icon-success" aria-hidden>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -83,6 +92,7 @@ export default function SubscriptionsPage() {
           >
             ×
           </button>
+          <div className="subscription-toast-timer" aria-hidden />
         </div>
       )}
 
