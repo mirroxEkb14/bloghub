@@ -1596,6 +1596,28 @@ label {
   border-radius: var(--radius);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
   max-width: 360px;
+  overflow: hidden;
+}
+
+.subscription-toast-timer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-muted) 0%, var(--accent) 100%);
+  border-radius: 0 0 var(--radius) var(--radius);
+  transform-origin: left;
+  animation: subscription-toast-timer-shrink var(--toast-duration, 4s) linear forwards;
+}
+
+@keyframes subscription-toast-timer-shrink {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
 }
 
 .subscription-toast-icon {
