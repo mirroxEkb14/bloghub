@@ -29,15 +29,20 @@ class CreatorProfileResourceTable
                     ->label(__('filament.creator_profiles.table.columns.user'))
                     ->view('filament.tables.columns.creator-profile-name')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->extraCellAttributes(['style' => 'max-width: 220px;']),
                 TextColumn::make('slug')
                     ->label(__('filament.creator_profiles.table.columns.slug'))
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->limit(25)
+                    ->extraCellAttributes(['style' => 'max-width: 160px;']),
                 TextColumn::make('display_name')
                     ->label(__('filament.creator_profiles.table.columns.display_name'))
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->limit(30)
+                    ->extraCellAttributes(['style' => 'max-width: 200px;']),
                 TextColumn::make('posts_count')
                     ->label(__('filament.creator_profiles.table.columns.posts_count'))
                     ->counts('posts')

@@ -56,6 +56,10 @@ class Tag extends Model
             return '';
         }
 
-        return $profiles->map(fn ($profile) => "#{$profile->id} · {$profile->display_name}")->join(', ');
+        return $profiles->map(function ($profile) {
+            $name = Str::limit($profile->display_name ?? '', 30);
+
+            return "#{$profile->id} · {$name}";
+        })->join(', ');
     }
 }

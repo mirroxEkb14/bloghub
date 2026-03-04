@@ -48,6 +48,7 @@ class Profile extends Page
                         'en' => __('filament.profile.language_options.en'),
                         'cs' => __('filament.profile.language_options.cs'),
                     ])
+                    ->selectablePlaceholder(false)
                     ->required(),
             ])
             ->statePath('data');

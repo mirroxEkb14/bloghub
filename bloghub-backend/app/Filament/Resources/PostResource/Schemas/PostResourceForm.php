@@ -82,6 +82,11 @@ class PostResourceForm
                                             })
                                             ->searchable()
                                             ->nullable(),
+                                        TextInput::make('required_tier_level_display')
+                                            ->label(__('filament.tiers.form.level'))
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->formatStateUsing(fn ($state, $record) => $record?->requiredTier?->level),
                                     ]),
                             ]),
                         Grid::make(1)

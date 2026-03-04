@@ -89,7 +89,7 @@ return [
                 'title' => 'Titulek',
                 'content_text' => 'Obsah',
                 'media_type' => 'Typ média',
-                'required_tier' => 'Vyžadovaná úroveň',
+                'required_tier' => 'Úroveň',
                 'comments_count' => 'Komentáře',
                 'created_at' => 'Vytvořeno',
             ],
