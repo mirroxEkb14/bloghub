@@ -1078,7 +1078,6 @@ label {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 4.2em;
 }
 
 .tier-card-price {
