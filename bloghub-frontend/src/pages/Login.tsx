@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import InputWithIcon from '../components/InputWithIcon';
 import PasswordField from '../components/PasswordField';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
   const { login, error, clearError } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
+  const from = (location.state as { from?: string } | null)?.from ?? '/';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -21,7 +23,7 @@ export default function Login() {
     setSubmitting(true);
     try {
       await login(email, password);
-      navigate('/', { replace: true });
+      navigate(from, { replace: true });
     } catch {
       // error set in context
     } finally {

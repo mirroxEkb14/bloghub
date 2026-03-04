@@ -9,6 +9,7 @@ import Discovery from './pages/Discovery';
 import CreatorProfilePage from './pages/CreatorProfilePage';
 import CreatorProfileForm from './pages/CreatorProfileForm';
 import PostPage from './pages/PostPage';
+import SubscriptionsPage from './pages/SubscriptionsPage';
 import './index.css';
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
             <Route path="/creator/edit" element={<CreatorProfileForm mode="edit" />} />
             <Route path="/creator/:slug" element={<CreatorProfilePage />} />
             <Route path="/creator/:slug/post/:postSlug" element={<PostPage />} />
+            <Route path="/subscriptions" element={<SubscriptionsPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="*" element={<Navigate to="/" replace />} />

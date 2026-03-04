@@ -66,4 +66,9 @@ class SubscriptionPolicy
     {
         return $authUser->can('Reorder:Subscription');
     }
+
+    public function cancel(User $authUser, Subscription $subscription): bool
+    {
+        return $authUser->id === $subscription->user_id;
+    }
 }
