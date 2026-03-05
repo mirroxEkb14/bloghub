@@ -53,7 +53,7 @@ class SubscriptionController extends Controller
         $profile = CreatorProfile::query()->where('slug', $slug)->first();
 
         if ($profile === null) {
-            return response()->json(['message' => __('Creator profile not found.')], 404);
+            return response()->json(['message' => __('Creator profile not found')], 404);
         }
 
         $user = request()->user();
@@ -88,7 +88,7 @@ class SubscriptionController extends Controller
         ]);
 
         return response()->json([
-            'message' => __('Subscription canceled.'),
+            'message' => __('Subscription canceled'),
             'subscription' => new SubscriptionResource($subscription->load(['tier', 'tier.creatorProfile'])),
         ]);
     }

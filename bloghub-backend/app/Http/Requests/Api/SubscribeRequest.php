@@ -29,7 +29,7 @@ class SubscribeRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             if (! $this->tierExists()) {
-                $validator->errors()->add('tier_id', __('Tier not found.'));
+                $validator->errors()->add('tier_id', __('Tier not found'));
                 return;
             }
             $user = $this->user();

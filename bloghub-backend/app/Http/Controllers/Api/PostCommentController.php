@@ -25,7 +25,7 @@ class PostCommentController extends Controller
         $post = $profile->posts()->where('slug', $postSlug)->with('requiredTier:id,creator_profile_id,level,tier_name')->first();
 
         if ($post === null) {
-            return [null, response()->json(['message' => __('Post not found.')], 404)];
+            return [null, response()->json(['message' => __('Post not found')], 404)];
         }
 
         if ($post->required_tier_id !== null) {
@@ -118,7 +118,7 @@ class PostCommentController extends Controller
         if (strlen($contentText) > CommentResourceSupport::CONTENT_TEXT_MAX_LENGTH) {
             return response()->json([
                 'message' => __('The content text field must not exceed :max characters', ['max' => CommentResourceSupport::CONTENT_TEXT_MAX_LENGTH]),
-                'errors' => ['content_text' => [__('The content text field must not exceed :max characters.', ['max' => CommentResourceSupport::CONTENT_TEXT_MAX_LENGTH])]],
+                'errors' => ['content_text' => [__('The content text field must not exceed :max characters', ['max' => CommentResourceSupport::CONTENT_TEXT_MAX_LENGTH])]],
             ], 422);
         }
 

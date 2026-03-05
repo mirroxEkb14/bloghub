@@ -57,7 +57,7 @@ class CreatorProfileSeeder extends Seeder
         foreach (self::PROFILES as $userName => $data) {
             $user = User::where('name', $userName)->first();
             if (! $user) {
-                $this->command->warn("User \"{$userName}\" not found, skipping creator profile.");
+                $this->command->warn("User \"{$userName}\" not found, skipping creator profile");
 
                 continue;
             }

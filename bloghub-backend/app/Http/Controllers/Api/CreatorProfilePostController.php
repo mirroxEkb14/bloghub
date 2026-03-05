@@ -18,7 +18,7 @@ class CreatorProfilePostController extends Controller
         $profile = CreatorProfile::query()->where('slug', $slug)->first();
 
         if ($profile === null) {
-            return response()->json(['message' => __('Creator profile not found.')], 404);
+            return response()->json(['message' => __('Creator profile not found')], 404);
         }
 
         $userTierLevel = null;
@@ -51,13 +51,13 @@ class CreatorProfilePostController extends Controller
         $profile = CreatorProfile::query()->where('slug', $slug)->first();
 
         if ($profile === null) {
-            return response()->json(['message' => __('Creator profile not found.')], 404);
+            return response()->json(['message' => __('Creator profile not found')], 404);
         }
 
         $post = $profile->posts()->where('slug', $postSlug)->with('requiredTier:id,creator_profile_id,level,tier_name')->first();
 
         if ($post === null) {
-            return response()->json(['message' => __('Post not found.')], 404);
+            return response()->json(['message' => __('Post not found')], 404);
         }
 
         if ($post->required_tier_id !== null) {

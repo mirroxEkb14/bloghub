@@ -53,7 +53,7 @@ class CreatorProfileController extends Controller
             ->first();
 
         if ($profile === null) {
-            return response()->json(['message' => __('Creator profile not found.')], 404);
+            return response()->json(['message' => __('Creator profile not found')], 404);
         }
 
         return new CreatorProfileResource($profile);
@@ -63,7 +63,7 @@ class CreatorProfileController extends Controller
     {
         $profile = $request->user()?->creatorProfile;
         if ($profile === null) {
-            return response()->json(['message' => __('You do not have a creator profile.')], 404);
+            return response()->json(['message' => __('You do not have a creator profile')], 404);
         }
 
         $profile->load(['user:id,name,username', 'tags'])->loadCount('posts');
