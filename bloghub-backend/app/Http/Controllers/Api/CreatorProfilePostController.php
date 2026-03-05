@@ -6,6 +6,7 @@ use App\Enums\SubStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 use App\Models\CreatorProfile;
+use App\Models\PostView;
 use App\Models\Subscription;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -37,8 +38,13 @@ class CreatorProfilePostController extends Controller
 
         $query = $profile->posts()
             ->withCount('comments')
+            ->withCount(['postViews as views_count'])
             ->with('requiredTier:id,creator_profile_id,level,tier_name')
             ->orderByDesc('created_at');
+
+        if ($user) {
+            $query->withCount(['postViews as user_has_viewed' => fn ($q) => $q->where('user_id', $user->id)]);
+        }
 
         $perPage = min((int) $request->input('per_page', 15), 50);
         $posts = $query->paginate($perPage);
@@ -54,7 +60,15 @@ class CreatorProfilePostController extends Controller
             return response()->json(['message' => __('Creator profile not found')], 404);
         }
 
-        $post = $profile->posts()->where('slug', $postSlug)->with('requiredTier:id,creator_profile_id,level,tier_name')->first();
+        $post = $profile->posts()
+            ->where('slug', $postSlug)
+            ->withCount(['postViews as views_count'])
+            ->with('requiredTier:id,creator_profile_id,level,tier_name')
+            ->first();
+
+        if ($post && $request->user()) {
+            $post->loadCount(['postViews as user_has_viewed' => fn ($q) => $q->where('user_id', $request->user()->id)]);
+        }
 
         if ($post === null) {
             return response()->json(['message' => __('Post not found')], 404);
@@ -96,5 +110,34 @@ class CreatorProfilePostController extends Controller
         }
 
         return new PostResource($post);
+    }
+
+    public function recordView(Request $request, string $slug, string $postSlug): JsonResponse
+    {
+        $profile = CreatorProfile::query()->where('slug', $slug)->first();
+
+        if ($profile === null) {
+            return response()->json(['message' => __('Creator profile not found')], 404);
+        }
+
+        $post = $profile->posts()->where('slug', $postSlug)->first();
+
+        if ($post === null) {
+            return response()->json(['message' => __('Post not found')], 404);
+        }
+
+        $user = $request->user();
+        if (! $user) {
+            return response()->json(['message' => __('Unauthenticated')], 401);
+        }
+
+        PostView::firstOrCreate(
+            [
+                'post_id' => $post->id,
+                'user_id' => $user->id,
+            ]
+        );
+
+        return response()->json(['message' => 'OK'], 204);
     }
 }

@@ -1391,6 +1391,13 @@ label {
   margin-left: auto;
 }
 
+.post-card-seen {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  opacity: 0.85;
+  font-style: italic;
+}
+
 /* Locked post */
 .post-card-locked .post-card-header {
   background: var(--bg-card);

@@ -525,6 +525,10 @@ export default function CreatorProfilePage() {
                                   </figure>
                                 )}
                                 <footer className="post-card-footer">
+                                  <span className="post-card-stat" title="Unique views (full page)">
+                                    <span className="post-card-stat-icon" aria-hidden>👁</span>{' '}
+                                    {post.views_count ?? 0}
+                                  </span>
                                   <span className="post-card-stat">
                                     <span className="post-card-stat-icon" aria-hidden>♥</span> 0
                                   </span>
@@ -535,6 +539,11 @@ export default function CreatorProfilePage() {
                                   <span className="post-card-stat post-card-stat-bookmark">
                                     <span className="post-card-stat-icon" aria-hidden>🔖</span>
                                   </span>
+                                  {post.user_has_viewed && (
+                                    <span className="post-card-seen" title="You've already viewed this post">
+                                      Seen
+                                    </span>
+                                  )}
                                 </footer>
                               </>
                             )}

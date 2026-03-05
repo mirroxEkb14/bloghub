@@ -54,6 +54,11 @@ export default function PostPage() {
     return () => { cancelled = true; };
   }, [slug, postSlug]);
 
+  useEffect(() => {
+    if (!user || !slug || !postSlug || !post) return;
+    postsApi.recordView(slug, postSlug).catch(() => { /* ignore */ });
+  }, [user, slug, postSlug, post]);
+
   const fetchComments = useCallback(async () => {
     if (!slug || !postSlug) return;
     setCommentsLoading(true);

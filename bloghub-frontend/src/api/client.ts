@@ -187,6 +187,8 @@ export type Post = {
   media_type: 'Image' | 'Gif' | 'Audio' | 'Video' | null;
   required_tier?: PostRequiredTier | null;
   user_has_access?: boolean;
+  views_count?: number;
+  user_has_viewed?: boolean;
   comments_count?: number;
   created_at?: string;
   updated_at?: string;
@@ -347,6 +349,13 @@ export const postsApi = {
     return api<Post | { data: Post }>(
       `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts/${encodeURIComponent(postSlug)}`
     ).then(unwrapData);
+  },
+
+  recordView(creatorSlug: string, postSlug: string) {
+    return api<unknown>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts/${encodeURIComponent(postSlug)}/view`,
+      { method: 'POST' }
+    );
   },
 };
 
