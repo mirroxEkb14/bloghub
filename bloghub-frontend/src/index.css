@@ -1923,6 +1923,37 @@ label {
   padding: 0 1.5rem;
 }
 
+/* Scrollbar for post preview */
+.post-preview-overlay,
+.post-preview-body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-muted) var(--bg-input);
+}
+
+.post-preview-overlay::-webkit-scrollbar,
+.post-preview-body::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.post-preview-overlay::-webkit-scrollbar-track,
+.post-preview-body::-webkit-scrollbar-track {
+  background: var(--bg-input);
+  border-radius: 5px;
+}
+
+.post-preview-overlay::-webkit-scrollbar-thumb,
+.post-preview-body::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 5px;
+  border: 2px solid var(--bg-input);
+}
+
+.post-preview-overlay::-webkit-scrollbar-thumb:hover,
+.post-preview-body::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-muted);
+}
+
 .post-preview-modal .post-preview-media {
   margin: 0 0 1rem 0;
   flex-shrink: 0;
