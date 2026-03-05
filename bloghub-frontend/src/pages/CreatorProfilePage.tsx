@@ -135,6 +135,10 @@ export default function CreatorProfilePage() {
   }, [slug, user]);
 
   useEffect(() => {
+    if (!user) setPreviewPost(null);
+  }, [user]);
+
+  useEffect(() => {
     const params = new URLSearchParams(location.search);
     const subscribeResult = params.get('subscribe');
     const sessionId = params.get('session_id');
@@ -262,7 +266,7 @@ export default function CreatorProfilePage() {
       }
     })();
     return () => { cancelled = true; };
-  }, [slug, postsPage, postsRefetchTrigger]);
+  }, [slug, postsPage, postsRefetchTrigger, user]);
 
   useEffect(() => {
     if (postsPage === prevPostsPageRef.current) return;
