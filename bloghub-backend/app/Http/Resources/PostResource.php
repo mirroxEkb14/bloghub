@@ -15,6 +15,10 @@ class PostResource extends JsonResource
             $mediaUrl = StorageUrlSupport::publicUrl($mediaUrl);
         }
 
+        $userTierLevel = $request->attributes->get('creator_profile_user_tier_level');
+        $userHasAccess = $this->required_tier_id === null
+            || ($userTierLevel !== null && $this->requiredTier && $userTierLevel >= $this->requiredTier->level);
+
         return [
             'id' => $this->id,
             'slug' => $this->slug,
@@ -28,6 +32,7 @@ class PostResource extends JsonResource
                 'level' => $this->requiredTier->level,
                 'tier_name' => $this->requiredTier->tier_name,
             ]),
+            'user_has_access' => $userHasAccess,
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

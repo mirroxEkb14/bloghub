@@ -16,4 +16,11 @@ class ViewSubscription extends ViewRecord
             DeleteAction::make()->requiresConfirmation(),
         ];
     }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['tier_level'] = $this->getRecord()->tier?->level;
+
+        return $data;
+    }
 }

@@ -10,6 +10,18 @@ export class ValidationError extends Error {
   }
 }
 
+export class ApiError extends Error {
+  readonly status: number;
+  readonly body: unknown;
+
+  constructor(message: string, status: number, body: unknown) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.body = body;
+  }
+}
+
 function getToken(): string | null {
   return localStorage.getItem('auth_token');
 }
@@ -41,7 +53,7 @@ export async function api<T>(
     if (errorsObj) {
       throw new ValidationError(typeof msg === 'string' ? msg : 'Validation failed', errorsObj);
     }
-    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+    throw new ApiError(typeof msg === 'string' ? msg : JSON.stringify(msg), res.status, data);
   }
   return data as T;
 }
@@ -174,6 +186,7 @@ export type Post = {
   media_url: string | null;
   media_type: 'Image' | 'Gif' | 'Audio' | 'Video' | null;
   required_tier?: PostRequiredTier | null;
+  user_has_access?: boolean;
   created_at?: string;
   updated_at?: string;
 };
@@ -354,6 +367,10 @@ export type SubscriptionStatusResponse = {
   active_subscription: SubscriptionWithTier | null;
 };
 
+export type CheckoutSessionResponse =
+  | { type: 'free'; subscription: SubscriptionWithTier }
+  | { type: 'checkout'; checkout_url: string };
+
 export const subscriptionsApi = {
   list() {
     return api<{ data: SubscriptionWithTier[] } | SubscriptionWithTier[]>(
@@ -366,6 +383,20 @@ export const subscriptionsApi = {
       '/api/subscriptions',
       { method: 'POST', body: JSON.stringify({ tier_id: tierId }) }
     ).then(unwrapData);
+  },
+
+  createCheckoutSession(tierId: number) {
+    return api<CheckoutSessionResponse>(
+      '/api/subscriptions/create-checkout-session',
+      { method: 'POST', body: JSON.stringify({ tier_id: tierId }) }
+    );
+  },
+
+  confirmCheckout(sessionId: string) {
+    return api<{ status: 'active'; subscription: SubscriptionWithTier } | { status: string; message: string }>(
+      '/api/subscriptions/confirm-checkout',
+      { method: 'POST', body: JSON.stringify({ session_id: sessionId }) }
+    );
   },
 
   getStatusByCreator(creatorSlug: string) {

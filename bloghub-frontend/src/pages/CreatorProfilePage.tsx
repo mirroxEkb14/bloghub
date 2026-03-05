@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
+  ApiError,
   creatorProfilesApi,
   postsApi,
   subscriptionsApi,
@@ -53,6 +54,7 @@ export default function CreatorProfilePage() {
   const [highlightTierId, setHighlightTierId] = useState<number | null>(null);
   const [openMenuPostId, setOpenMenuPostId] = useState<number | null>(null);
   const [shareToast, setShareToast] = useState(false);
+  const [postsRefetchTrigger, setPostsRefetchTrigger] = useState(0);
   const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevPostsPageRef = useRef(1);
   const sidebarRef = useRef<HTMLElement | null>(null);
@@ -132,6 +134,56 @@ export default function CreatorProfilePage() {
   }, [slug, user]);
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const subscribeResult = params.get('subscribe');
+    const sessionId = params.get('session_id');
+    if (!slug || subscribeResult === null) return;
+    if (subscribeResult === 'success') {
+      const pathname = location.pathname;
+      if (sessionId) {
+        subscriptionsApi
+          .confirmCheckout(sessionId)
+          .then((res) => {
+            if (res.status === 'active' && 'subscription' in res) {
+              setSubscriptionStatus({ subscribed: true, active_subscription: res.subscription });
+              setSubscriptionSuccess('Thank you for subscribing!');
+              setPostsRefetchTrigger((t) => t + 1);
+            } else if ('message' in res) {
+              setSubscriptionError({ tierId: 0, message: res.message });
+            }
+          })
+          .catch((e) => {
+            const msg =
+              e instanceof ApiError && e.status === 422 && e.body && typeof e.body === 'object' && 'message' in e.body
+                ? (e.body as { message: string }).message
+                : e instanceof Error
+                  ? e.message
+                  : 'Could not verify subscription.';
+            setSubscriptionError({ tierId: 0, message: msg });
+          })
+          .finally(() => {
+            window.history.replaceState({}, '', pathname);
+          });
+      } else {
+        setSubscriptionSuccess('Thank you for subscribing!');
+        subscriptionsApi
+          .getStatusByCreator(slug)
+          .then((status) => {
+            setSubscriptionStatus(status);
+            setPostsRefetchTrigger((t) => t + 1);
+          })
+          .catch(() => {});
+        window.history.replaceState({}, '', pathname);
+      }
+      return;
+    }
+    if (subscribeResult === 'cancel') {
+      setSubscriptionError({ tierId: 0, message: 'Checkout was canceled' });
+      window.history.replaceState({}, '', `${location.pathname}`);
+    }
+  }, [slug, location.search]);
+
+  useEffect(() => {
     if (highlightTierId === null) return;
     highlightTimeoutRef.current = setTimeout(() => {
       setHighlightTierId(null);
@@ -151,25 +203,26 @@ export default function CreatorProfilePage() {
     return () => document.removeEventListener('click', close);
   }, [openMenuPostId]);
 
-  const TOAST_DURATION_MS = 4000;
+  const TOAST_BAR_S = 4;
+  const TOAST_VISIBLE_MS = 4100;
 
   useEffect(() => {
     if (!shareToast) return;
-    const t = setTimeout(() => setShareToast(false), TOAST_DURATION_MS);
+    const t = setTimeout(() => setShareToast(false), TOAST_VISIBLE_MS);
     return () => clearTimeout(t);
   }, [shareToast]);
 
   useEffect(() => {
-    if (!subscriptionSuccess) return;
-    const t = setTimeout(() => setSubscriptionSuccess(null), TOAST_DURATION_MS);
+    if (!subscriptionSuccess || loading) return;
+    const t = setTimeout(() => setSubscriptionSuccess(null), TOAST_VISIBLE_MS);
     return () => clearTimeout(t);
-  }, [subscriptionSuccess]);
+  }, [subscriptionSuccess, loading]);
 
   useEffect(() => {
-    if (!subscriptionError) return;
-    const t = setTimeout(() => setSubscriptionError(null), TOAST_DURATION_MS);
+    if (!subscriptionError || loading) return;
+    const t = setTimeout(() => setSubscriptionError(null), TOAST_VISIBLE_MS);
     return () => clearTimeout(t);
-  }, [subscriptionError]);
+  }, [subscriptionError, loading]);
 
   const getPostUrl = useCallback((creatorSlug: string, postSlug: string) => {
     return `${typeof window !== 'undefined' ? window.location.origin : ''}/creator/${creatorSlug}/post/${postSlug}`;
@@ -208,7 +261,7 @@ export default function CreatorProfilePage() {
       }
     })();
     return () => { cancelled = true; };
-  }, [slug, postsPage]);
+  }, [slug, postsPage, postsRefetchTrigger]);
 
   useEffect(() => {
     if (postsPage === prevPostsPageRef.current) return;
@@ -332,7 +385,7 @@ export default function CreatorProfilePage() {
               <>
                 <ul className="post-card-list">
                   {posts.map((post) => {
-                    const isLocked = !!post.required_tier;
+                    const isLocked = !!post.required_tier && !post.user_has_access;
                     return (
                       <li key={post.id} className="post-card-wrapper">
                         <article className={`post-card ${isLocked ? 'post-card-locked' : ''}`}>
@@ -557,10 +610,17 @@ export default function CreatorProfilePage() {
                     setSubscriptionSuccess(null);
                     setSubscribingTierId(tier.id);
                     try {
-                      await subscriptionsApi.subscribe(tier.id);
-                      const status = await subscriptionsApi.getStatusByCreator(slug!);
-                      setSubscriptionStatus(status);
-                      setSubscriptionSuccess(tier.tier_name);
+                      const result = await subscriptionsApi.createCheckoutSession(tier.id);
+                      if (result.type === 'checkout' && result.checkout_url) {
+                        window.location.href = result.checkout_url;
+                        return;
+                      }
+                      if (result.type === 'free' && result.subscription) {
+                        const status = await subscriptionsApi.getStatusByCreator(slug!);
+                        setSubscriptionStatus(status);
+                        setSubscriptionSuccess(`Subscribed to ${tier.tier_name}.`);
+                        setPostsRefetchTrigger((t) => t + 1);
+                      }
                     } catch (e) {
                       setSubscriptionError({
                         tierId: tier.id,
@@ -635,7 +695,7 @@ export default function CreatorProfilePage() {
           role="status"
           aria-live="polite"
           aria-label="Link copied"
-          style={{ ['--toast-duration' as string]: '4s' }}
+          style={{ ['--toast-duration' as string]: `${TOAST_BAR_S}s` }}
         >
           <span className="subscription-toast-icon subscription-toast-icon-success" aria-hidden>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -662,7 +722,7 @@ export default function CreatorProfilePage() {
           role="status"
           aria-live="polite"
           aria-label="Subscribed"
-          style={{ ['--toast-duration' as string]: '4s' }}
+          style={{ ['--toast-duration' as string]: `${TOAST_BAR_S}s` }}
         >
           <span className="subscription-toast-icon subscription-toast-icon-success" aria-hidden>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -671,7 +731,7 @@ export default function CreatorProfilePage() {
             </svg>
           </span>
           <p className="subscription-toast-msg">
-            Subscribed to {subscriptionSuccess}
+            {subscriptionSuccess}
           </p>
           <button
             type="button"
@@ -691,16 +751,16 @@ export default function CreatorProfilePage() {
           role="status"
           aria-live="polite"
           aria-label="Subscription notice"
-          style={{ ['--toast-duration' as string]: '4s' }}
+          style={{ ['--toast-duration' as string]: `${TOAST_BAR_S}s` }}
         >
           <span className="subscription-toast-icon subscription-toast-icon-error" aria-hidden>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="2" />
-              <path d="M10 6v4M10 13v1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M10 3.5L2 16.5h16L10 3.5z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" />
+              <path d="M10 8v3M10 13v1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </span>
           <p className="subscription-toast-msg">
-            You're already subscribed to {subscriptionStatus?.active_subscription?.tier?.tier_name ?? 'this creator'}
+            {subscriptionError.message}
           </p>
           <button
             type="button"

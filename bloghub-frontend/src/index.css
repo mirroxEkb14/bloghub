@@ -1632,7 +1632,7 @@ label {
 }
 
 .subscription-toast-icon-error {
-  color: var(--accent-muted);
+  color: #ef4444;
 }
 
 .subscription-toast-msg {

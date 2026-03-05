@@ -30,9 +30,8 @@ class SubscriptionResourceTable
                     ->view('filament.tables.columns.subscription-user')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('tier.tier_name')
+                TextColumn::make('tier.level')
                     ->label(__('filament.subscriptions.table.columns.tier'))
-                    ->searchable()
                     ->sortable(),
                 TextColumn::make('start_date')
                     ->label(__('filament.subscriptions.table.columns.start_date'))

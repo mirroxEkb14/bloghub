@@ -13,7 +13,8 @@
         "filament/filament": "^4.0",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
-        "laravel/tinker": "^2.10.1"
+        "laravel/tinker": "^2.10.1",
+        "stripe/stripe-php": "^19.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -15,6 +15,7 @@ class Subscription extends Model
         'start_date',
         'end_date',
         'sub_status',
+        'stripe_checkout_session_id',
     ];
 
     protected $casts = [
