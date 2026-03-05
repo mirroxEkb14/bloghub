@@ -121,65 +121,78 @@ export default function SubscriptionsPage() {
           </p>
         ) : (
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {subscriptions.map((sub) => (
-              <li
-                key={sub.id}
-                style={{
-                  padding: '1rem',
-                  borderRadius: 'var(--radius-sm)',
-                  border: '1px solid var(--border)',
-                  background: 'var(--bg-input)',
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '0.75rem',
-                }}
-              >
-                <div style={{ flex: '1 1 200px' }}>
-                  {sub.creator?.slug ? (
-                    <Link
-                      to={`/creator/${sub.creator.slug}`}
-                      style={{ fontWeight: 600, color: 'inherit' }}
-                    >
-                      {sub.creator.display_name ?? sub.creator.slug}
-                    </Link>
-                  ) : (
-                    <span style={{ fontWeight: 600 }}>
-                      {sub.creator?.display_name ?? 'Creator'}
-                    </span>
-                  )}
-                  <span style={{ color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>
-                    · {sub.tier?.tier_name ?? 'Tier'}
-                  </span>
-                  <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-                    {sub.sub_status === 'Active' ? (
-                      <>Active until {sub.end_date ? new Date(sub.end_date).toLocaleDateString(undefined, { dateStyle: 'medium' }) : '—'}</>
+            {subscriptions.map((sub) => {
+              const endDate = sub.end_date ? new Date(sub.end_date) : null;
+              const isExpired = endDate !== null && endDate < new Date();
+              const isActive = sub.sub_status === 'Active' && !isExpired;
+              const statusLabel = sub.sub_status === 'Canceled'
+                ? 'Canceled'
+                : isExpired
+                  ? `Expired ${endDate.toLocaleDateString(undefined, { dateStyle: 'medium' })}`
+                  : `Active until ${endDate?.toLocaleDateString(undefined, { dateStyle: 'medium' }) ?? '—'}`;
+              return (
+                <li
+                  key={sub.id}
+                  style={{
+                    padding: '1rem',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1px solid var(--border)',
+                    background: 'var(--bg-input)',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '0.75rem',
+                  }}
+                >
+                  <div style={{ flex: '1 1 200px' }}>
+                    {sub.creator?.slug ? (
+                      <Link
+                        to={`/creator/${sub.creator.slug}`}
+                        style={{ fontWeight: 600, color: 'inherit' }}
+                      >
+                        {sub.creator.display_name ?? sub.creator.slug}
+                      </Link>
                     ) : (
-                      <span style={{ opacity: 0.8 }}>Canceled</span>
+                      <span style={{ fontWeight: 600 }}>
+                        {sub.creator?.display_name ?? 'Creator'}
+                      </span>
+                    )}
+                    <span style={{ color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>
+                      · {sub.tier?.tier_name ?? 'Tier'}
+                    </span>
+                    <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
+                      <span style={isExpired ? { opacity: 0.85, fontStyle: 'italic' } : undefined}>
+                        {statusLabel}
+                      </span>
+                      {isExpired && (
+                        <span style={{ display: 'block', fontSize: '0.8125rem', marginTop: '0.25rem', opacity: 0.8 }}>
+                          Resubscribe from the creator’s profile
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    {sub.creator?.slug ? (
+                      <Link to={`/creator/${sub.creator.slug}`} className="btn btn-secondary btn-sm">
+                        View profile
+                      </Link>
+                    ) : null}
+                    {isActive && (
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-sm"
+                        style={{ borderColor: 'var(--color-error, #f87171)', color: 'var(--color-error, #f87171)' }}
+                        disabled={cancelingId === sub.id}
+                        onClick={() => handleCancel(sub)}
+                      >
+                        {cancelingId === sub.id ? 'Canceling…' : 'Cancel'}
+                      </button>
                     )}
                   </div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  {sub.creator?.slug ? (
-                    <Link to={`/creator/${sub.creator.slug}`} className="btn btn-secondary btn-sm">
-                      View profile
-                    </Link>
-                  ) : null}
-                  {sub.sub_status === 'Active' && (
-                    <button
-                      type="button"
-                      className="btn btn-secondary btn-sm"
-                      style={{ borderColor: 'var(--color-error, #f87171)', color: 'var(--color-error, #f87171)' }}
-                      disabled={cancelingId === sub.id}
-                      onClick={() => handleCancel(sub)}
-                    >
-                      {cancelingId === sub.id ? 'Canceling…' : 'Cancel'}
-                    </button>
-                  )}
-                </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

@@ -53,6 +53,11 @@ class PostResourceTable
                     ->label(__('filament.posts.table.columns.comments_count'))
                     ->counts('comments')
                     ->toggleable(),
+                TextColumn::make('created_at')
+                    ->label(__('filament.posts.table.columns.created_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->recordActions([
                 ViewAction::make()->label(__('filament.posts.table.actions.view')),

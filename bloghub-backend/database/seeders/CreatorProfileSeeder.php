@@ -6,6 +6,7 @@ use App\Models\CreatorProfile;
 use App\Models\Tag;
 use App\Models\User;
 use App\Support\CreatorProfileResourceSupport;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
@@ -102,6 +103,10 @@ class CreatorProfileSeeder extends Seeder
 
             $tagIds = Tag::whereIn('slug', $data['tag_slugs'])->pluck('id');
             $profile->tags()->sync($tagIds);
+
+            $profile->created_at = Carbon::parse('2024-01-15')
+                ->setTime(rand(6, 22), rand(0, 59), rand(0, 59));
+            $profile->save();
         }
     }
 

@@ -274,7 +274,8 @@ class PostSeeder extends Seeder
                         $tier = $tiersByLevel->get($tierLevel);
                         $attributes['required_tier_id'] = $tier?->id;
                     }
-                    $attributes['created_at'] = Carbon::parse($createdAtKey);
+                    $attributes['created_at'] = Carbon::parse($createdAtKey)
+                        ->setTime(rand(0, 23), rand(0, 59), rand(0, 59));
                 }
 
                 $post = Post::firstOrCreate(
