@@ -136,7 +136,7 @@ export default function CreatorProfilePage() {
     const subscribeResult = params.get('subscribe');
     if (!slug || subscribeResult === null) return;
     if (subscribeResult === 'success') {
-      setSubscriptionSuccess('Subscription active. Thank you for subscribing.');
+      setSubscriptionSuccess('Thank you for subscribing!');
       subscriptionsApi.getStatusByCreator(slug).then(setSubscriptionStatus).catch(() => {});
       window.history.replaceState({}, '', `${location.pathname}`);
     }

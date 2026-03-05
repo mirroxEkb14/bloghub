@@ -105,13 +105,17 @@ class StripePaymentService
 
             $paymentIntentId = is_string($session->payment_intent) ? $session->payment_intent : null;
             if ($paymentIntentId) {
-                $pi = $this->stripe->paymentIntents->retrieve($paymentIntentId);
+                $pi = $this->stripe->paymentIntents->retrieve($paymentIntentId, [
+                    'expand' => ['payment_method.card', 'charges.data.payment_method_details'],
+                ]);
                 if ($amountCents === 0) {
                     $amountCents = $pi->amount ?? 0;
                 }
                 $currency = $this->mapStripeCurrencyToEnum($pi->currency ?? 'usd');
-                if (isset($pi->charges->data[0]->payment_method_details->card->last4)) {
-                    $cardLast4 = $pi->charges->data[0]->payment_method_details->card->last4;
+                if ($pi->payment_method && isset($pi->payment_method->card->last4)) {
+                    $cardLast4 = $pi->payment_method->card->last4;
+                } elseif (($firstCharge = $pi->charges->data[0] ?? null) && isset($firstCharge->payment_method_details->card->last4)) {
+                    $cardLast4 = $firstCharge->payment_method_details->card->last4;
                 }
             }
             if ($amountCents === 0) {
