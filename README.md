@@ -168,7 +168,9 @@ Pro simulaci procesu plateb projekt používá platební bránu  <a href='https:
         - Description (optional): <b>Local dev – checkout.session.completed</b>
     - ze stránky nově vytveřeného Destination, zkopírovat <b>Signing secret</b> (`whsec_`) a uložit do <b>STRIPE_WEBHOOK_SECRET</b>.
 
-<b>Poznámka</b>: na stránce `checkout.stripe.com` se pak používá jedna z testovacích Stripe karet, tj. <b>4242 4242 4242 4242</b>. Seznam veškerých karet lze nalézt na stránkách <a href='https://docs.stripe.com/testing'>Stripe Docs</a>.
+<b>Poznámka №1</b>: na stránce `checkout.stripe.com` se pak používá jedna z testovacích Stripe karet, tj. <b>4242 4242 4242 4242</b>. Seznam veškerých karet lze nalézt na stránkách <a href='https://docs.stripe.com/testing'>Stripe Docs</a>.
+
+<b>Poznámka №2</b>: platby nebudou procházet v případě, že <b>(i)</b> <b>Destination</b> je vypnut ve Stripe dashboardu, <b>(ii)</b> není vytnořen zabezpečený tunel ve příkazovém řádku ngrok.
 
 ---
 
