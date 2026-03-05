@@ -19,7 +19,7 @@ class CommentResourceTable
         return $table
             ->recordUrl(fn ($record) => CommentResource::getUrl('view', ['record' => $record]))
             ->defaultSort('id', 'asc')
-            ->modifyQueryUsing(fn ($query) => $query->with(['user', 'post']))
+            ->modifyQueryUsing(fn ($query) => $query->with(['user.creatorProfile', 'post']))
             ->filters(CommentTableFilters::filters())
             ->reorderableColumns()
             ->columns([

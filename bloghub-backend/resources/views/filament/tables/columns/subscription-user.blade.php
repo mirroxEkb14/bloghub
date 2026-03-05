@@ -1,7 +1,9 @@
 @php
-    use Illuminate\Support\Str;$name = $getState() ?? '';
+    use Illuminate\Support\Str;
+    $name = $getState() ?? '';
     $initial = $name !== '' ? mb_strtoupper(mb_substr($name, 0, 1)) : '?';
     $username = $record->user?->username ?? '';
+    $avatarUrl = $record->user?->creatorProfile?->profile_avatar_url ?? null;
     $nameLimit = 25;
     $usernameLimit = 20;
     $nameDisplay = Str::limit($name, $nameLimit);
@@ -10,8 +12,12 @@
 
 <div style="display: flex; align-items: center; gap: 0.75rem; max-width: 180px;">
     <div
-        style="display: flex; height: 36px; width: 36px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 10px; background-color: #1f2937; font-size: 0.875rem; font-weight: 600; color: #f59e0b;">
-        {{ $initial }}
+        style="display: flex; height: 36px; width: 36px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 10px; background-color: #1f2937; font-size: 0.875rem; font-weight: 600; color: #f59e0b; overflow: hidden;">
+        @if($avatarUrl)
+            <img src="{{ $avatarUrl }}" alt="" style="width: 100%; height: 100%; object-fit: cover;" />
+        @else
+            {{ $initial }}
+        @endif
     </div>
     <div style="min-width: 0; overflow: hidden;">
         <div
