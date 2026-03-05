@@ -36,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me/subscriptions', [SubscriptionController::class, 'index']);
     Route::post('/subscriptions', [SubscriptionController::class, 'store']);
     Route::post('/subscriptions/create-checkout-session', [SubscriptionCheckoutController::class, 'createCheckoutSession']);
+    Route::post('/subscriptions/confirm-checkout', [SubscriptionCheckoutController::class, 'confirmCheckout']);
     Route::get('/creator-profiles/{slug}/subscription-status', [SubscriptionController::class, 'statusByCreator']);
     Route::patch('/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel']);
 });

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
+  ApiError,
   creatorProfilesApi,
   postsApi,
   subscriptionsApi,
@@ -134,11 +135,39 @@ export default function CreatorProfilePage() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const subscribeResult = params.get('subscribe');
+    const sessionId = params.get('session_id');
     if (!slug || subscribeResult === null) return;
     if (subscribeResult === 'success') {
-      setSubscriptionSuccess('Thank you for subscribing!');
-      subscriptionsApi.getStatusByCreator(slug).then(setSubscriptionStatus).catch(() => {});
-      window.history.replaceState({}, '', `${location.pathname}`);
+      const pathname = location.pathname;
+      if (sessionId) {
+        subscriptionsApi
+          .confirmCheckout(sessionId)
+          .then((res) => {
+            if (res.status === 'active' && 'subscription' in res) {
+              setSubscriptionStatus({ subscribed: true, active_subscription: res.subscription });
+              setSubscriptionSuccess('Thank you for subscribing!');
+            } else if ('message' in res) {
+              setSubscriptionError({ tierId: 0, message: res.message });
+            }
+          })
+          .catch((e) => {
+            const msg =
+              e instanceof ApiError && e.status === 422 && e.body && typeof e.body === 'object' && 'message' in e.body
+                ? (e.body as { message: string }).message
+                : e instanceof Error
+                  ? e.message
+                  : 'Could not verify subscription.';
+            setSubscriptionError({ tierId: 0, message: msg });
+          })
+          .finally(() => {
+            window.history.replaceState({}, '', pathname);
+          });
+      } else {
+        setSubscriptionSuccess('Thank you for subscribing!');
+        subscriptionsApi.getStatusByCreator(slug).then(setSubscriptionStatus).catch(() => {});
+        window.history.replaceState({}, '', pathname);
+      }
+      return;
     }
     if (subscribeResult === 'cancel') {
       setSubscriptionError({ tierId: 0, message: 'Checkout was canceled' });
@@ -717,8 +746,8 @@ export default function CreatorProfilePage() {
         >
           <span className="subscription-toast-icon subscription-toast-icon-error" aria-hidden>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="2" />
-              <path d="M10 6v4M10 13v1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M10 3.5L2 16.5h16L10 3.5z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" />
+              <path d="M10 8v3M10 13v1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </span>
           <p className="subscription-toast-msg">

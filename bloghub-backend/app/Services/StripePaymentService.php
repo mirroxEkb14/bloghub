@@ -67,6 +67,40 @@ class StripePaymentService
         return $session;
     }
 
+    public function getCheckoutSessionStatus(string $sessionId, int $userId): array
+    {
+        $sessionId = trim($sessionId);
+        if ($sessionId === '' || ! str_starts_with($sessionId, 'cs_')) {
+            return ['status' => 'invalid'];
+        }
+
+        try {
+            $session = $this->stripe->checkout->sessions->retrieve($sessionId);
+        } catch (\Throwable) {
+            return ['status' => 'invalid'];
+        }
+
+        $sessionUserId = (int) ($session->client_reference_id ?? $session->metadata['user_id'] ?? 0);
+        if ($sessionUserId !== $userId) {
+            return ['status' => 'invalid'];
+        }
+
+        if ($session->payment_status !== 'paid') {
+            return ['status' => 'unpaid'];
+        }
+
+        $subscription = Subscription::query()
+            ->where('stripe_checkout_session_id', $sessionId)
+            ->with(['tier', 'tier.creatorProfile'])
+            ->first();
+
+        if ($subscription) {
+            return ['status' => 'active', 'subscription' => $subscription];
+        }
+
+        return ['status' => 'webhook_unavailable'];
+    }
+
     public function handleCheckoutSessionCompleted(StripeSession $session): void
     {
         $sessionId = $session->id;

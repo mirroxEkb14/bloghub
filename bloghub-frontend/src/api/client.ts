@@ -391,6 +391,13 @@ export const subscriptionsApi = {
     );
   },
 
+  confirmCheckout(sessionId: string) {
+    return api<{ status: 'active'; subscription: SubscriptionWithTier } | { status: string; message: string }>(
+      '/api/subscriptions/confirm-checkout',
+      { method: 'POST', body: JSON.stringify({ session_id: sessionId }) }
+    );
+  },
+
   getStatusByCreator(creatorSlug: string) {
     return api<SubscriptionStatusResponse>(
       `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/subscription-status`
