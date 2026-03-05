@@ -21,6 +21,7 @@ class UserResourceTable
         return $table
             ->recordUrl(UserResourceSupport::recordViewUrl(...))
             ->defaultSort('id')
+            ->modifyQueryUsing(fn ($query) => $query->with('creatorProfile'))
             ->filters(UserTableFilters::filters())
             ->columns([
                 TextColumn::make('id')

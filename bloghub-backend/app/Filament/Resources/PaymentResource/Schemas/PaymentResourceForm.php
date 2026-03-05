@@ -59,6 +59,21 @@ class PaymentResourceForm
                                     ->options(PaymentResourceSupport::paymentStatusOptions())
                                     ->required(),
                             ]),
+                        Section::make(__('filament.section_metadata'))
+                            ->schema([
+                                TextInput::make('created_at')
+                                    ->label(__('filament.fields.created_at'))
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->format('Y-m-d H:i:s') : '—'),
+                                TextInput::make('updated_at')
+                                    ->label(__('filament.fields.updated_at'))
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->format('Y-m-d H:i:s') : '—'),
+                            ])
+                            ->columns(2)
+                            ->visible(fn ($record) => $record !== null),
                     ]),
             ]);
     }

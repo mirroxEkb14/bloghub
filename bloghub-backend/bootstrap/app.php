@@ -4,6 +4,8 @@ use App\Http\Middleware\OptionalSanctumAuth;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,5 +20,19 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->renderable(function (\Throwable $e, Request $request) {
+            if (str_contains($e->getMessage(), 'Undefined array key') && ($request->expectsJson() || $request->is('api/*'))) {
+                Log::channel('single')->error('API Undefined array key: '.$e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+
+                return response()->json([
+                    'message' => 'An error occurred. Please try again',
+                ], 500);
+            }
+
+            return null;
+        });
     })->create();

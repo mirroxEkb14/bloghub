@@ -15,7 +15,7 @@ class CreatorProfileTierController extends Controller
         $profile = CreatorProfile::query()->where('slug', $slug)->first();
 
         if ($profile === null) {
-            return response()->json(['message' => __('Creator profile not found.')], 404);
+            return response()->json(['message' => __('Creator profile not found')], 404);
         }
 
         $tiers = $profile->tiers()->orderBy('level')->get();

@@ -19,7 +19,7 @@ class PostResourceTable
         return $table
             ->recordUrl(fn ($record) => PostResource::getUrl('view', ['record' => $record]))
             ->defaultSort('id')
-            ->modifyQueryUsing(fn ($query) => $query->with(['creatorProfile', 'requiredTier']))
+            ->modifyQueryUsing(fn ($query) => $query->with(['creatorProfile.user', 'requiredTier']))
             ->filters(PostTableFilters::filters())
             ->columns([
                 TextColumn::make('id')
@@ -30,13 +30,13 @@ class PostResourceTable
                     ->view('filament.tables.columns.post-creator')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('slug')
-                    ->label(__('filament.posts.table.columns.slug'))
+                TextColumn::make('title')
+                    ->label(__('filament.posts.table.columns.title'))
                     ->searchable()
                     ->sortable()
                     ->limit(30),
-                TextColumn::make('title')
-                    ->label(__('filament.posts.table.columns.title'))
+                TextColumn::make('slug')
+                    ->label(__('filament.posts.table.columns.slug'))
                     ->searchable()
                     ->sortable()
                     ->limit(30),

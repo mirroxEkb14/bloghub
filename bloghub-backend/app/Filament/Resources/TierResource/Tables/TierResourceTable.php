@@ -11,6 +11,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 
@@ -32,8 +33,9 @@ class TierResourceTable
                     ->disk('public')
                     ->circular()
                     ->toggleable(),
-                TextColumn::make('creatorProfile.display_name')
+                ViewColumn::make('creatorProfile.display_name')
                     ->label(__('filament.tiers.table.columns.creator_profile'))
+                    ->view('filament.tables.columns.tier-creator-profile')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('level')

@@ -18,7 +18,7 @@ class CreatorProfilePostController extends Controller
         $profile = CreatorProfile::query()->where('slug', $slug)->first();
 
         if ($profile === null) {
-            return response()->json(['message' => __('Creator profile not found.')], 404);
+            return response()->json(['message' => __('Creator profile not found')], 404);
         }
 
         $userTierLevel = null;
@@ -35,7 +35,10 @@ class CreatorProfilePostController extends Controller
         }
         $request->attributes->set('creator_profile_user_tier_level', $userTierLevel);
 
-        $query = $profile->posts()->with('requiredTier:id,creator_profile_id,level,tier_name')->orderByDesc('created_at');
+        $query = $profile->posts()
+            ->withCount('comments')
+            ->with('requiredTier:id,creator_profile_id,level,tier_name')
+            ->orderByDesc('created_at');
 
         $perPage = min((int) $request->input('per_page', 15), 50);
         $posts = $query->paginate($perPage);
@@ -48,13 +51,13 @@ class CreatorProfilePostController extends Controller
         $profile = CreatorProfile::query()->where('slug', $slug)->first();
 
         if ($profile === null) {
-            return response()->json(['message' => __('Creator profile not found.')], 404);
+            return response()->json(['message' => __('Creator profile not found')], 404);
         }
 
         $post = $profile->posts()->where('slug', $postSlug)->with('requiredTier:id,creator_profile_id,level,tier_name')->first();
 
         if ($post === null) {
-            return response()->json(['message' => __('Post not found.')], 404);
+            return response()->json(['message' => __('Post not found')], 404);
         }
 
         if ($post->required_tier_id !== null) {

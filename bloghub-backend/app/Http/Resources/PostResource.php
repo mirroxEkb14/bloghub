@@ -33,6 +33,7 @@ class PostResource extends JsonResource
                 'tier_name' => $this->requiredTier->tier_name,
             ]),
             'user_has_access' => $userHasAccess,
+            'comments_count' => $this->when(isset($this->comments_count), fn () => (int) $this->comments_count),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

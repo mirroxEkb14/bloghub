@@ -67,8 +67,8 @@ class SubscriptionCheckoutController extends Controller
             'status' => $result['status'],
             'message' => match ($result['status']) {
                 'webhook_unavailable' => __('Our payment provider\'s connection is temporarily unavailable D:'),
-                'unpaid' => __('This checkout session was not paid.'),
-                default => __('Invalid or expired session.'),
+                'unpaid' => __('This checkout session was not paid'),
+                default => __('Invalid or expired session'),
             },
         ], $result['status'] === 'active' ? 200 : 422);
     }

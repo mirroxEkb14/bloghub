@@ -187,8 +187,24 @@ export type Post = {
   media_type: 'Image' | 'Gif' | 'Audio' | 'Video' | null;
   required_tier?: PostRequiredTier | null;
   user_has_access?: boolean;
+  comments_count?: number;
   created_at?: string;
   updated_at?: string;
+};
+
+export type CommentUser = {
+  id: number;
+  name: string;
+  username: string;
+  avatar_url?: string | null;
+};
+
+export type Comment = {
+  id: number;
+  content_text: string;
+  created_at: string;
+  updated_at: string;
+  user: CommentUser;
 };
 
 export type Tier = {
@@ -331,6 +347,21 @@ export const postsApi = {
     return api<Post | { data: Post }>(
       `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts/${encodeURIComponent(postSlug)}`
     ).then(unwrapData);
+  },
+};
+
+export const commentsApi = {
+  list(creatorSlug: string, postSlug: string) {
+    return api<{ data: Comment[] } | Comment[]>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts/${encodeURIComponent(postSlug)}/comments`
+    ).then((r) => (Array.isArray(r) ? r : (r && typeof r === 'object' && 'data' in r ? (r as { data: Comment[] }).data : [])) ?? []);
+  },
+
+  create(creatorSlug: string, postSlug: string, body: { content_text: string }) {
+    return api<{ data: Comment } | Comment>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts/${encodeURIComponent(postSlug)}/comments`,
+      { method: 'POST', body: JSON.stringify(body) }
+    ).then((r) => (r && typeof r === 'object' && 'data' in r ? (r as { data: Comment }).data : r) as Comment);
   },
 };
 

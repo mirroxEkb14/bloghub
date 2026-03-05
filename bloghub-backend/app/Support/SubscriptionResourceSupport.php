@@ -34,7 +34,7 @@ class SubscriptionResourceSupport
     public static function tableModifyQueryUsing(): Closure
     {
         return static function (Builder $query): Builder {
-            return $query->with(['user', 'tier']);
+            return $query->with(['user.creatorProfile', 'tier']);
         };
     }
 }
