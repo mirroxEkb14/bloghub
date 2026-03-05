@@ -24,7 +24,8 @@ class CreatorProfilePostController extends Controller
 
         $userTierLevel = null;
         $user = $request->user();
-        if ($user) {
+        $isProfileOwner = $user && $user->id === $profile->user_id;
+        if ($user && ! $isProfileOwner) {
             $subscription = Subscription::query()
                 ->where('user_id', $user->id)
                 ->where('sub_status', SubStatus::Active)
@@ -33,8 +34,11 @@ class CreatorProfilePostController extends Controller
                 ->with('tier:id,level')
                 ->first();
             $userTierLevel = $subscription?->tier?->level;
+        } elseif ($isProfileOwner) {
+            $userTierLevel = PHP_INT_MAX;
         }
         $request->attributes->set('creator_profile_user_tier_level', $userTierLevel);
+        $request->attributes->set('creator_profile_is_owner', $isProfileOwner ?? false);
 
         $query = $profile->posts()
             ->withCount('comments')
@@ -74,8 +78,28 @@ class CreatorProfilePostController extends Controller
             return response()->json(['message' => __('Post not found')], 404);
         }
 
-        if ($post->required_tier_id !== null) {
-            $user = $request->user();
+        $user = $request->user();
+        $isProfileOwner = $user && $user->id === $profile->user_id;
+        if ($isProfileOwner) {
+            $request->attributes->set('creator_profile_user_tier_level', PHP_INT_MAX);
+            $request->attributes->set('creator_profile_is_owner', true);
+        } else {
+            $request->attributes->set('creator_profile_is_owner', false);
+            $userTierLevel = null;
+            if ($user) {
+                $subscription = Subscription::query()
+                    ->where('user_id', $user->id)
+                    ->where('sub_status', SubStatus::Active)
+                    ->where('end_date', '>', now())
+                    ->whereHas('tier', fn ($q) => $q->where('creator_profile_id', $profile->id))
+                    ->with('tier:id,level')
+                    ->first();
+                $userTierLevel = $subscription?->tier?->level;
+            }
+            $request->attributes->set('creator_profile_user_tier_level', $userTierLevel);
+        }
+
+        if ($post->required_tier_id !== null && ! $isProfileOwner) {
             if (! $user) {
                 return response()->json([
                     'message' => __('This post is for subscribers only'),

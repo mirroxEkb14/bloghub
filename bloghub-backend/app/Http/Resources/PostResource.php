@@ -15,8 +15,10 @@ class PostResource extends JsonResource
             $mediaUrl = StorageUrlSupport::publicUrl($mediaUrl);
         }
 
+        $isProfileOwner = (bool) $request->attributes->get('creator_profile_is_owner', false);
         $userTierLevel = $request->attributes->get('creator_profile_user_tier_level');
-        $userHasAccess = $this->required_tier_id === null
+        $userHasAccess = $isProfileOwner
+            || $this->required_tier_id === null
             || ($userTierLevel !== null && $this->requiredTier && $userTierLevel >= $this->requiredTier->level);
 
         return [
