@@ -182,13 +182,26 @@ export default function PostPage() {
           <p className="comments-empty">No comments yet. Be the first to comment</p>
         )}
         <ul className="comments-list">
-          {comments.map((c) => (
+          {comments.map((c) => {
+            const displayName = c.user?.name ?? c.user?.username ?? 'User';
+            const initial = displayName.charAt(0).toUpperCase();
+            const avatarUrl = c.user?.avatar_url;
+            return (
             <li key={c.id} className="comment-item">
               <div className="comment-item-header">
-                <span className="comment-author">{c.user?.name ?? c.user?.username ?? 'User'}</span>
-                <time className="comment-date" dateTime={c.created_at} title={formatDateTimeLocal(c.created_at)}>
-                  {formatDateTimeLocal(c.created_at)}
-                </time>
+                <div className="comment-avatar" aria-hidden>
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="" width={40} height={40} />
+                  ) : (
+                    <span className="comment-avatar-initial">{initial}</span>
+                  )}
+                </div>
+                <div className="comment-item-meta">
+                  <span className="comment-author">{displayName}</span>
+                  <time className="comment-date" dateTime={c.created_at} title={formatDateTimeLocal(c.created_at)}>
+                    {formatDateTimeLocal(c.created_at)}
+                  </time>
+                </div>
               </div>
               <div className="comment-body">
                 {(typeof c.content_text === 'string' ? c.content_text : '').split('\n').map((line, i) => (
@@ -196,7 +209,8 @@ export default function PostPage() {
                 ))}
               </div>
             </li>
-          ))}
+          );
+          })}
         </ul>
         {user && (
           <form className="comment-form" onSubmit={handleSubmitComment}>

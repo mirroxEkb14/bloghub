@@ -196,6 +196,7 @@ export type CommentUser = {
   id: number;
   name: string;
   username: string;
+  avatar_url?: string | null;
 };
 
 export type Comment = {

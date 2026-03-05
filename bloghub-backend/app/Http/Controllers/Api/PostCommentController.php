@@ -79,7 +79,10 @@ class PostCommentController extends Controller
             return $errorResponse;
         }
 
-        $comments = $post->comments()->with('user:id,name,username')->orderBy('created_at')->get();
+        $comments = $post->comments()
+            ->with(['user:id,name,username', 'user.creatorProfile:id,user_id,profile_avatar_path'])
+            ->orderBy('created_at')
+            ->get();
 
         $data = [];
         foreach ($comments as $comment) {
@@ -127,7 +130,7 @@ class PostCommentController extends Controller
             'content_text' => $contentText,
         ]);
 
-        $comment->load('user:id,name,username');
+        $comment->load(['user:id,name,username', 'user.creatorProfile:id,user_id,profile_avatar_path']);
 
         return response()->json(['data' => $this->commentToArray($comment)]);
     }
@@ -145,6 +148,9 @@ class PostCommentController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'username' => $user->username,
+                'avatar_url' => $user->relationLoaded('creatorProfile') && $user->creatorProfile?->profile_avatar_path
+                    ? $user->creatorProfile->profile_avatar_url
+                    : null,
             ] : null,
         ];
     }
