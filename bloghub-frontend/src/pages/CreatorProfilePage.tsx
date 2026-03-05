@@ -538,7 +538,17 @@ export default function CreatorProfilePage() {
                                   </span>
                                   <span className="post-card-stat">
                                     <span className="post-card-stat-icon" aria-hidden>💬</span>{' '}
-                                    {post.comments_count ?? 0}
+                                    {(post.comments_count ?? 0) > 0 && slug ? (
+                                      <Link
+                                        to={`/creator/${slug}/post/${post.slug}#comments`}
+                                        className="post-card-stat-link"
+                                        title="Jump to comments"
+                                      >
+                                        {post.comments_count}
+                                      </Link>
+                                    ) : (
+                                      post.comments_count ?? 0
+                                    )}
                                   </span>
                                   <span className="post-card-stat post-card-stat-bookmark">
                                     <span className="post-card-stat-icon" aria-hidden>🔖</span>
