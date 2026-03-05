@@ -143,7 +143,7 @@ export default function PostPage() {
       <h1 className="post-page-title">{post.title}</h1>
       {(post.created_at || post.updated_at) && (
         <p className="post-page-meta">
-          {post.created_at && new Date(post.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' })}
+          {post.created_at && formatDateTimeLocal(post.created_at)}
         </p>
       )}
       {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (

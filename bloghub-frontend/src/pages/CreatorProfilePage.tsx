@@ -14,6 +14,7 @@ import {
 } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import LoadingPage from '../components/LoadingPage';
+import { formatDateTimeLocal } from '../utils/date';
 
 const POSTS_PAGE_SIZE = 12;
 
@@ -426,7 +427,7 @@ export default function CreatorProfilePage() {
                                   <span className="post-card-sep"> • </span>
                                 )}
                                 {post.created_at && (
-                                  <span className="post-card-time">{relativeTime(post.created_at)}</span>
+                                  <span className="post-card-time">{formatDateTimeLocal(post.created_at)}</span>
                                 )}
                               </span>
                             </div>
@@ -806,7 +807,7 @@ export default function CreatorProfilePage() {
               )}
               {previewPost.created_at && (
                 <span className="post-preview-date">
-                  {new Date(previewPost.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' })}
+                  {formatDateTimeLocal(previewPost.created_at)}
                 </span>
               )}
             </div>
