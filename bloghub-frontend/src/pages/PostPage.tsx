@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { ApiError, commentsApi, postsApi, type Comment, type Post } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import LoadingPage from '../components/LoadingPage';
+import { formatDateTimeLocal } from '../utils/date';
 
 type SubscriptionRequiredBody = {
   requires_subscription?: boolean;
@@ -185,8 +186,8 @@ export default function PostPage() {
             <li key={c.id} className="comment-item">
               <div className="comment-item-header">
                 <span className="comment-author">{c.user?.name ?? c.user?.username ?? 'User'}</span>
-                <time className="comment-date" dateTime={c.created_at}>
-                  {new Date(c.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' })}
+                <time className="comment-date" dateTime={c.created_at} title={formatDateTimeLocal(c.created_at)}>
+                  {formatDateTimeLocal(c.created_at)}
                 </time>
               </div>
               <div className="comment-body">
