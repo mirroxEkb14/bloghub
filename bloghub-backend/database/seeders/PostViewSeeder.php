@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\PaymentStatus;
 use App\Models\Post;
 use App\Models\PostView;
 use App\Models\Subscription;
@@ -78,16 +79,21 @@ class PostViewSeeder extends Seeder
                     $q->where('creator_profile_id', $post->creator_profile_id)
                         ->where('level', '>=', $requiredLevel);
                 })
+                ->whereHas('payments', fn ($q) => $q->where('payment_status', PaymentStatus::Completed))
                 ->with('tier')
                 ->get();
 
+            $postCreatedAt = Carbon::parse($post->created_at);
+
             foreach ($subs as $sub) {
-                $viewAfter = Carbon::parse($post->created_at)->max($sub->start_date);
+                $viewAfter = $postCreatedAt->copy()->max($sub->start_date);
                 $viewBefore = $sub->end_date;
-                if ($viewAfter->gt($viewBefore)) {
-                    continue;
+
+                if ($viewAfter->lte($viewBefore)) {
+                    $viewAt = $this->randomBetween($viewAfter, $viewBefore);
+                } else {
+                    $viewAt = $postCreatedAt->copy()->addSecond();
                 }
-                $viewAt = $this->randomBetween($viewAfter, $viewBefore);
 
                 PostView::firstOrCreate(
                     [
