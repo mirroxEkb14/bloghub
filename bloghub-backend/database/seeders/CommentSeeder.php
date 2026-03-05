@@ -41,6 +41,20 @@ class CommentSeeder extends Seeder
                 ['Gordon Freeman', 'λ'],
             ],
         ],
+        'Dana Scully' => [
+            'Case File: 6x21 — The Brown Mountain Symbiosis' => [
+                ['Fox Mulder', 'You can hide behind terms like \'mycelial network\' and \'hallucinogenic symbiosis\' all you want, Scully, but the fact remains: we were eaten by a giant underground mushroom. And admit it—for a brief, terrifying moment in that cave before the digestive acid kicked in, you actually believed we\'d been abducted. Though I have to say, as far as near-death experiences go, sharing a hallucination with you was... oddly domestic.'],
+                ['Gregory House', 'Let me get this straight. You two wander into an enclosed subterranean environment surrounded by decaying organic matter, inhale massive quantities of unidentified spores, start hallucinating, and your first instinct is to blame the paranormal instead of a basic fungal infection? You don\'t need the FBI, you need broad-spectrum antifungals, a respirator, and a first-year biology textbook. It\'s a giant *Armillaria* fungus producing a neurotoxin, you idiots. Next time, try taking a tissue biopsy before you start planning your own funerals.'],
+            ],
+            'Case File: 6x06 — The Holiday Solstice' => [
+                ['Fox Mulder', 'You can write off the bleeding walls and the fact that we literally shot each other as \'environmental toxins\' and \'stress-induced shared hysteria\' all you want, Scully. But you still haven\'t explained how Maurice and Lyda knew exactly which psychological buttons to push. And more importantly, you never explained how you managed to get me that Christmas gift when you supposedly didn\'t have time to go shopping. Admit it—just this once, it was a Christmas miracle. Or at the very least, highly active, festive poltergeists.'],
+                ['CJ (Carl Johnson)', 'Man, what is wrong with y\'all? It\'s the holidays! You\'re supposed to be kicking back with your family, not breaking into some creepy-ass abandoned mansion with ghosts trying to make you blast each other. I seen some crazy, unexplained stuff out in the badlands, but y\'all take the cake. Next time, just stay home, lock the doors, and order some Cluckin\' Bell.'],
+            ],
+            'Einstein\'s Twin Paradox: A New Interpretation' => [
+                ['Caroline', 'A \'new\' interpretation, Agent Scully? How quaint. At Aperture Science, we don\'t just \'interpret\' relativity, we monetize it. Back in the 70s, we had a mandatory Bring-Your-Twin-To-Work Day specifically to test the effects of prolonged portal-induced time dilation. One aged normally, the other became a localized temporal anomaly. We had to fire them both for violating the laws of physics on company time. Theoretical physics is just an excuse for people who are too afraid to build a working quantum tunneling device.'],
+                ['Gordon Freeman', 't = t0 / sqrt(1 - v^2/c^2)'],
+            ],
+        ],
     ];
 
     public function run(): void
