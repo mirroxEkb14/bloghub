@@ -16,8 +16,10 @@ class PostResource extends JsonResource
         }
 
         $isProfileOwner = (bool) $request->attributes->get('creator_profile_is_owner', false);
+        $isSuperAdmin = (bool) $request->attributes->get('creator_profile_is_super_admin', false);
         $userTierLevel = $request->attributes->get('creator_profile_user_tier_level');
         $userHasAccess = $isProfileOwner
+            || $isSuperAdmin
             || $this->required_tier_id === null
             || ($userTierLevel !== null && $this->requiredTier && $userTierLevel >= $this->requiredTier->level);
 

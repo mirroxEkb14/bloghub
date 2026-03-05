@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\SubStatus;
+use App\Enums\UserRoleEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 use App\Models\CreatorProfile;
@@ -25,7 +26,10 @@ class CreatorProfilePostController extends Controller
         $userTierLevel = null;
         $user = $request->user();
         $isProfileOwner = $user && $user->id === $profile->user_id;
-        if ($user && ! $isProfileOwner) {
+        $isSuperAdmin = $user && $user->hasRole(UserRoleEnum::SuperAdmin->value);
+        $hasFullAccess = $isProfileOwner || $isSuperAdmin;
+
+        if ($user && ! $hasFullAccess) {
             $subscription = Subscription::query()
                 ->where('user_id', $user->id)
                 ->where('sub_status', SubStatus::Active)
@@ -34,11 +38,12 @@ class CreatorProfilePostController extends Controller
                 ->with('tier:id,level')
                 ->first();
             $userTierLevel = $subscription?->tier?->level;
-        } elseif ($isProfileOwner) {
+        } elseif ($hasFullAccess) {
             $userTierLevel = PHP_INT_MAX;
         }
         $request->attributes->set('creator_profile_user_tier_level', $userTierLevel);
         $request->attributes->set('creator_profile_is_owner', $isProfileOwner ?? false);
+        $request->attributes->set('creator_profile_is_super_admin', $isSuperAdmin ?? false);
 
         $query = $profile->posts()
             ->withCount('comments')
@@ -80,11 +85,16 @@ class CreatorProfilePostController extends Controller
 
         $user = $request->user();
         $isProfileOwner = $user && $user->id === $profile->user_id;
-        if ($isProfileOwner) {
+        $isSuperAdmin = $user && $user->hasRole(UserRoleEnum::SuperAdmin->value);
+        $hasFullAccess = $isProfileOwner || $isSuperAdmin;
+
+        if ($hasFullAccess) {
             $request->attributes->set('creator_profile_user_tier_level', PHP_INT_MAX);
-            $request->attributes->set('creator_profile_is_owner', true);
+            $request->attributes->set('creator_profile_is_owner', $isProfileOwner);
+            $request->attributes->set('creator_profile_is_super_admin', $isSuperAdmin);
         } else {
             $request->attributes->set('creator_profile_is_owner', false);
+            $request->attributes->set('creator_profile_is_super_admin', false);
             $userTierLevel = null;
             if ($user) {
                 $subscription = Subscription::query()
@@ -99,7 +109,7 @@ class CreatorProfilePostController extends Controller
             $request->attributes->set('creator_profile_user_tier_level', $userTierLevel);
         }
 
-        if ($post->required_tier_id !== null && ! $isProfileOwner) {
+        if ($post->required_tier_id !== null && ! $hasFullAccess) {
             if (! $user) {
                 return response()->json([
                     'message' => __('This post is for subscribers only'),
