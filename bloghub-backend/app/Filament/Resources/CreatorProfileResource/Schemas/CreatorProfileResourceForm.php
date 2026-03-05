@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\CreatorProfileResource\Schemas;
 
 use App\Support\CreatorProfileResourceSupport;
+use Carbon\Carbon;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -81,6 +82,18 @@ class CreatorProfileResourceForm
                                             ->image()
                                             ->imageEditor()
                                             ->columnSpanFull(),
+                                        TextInput::make('created_at')
+                                            ->label(__('filament.fields.created_at'))
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->format('Y-m-d H:i:s') : '—')
+                                            ->visible(fn ($record) => $record !== null),
+                                        TextInput::make('updated_at')
+                                            ->label(__('filament.fields.updated_at'))
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->format('Y-m-d H:i:s') : '—')
+                                            ->visible(fn ($record) => $record !== null),
                                     ]),
                             ]),
                     ]),

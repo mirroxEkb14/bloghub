@@ -17,6 +17,11 @@ return [
     'content' => [
         'navigation_group' => 'Content',
     ],
+    'section_metadata' => 'Metadata',
+    'fields' => [
+        'created_at' => 'Created',
+        'updated_at' => 'Updated',
+    ],
     'administration' => [
         'navigation_group' => 'Administration',
     ],
@@ -146,7 +151,7 @@ return [
             'about_hint' => 'max. 255 characters',
             'tags' => 'Tags',
             'section_profile' => 'Profile',
-            'section_display' => 'Display',
+            'section_display' => 'Details',
             'section_about' => 'About',
         ],
         'table' => [
@@ -183,6 +188,8 @@ return [
         'plural_label' => 'Tags',
         'cannot_delete_in_use' => 'Cannot delete tag assigned to creator profiles',
         'form' => [
+            'section_details' => 'Details',
+            'creator_profiles_count_label' => 'Total',
             'slug' => 'Slug',
             'name' => 'Name',
             'slug_placeholder' => 'my-tag',
@@ -234,7 +241,7 @@ return [
                 'tier_desc' => 'Description',
                 'price' => 'Price',
                 'tier_currency' => 'Currency',
-                'subscriptions_count' => 'Subscriptions',
+                'subscriptions_count' => 'Subs',
                 'created_at' => 'Created',
             ],
             'actions' => [
@@ -338,6 +345,8 @@ return [
         'model_label' => 'User',
         'plural_label' => 'Users',
         'form' => [
+            'section_account' => 'Account',
+            'section_security' => 'Security',
             'name' => 'Name',
             'username' => 'Username',
             'email' => 'Email',

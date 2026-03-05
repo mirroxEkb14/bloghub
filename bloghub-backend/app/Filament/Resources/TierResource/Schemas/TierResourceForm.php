@@ -4,6 +4,7 @@ namespace App\Filament\Resources\TierResource\Schemas;
 
 use App\Rules\LevelUniquePerCreatorProfileRule;
 use App\Support\TierResourceSupport;
+use Carbon\Carbon;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -88,6 +89,21 @@ class TierResourceForm
                                             ->options(TierResourceSupport::currencyOptions())
                                             ->required(),
                                     ]),
+                                Section::make(__('filament.section_metadata'))
+                                    ->schema([
+                                        TextInput::make('created_at')
+                                            ->label(__('filament.fields.created_at'))
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->format('Y-m-d H:i:s') : '—'),
+                                        TextInput::make('updated_at')
+                                            ->label(__('filament.fields.updated_at'))
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->format('Y-m-d H:i:s') : '—'),
+                                    ])
+                                    ->columns(2)
+                                    ->visible(fn ($record) => $record !== null),
                             ]),
                     ]),
             ]);

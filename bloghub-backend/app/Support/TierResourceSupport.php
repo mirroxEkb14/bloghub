@@ -74,7 +74,7 @@ class TierResourceSupport
     public static function tierTableModifyQueryUsing(): Closure
     {
         return static function (Builder $query): Builder {
-            return $query->with('creatorProfile');
+            return $query->with('creatorProfile.user');
         };
     }
 

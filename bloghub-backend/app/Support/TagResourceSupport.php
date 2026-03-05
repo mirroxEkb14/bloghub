@@ -40,7 +40,7 @@ class TagResourceSupport
     public static function tagTableModifyQueryUsing(): Closure
     {
         return static function (Builder $query): Builder {
-            return $query->with('creatorProfiles');
+            return $query->withCount('creatorProfiles');
         };
     }
 }

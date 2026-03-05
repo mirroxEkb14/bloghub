@@ -16,8 +16,10 @@
         <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.875rem; font-weight: 600; color: #f9fafb;">
             {{ $userName }}
         </div>
-        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; color: #9ca3af;">
-            {{ $record->user?->username }}
-        </div>
+        @if(($record->user?->username ?? '') !== '')
+            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; color: #9ca3af;">
+                &#64;{{ $record->user->username }}
+            </div>
+        @endif
     </div>
 </div>

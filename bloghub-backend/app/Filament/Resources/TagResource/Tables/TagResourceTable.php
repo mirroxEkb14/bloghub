@@ -25,18 +25,17 @@ class TagResourceTable
                 TextColumn::make('id')
                     ->label('#')
                     ->sortable(),
-                TextColumn::make('slug')
-                    ->label(__('filament.tags.table.columns.slug'))
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('name')
                     ->label(__('filament.tags.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('creator_profiles_label')
+                TextColumn::make('slug')
+                    ->label(__('filament.tags.table.columns.slug'))
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('creator_profiles_count')
                     ->label(__('filament.tags.table.columns.creator_profiles'))
-                    ->limit(50)
-                    ->extraCellAttributes(['style' => 'max-width: 280px;'])
+                    ->counts('creatorProfiles')
                     ->toggleable(),
                 TextColumn::make('created_at')
                     ->label(__('filament.tags.table.columns.created_at'))
