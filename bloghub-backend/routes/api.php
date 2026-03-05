@@ -18,8 +18,10 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/tags', [TagController::class, 'index']);
 Route::get('/creator-profiles', [CreatorProfileController::class, 'index']);
-Route::get('/creator-profiles/{slug}/posts', [CreatorProfilePostController::class, 'index']);
-Route::get('/creator-profiles/{slug}/posts/{postSlug}', [CreatorProfilePostController::class, 'show']);
+Route::get('/creator-profiles/{slug}/posts', [CreatorProfilePostController::class, 'index'])
+    ->middleware('auth.sanctum.optional');
+Route::get('/creator-profiles/{slug}/posts/{postSlug}', [CreatorProfilePostController::class, 'show'])
+    ->middleware('auth.sanctum.optional');
 Route::get('/creator-profiles/{slug}/tiers', [CreatorProfileTierController::class, 'index']);
 Route::get('/creator-profiles/{slug}', [CreatorProfileController::class, 'show']);
 

@@ -186,6 +186,7 @@ export type Post = {
   media_url: string | null;
   media_type: 'Image' | 'Gif' | 'Audio' | 'Video' | null;
   required_tier?: PostRequiredTier | null;
+  user_has_access?: boolean;
   created_at?: string;
   updated_at?: string;
 };

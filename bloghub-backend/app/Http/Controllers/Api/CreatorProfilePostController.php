@@ -21,6 +21,20 @@ class CreatorProfilePostController extends Controller
             return response()->json(['message' => __('Creator profile not found.')], 404);
         }
 
+        $userTierLevel = null;
+        $user = $request->user();
+        if ($user) {
+            $subscription = Subscription::query()
+                ->where('user_id', $user->id)
+                ->where('sub_status', SubStatus::Active)
+                ->where('end_date', '>', now())
+                ->whereHas('tier', fn ($q) => $q->where('creator_profile_id', $profile->id))
+                ->with('tier:id,level')
+                ->first();
+            $userTierLevel = $subscription?->tier?->level;
+        }
+        $request->attributes->set('creator_profile_user_tier_level', $userTierLevel);
+
         $query = $profile->posts()->with('requiredTier:id,creator_profile_id,level,tier_name')->orderByDesc('created_at');
 
         $perPage = min((int) $request->input('per_page', 15), 50);

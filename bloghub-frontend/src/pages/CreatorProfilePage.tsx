@@ -54,6 +54,7 @@ export default function CreatorProfilePage() {
   const [highlightTierId, setHighlightTierId] = useState<number | null>(null);
   const [openMenuPostId, setOpenMenuPostId] = useState<number | null>(null);
   const [shareToast, setShareToast] = useState(false);
+  const [postsRefetchTrigger, setPostsRefetchTrigger] = useState(0);
   const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevPostsPageRef = useRef(1);
   const sidebarRef = useRef<HTMLElement | null>(null);
@@ -146,6 +147,7 @@ export default function CreatorProfilePage() {
             if (res.status === 'active' && 'subscription' in res) {
               setSubscriptionStatus({ subscribed: true, active_subscription: res.subscription });
               setSubscriptionSuccess('Thank you for subscribing!');
+              setPostsRefetchTrigger((t) => t + 1);
             } else if ('message' in res) {
               setSubscriptionError({ tierId: 0, message: res.message });
             }
@@ -164,7 +166,13 @@ export default function CreatorProfilePage() {
           });
       } else {
         setSubscriptionSuccess('Thank you for subscribing!');
-        subscriptionsApi.getStatusByCreator(slug).then(setSubscriptionStatus).catch(() => {});
+        subscriptionsApi
+          .getStatusByCreator(slug)
+          .then((status) => {
+            setSubscriptionStatus(status);
+            setPostsRefetchTrigger((t) => t + 1);
+          })
+          .catch(() => {});
         window.history.replaceState({}, '', pathname);
       }
       return;
@@ -253,7 +261,7 @@ export default function CreatorProfilePage() {
       }
     })();
     return () => { cancelled = true; };
-  }, [slug, postsPage]);
+  }, [slug, postsPage, postsRefetchTrigger]);
 
   useEffect(() => {
     if (postsPage === prevPostsPageRef.current) return;
@@ -377,7 +385,7 @@ export default function CreatorProfilePage() {
               <>
                 <ul className="post-card-list">
                   {posts.map((post) => {
-                    const isLocked = !!post.required_tier;
+                    const isLocked = !!post.required_tier && !post.user_has_access;
                     return (
                       <li key={post.id} className="post-card-wrapper">
                         <article className={`post-card ${isLocked ? 'post-card-locked' : ''}`}>
@@ -611,6 +619,7 @@ export default function CreatorProfilePage() {
                         const status = await subscriptionsApi.getStatusByCreator(slug!);
                         setSubscriptionStatus(status);
                         setSubscriptionSuccess(`Subscribed to ${tier.tier_name}.`);
+                        setPostsRefetchTrigger((t) => t + 1);
                       }
                     } catch (e) {
                       setSubscriptionError({
