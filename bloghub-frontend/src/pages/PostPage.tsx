@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ApiError, postsApi, type Post } from '../api/client';
+import { ApiError, commentsApi, postsApi, type Comment, type Post } from '../api/client';
+import { useAuth } from '../contexts/AuthContext';
 import LoadingPage from '../components/LoadingPage';
 
 type SubscriptionRequiredBody = {
@@ -10,10 +11,16 @@ type SubscriptionRequiredBody = {
 
 export default function PostPage() {
   const { slug, postSlug } = useParams<{ slug: string; postSlug: string }>();
+  const { user } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [subscriptionRequired, setSubscriptionRequired] = useState<{ tierName: string } | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentError, setCommentError] = useState<string | null>(null);
+  const [newCommentText, setNewCommentText] = useState('');
+  const [submittingComment, setSubmittingComment] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -45,6 +52,40 @@ export default function PostPage() {
     })();
     return () => { cancelled = true; };
   }, [slug, postSlug]);
+
+  const fetchComments = useCallback(async () => {
+    if (!slug || !postSlug) return;
+    setCommentsLoading(true);
+    setCommentError(null);
+    try {
+      const list = await commentsApi.list(slug, postSlug);
+      setComments(list);
+    } catch (e) {
+      setCommentError(e instanceof Error ? e.message : 'Failed to load comments');
+    } finally {
+      setCommentsLoading(false);
+    }
+  }, [slug, postSlug]);
+
+  useEffect(() => {
+    if (post) fetchComments();
+  }, [post, fetchComments]);
+
+  const handleSubmitComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!slug || !postSlug || !user || !newCommentText.trim() || submittingComment) return;
+    setSubmittingComment(true);
+    setCommentError(null);
+    try {
+      const created = await commentsApi.create(slug, postSlug, { content_text: newCommentText.trim() });
+      setComments((prev) => [...prev, created]);
+      setNewCommentText('');
+    } catch (e) {
+      setCommentError(e instanceof Error ? e.message : 'Failed to post comment');
+    } finally {
+      setSubmittingComment(false);
+    }
+  };
 
   if (loading) {
     return <LoadingPage message="Loading post..." />;
@@ -125,6 +166,66 @@ export default function PostPage() {
           ))}
         </div>
       )}
+
+      <section className="comments-section" aria-label="Comments">
+        <h2 className="comments-section-title">
+          Comments {comments.length > 0 && `(${comments.length})`}
+        </h2>
+        {commentsLoading && <p className="comments-loading">Loading comments...</p>}
+        {commentError && (
+          <p className="comments-error" role="alert">
+            {commentError}
+          </p>
+        )}
+        {!commentsLoading && comments.length === 0 && !commentError && (
+          <p className="comments-empty">No comments yet. Be the first to comment</p>
+        )}
+        <ul className="comments-list">
+          {comments.map((c) => (
+            <li key={c.id} className="comment-item">
+              <div className="comment-item-header">
+                <span className="comment-author">{c.user?.name ?? c.user?.username ?? 'User'}</span>
+                <time className="comment-date" dateTime={c.created_at}>
+                  {new Date(c.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' })}
+                </time>
+              </div>
+              <div className="comment-body">
+                {(typeof c.content_text === 'string' ? c.content_text : '').split('\n').map((line, i) => (
+                  <p key={i}>{line || '\u00A0'}</p>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ul>
+        {user && (
+          <form className="comment-form" onSubmit={handleSubmitComment}>
+            <label htmlFor="new-comment" className="comment-form-label">
+              Add a comment
+            </label>
+            <textarea
+              id="new-comment"
+              className="comment-form-textarea"
+              value={newCommentText}
+              onChange={(e) => setNewCommentText(e.target.value)}
+              placeholder="Write your comment..."
+              rows={3}
+              maxLength={2000}
+              disabled={submittingComment}
+            />
+            <div className="comment-form-actions">
+              <span className="comment-form-count">{newCommentText.length}/2000</span>
+              <button type="submit" className="btn btn-primary" disabled={!newCommentText.trim() || submittingComment}>
+                {submittingComment ? 'Posting...' : 'Post comment'}
+              </button>
+            </div>
+          </form>
+        )}
+        {!user && (
+          <p className="comments-sign-in">
+            <Link to="/login">Sign in</Link> to leave a comment
+          </p>
+        )}
+      </section>
     </article>
   );
 }

@@ -35,7 +35,10 @@ class CreatorProfilePostController extends Controller
         }
         $request->attributes->set('creator_profile_user_tier_level', $userTierLevel);
 
-        $query = $profile->posts()->with('requiredTier:id,creator_profile_id,level,tier_name')->orderByDesc('created_at');
+        $query = $profile->posts()
+            ->withCount('comments')
+            ->with('requiredTier:id,creator_profile_id,level,tier_name')
+            ->orderByDesc('created_at');
 
         $perPage = min((int) $request->input('per_page', 15), 50);
         $posts = $query->paginate($perPage);

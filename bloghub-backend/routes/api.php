@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CreatorProfileController;
 use App\Http\Controllers\Api\CreatorProfilePostController;
 use App\Http\Controllers\Api\CreatorProfileTierController;
 use App\Http\Controllers\Api\CreatorProfileUploadController;
+use App\Http\Controllers\Api\PostCommentController;
 use App\Http\Controllers\Api\StripeWebhookController;
 use App\Http\Controllers\Api\SubscriptionCheckoutController;
 use App\Http\Controllers\Api\SubscriptionController;
@@ -21,6 +22,8 @@ Route::get('/creator-profiles', [CreatorProfileController::class, 'index']);
 Route::get('/creator-profiles/{slug}/posts', [CreatorProfilePostController::class, 'index'])
     ->middleware('auth.sanctum.optional');
 Route::get('/creator-profiles/{slug}/posts/{postSlug}', [CreatorProfilePostController::class, 'show'])
+    ->middleware('auth.sanctum.optional');
+Route::get('/creator-profiles/{slug}/posts/{postSlug}/comments', [PostCommentController::class, 'index'])
     ->middleware('auth.sanctum.optional');
 Route::get('/creator-profiles/{slug}/tiers', [CreatorProfileTierController::class, 'index']);
 Route::get('/creator-profiles/{slug}', [CreatorProfileController::class, 'show']);
@@ -41,4 +44,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/subscriptions/confirm-checkout', [SubscriptionCheckoutController::class, 'confirmCheckout']);
     Route::get('/creator-profiles/{slug}/subscription-status', [SubscriptionController::class, 'statusByCreator']);
     Route::patch('/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel']);
+
+    Route::post('/creator-profiles/{slug}/posts/{postSlug}/comments', [PostCommentController::class, 'store']);
 });

@@ -528,7 +528,8 @@ export default function CreatorProfilePage() {
                                     <span className="post-card-stat-icon" aria-hidden>♥</span> 0
                                   </span>
                                   <span className="post-card-stat">
-                                    <span className="post-card-stat-icon" aria-hidden>💬</span> 0
+                                    <span className="post-card-stat-icon" aria-hidden>💬</span>{' '}
+                                    {post.comments_count ?? 0}
                                   </span>
                                   <span className="post-card-stat post-card-stat-bookmark">
                                     <span className="post-card-stat-icon" aria-hidden>🔖</span>
