@@ -19,7 +19,7 @@
         </div>
         @if($username !== '')
             <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; color: #9ca3af;">
-                {{ $username }}
+                &#64;{{ $username }}
             </div>
         @endif
     </div>
