@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             PostSeeder::class,
             SubscriptionSeeder::class,
             PostViewSeeder::class,
+            CommentSeeder::class,
         ]);
     }
 }
