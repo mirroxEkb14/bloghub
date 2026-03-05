@@ -23,7 +23,7 @@ class SubscriptionResourceForm
                     ->columns()
                     ->schema([
                         Section::make(__('filament.subscriptions.form.section_main'))
-                            ->columns()
+                            ->columns(2)
                             ->schema([
                                 Select::make('user_id')
                                     ->label(__('filament.subscriptions.form.user_id'))
@@ -31,12 +31,21 @@ class SubscriptionResourceForm
                                     ->searchable()
                                     ->preload()
                                     ->required(),
+                                Select::make('sub_status')
+                                    ->label(__('filament.subscriptions.form.sub_status'))
+                                    ->options(SubscriptionResourceSupport::subStatusOptions())
+                                    ->required(),
                                 Select::make('tier_id')
                                     ->label(__('filament.subscriptions.form.tier_id'))
                                     ->relationship('tier', 'tier_name')
                                     ->searchable()
                                     ->preload()
                                     ->required(),
+                                TextInput::make('tier_level')
+                                    ->label(__('filament.tiers.form.level'))
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->visible(fn ($get) => $get('tier_level') !== null && $get('tier_level') !== ''),
                                 TextInput::make('start_date')
                                     ->label(__('filament.subscriptions.form.start_date'))
                                     ->placeholder(__('filament.subscriptions.form.start_date_placeholder'))
@@ -48,10 +57,6 @@ class SubscriptionResourceForm
                                     ->placeholder(__('filament.subscriptions.form.end_date_placeholder'))
                                     ->required()
                                     ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->format('Y-m-d H:i') : ''),
-                                Select::make('sub_status')
-                                    ->label(__('filament.subscriptions.form.sub_status'))
-                                    ->options(SubscriptionResourceSupport::subStatusOptions())
-                                    ->required(),
                             ]),
                     ]),
             ]);
