@@ -52,6 +52,7 @@
 
 .public-feed-header-inner {
   display: block;
+  width: 100%;
 }
 
 .public-feed-header-inner .profile-name {
@@ -62,6 +63,59 @@
 
 .public-feed-header-inner .profile-meta {
   margin: 0.25rem 0 0 0;
+}
+
+.public-feed-filter-row {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.public-feed-search-wrap {
+  display: flex;
+  align-items: center;
+  flex: 1 1 0;
+  min-width: 0;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  transition: border-color 0.2s;
+}
+.public-feed-search-wrap:focus-within {
+  border-color: var(--accent-muted);
+}
+.public-feed-search-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 0.75rem;
+  color: var(--text-secondary);
+}
+.public-feed-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0.5rem 0.75rem 0.5rem 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text);
+  font-family: inherit;
+}
+.public-feed-search-input::placeholder {
+  color: var(--text-secondary);
+}
+.public-feed-search-input:focus {
+  outline: none;
+}
+
+.public-feed-count-inline {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
 }
 
 .public-feed-count {

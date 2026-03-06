@@ -373,11 +373,13 @@ export type PostsByCreatorParams = {
 export type PublicFeedParams = {
   per_page?: number;
   page?: number;
+  q?: string;
 };
 
 export type TierFeedParams = {
   per_page?: number;
   page?: number;
+  q?: string;
 };
 
 export const feedApi = {
@@ -385,16 +387,18 @@ export const feedApi = {
     const sp = new URLSearchParams();
     if (params.per_page != null) sp.set('per_page', String(params.per_page));
     if (params.page != null) sp.set('page', String(params.page));
-    const q = sp.toString();
-    return api<PaginatedResponse<Post>>(`/api/me/feed/public${q ? `?${q}` : ''}`);
+    if (params.q != null && params.q.trim() !== '') sp.set('q', params.q.trim());
+    const queryString = sp.toString();
+    return api<PaginatedResponse<Post>>(`/api/me/feed/public${queryString ? `?${queryString}` : ''}`);
   },
 
   getTierFeed(params: TierFeedParams = {}) {
     const sp = new URLSearchParams();
     if (params.per_page != null) sp.set('per_page', String(params.per_page));
     if (params.page != null) sp.set('page', String(params.page));
-    const q = sp.toString();
-    return api<PaginatedResponse<Post>>(`/api/me/feed/tier${q ? `?${q}` : ''}`);
+    if (params.q != null && params.q.trim() !== '') sp.set('q', params.q.trim());
+    const queryString = sp.toString();
+    return api<PaginatedResponse<Post>>(`/api/me/feed/tier${queryString ? `?${queryString}` : ''}`);
   },
 };
 

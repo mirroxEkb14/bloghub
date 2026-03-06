@@ -12,12 +12,30 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class FeedController extends Controller
 {
+    private function applyCreatorSearch($query, Request $request): void
+    {
+        $q = trim((string) $request->input('q', ''));
+        if ($q === '') {
+            return;
+        }
+        $term = '%'.$q.'%';
+        $query->where(function ($builder) use ($term) {
+            $builder->whereHas('creatorProfile', function ($profileBuilder) use ($term) {
+                $profileBuilder->where('display_name', 'like', $term)
+                    ->orWhereHas('user', function ($userBuilder) use ($term) {
+                        $userBuilder->where('username', 'like', $term);
+                    });
+            })->orWhere('title', 'like', $term);
+        });
+    }
+
     public function publicFeed(Request $request): AnonymousResourceCollection
     {
         $user = $request->user();
 
         if ($user->hasRole('super_admin')) {
             $query = Post::query()->whereNull('required_tier_id');
+            $subscribedProfileIds = null;
         } else {
             $subscribedProfileIds = Subscription::query()
                 ->where('user_id', $user->id)
@@ -42,6 +60,8 @@ class FeedController extends Controller
                     ->whereNull('required_tier_id');
             }
         }
+
+        $this->applyCreatorSearch($query, $request);
 
         $query
             ->with('creatorProfile:id,slug,display_name,profile_avatar_path')
@@ -88,6 +108,7 @@ class FeedController extends Controller
 
             if (count($creatorLevels) === 0) {
                 $query = Post::query()->whereRaw('1 = 0');
+                $profileIds = [];
             } else {
                 $profileIds = array_keys($creatorLevels);
                 $query = Post::query()
@@ -102,6 +123,8 @@ class FeedController extends Controller
                     });
             }
         }
+
+        $this->applyCreatorSearch($query, $request);
 
         $query
             ->with('creatorProfile:id,slug,display_name,profile_avatar_path')
