@@ -1665,7 +1665,9 @@ input.has-error:focus,
 }
 
 .post-card-dropdown-item {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   width: 100%;
   text-align: left;
   padding: 0.5rem 1rem;
@@ -1676,6 +1678,13 @@ input.has-error:focus,
   cursor: pointer;
   border-radius: 0;
   font-family: inherit;
+}
+
+.post-card-dropdown-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .post-card-dropdown-item:hover {
