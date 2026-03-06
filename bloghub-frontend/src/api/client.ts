@@ -94,6 +94,8 @@ export type User = {
   username: string;
   email: string;
   email_verified_at: string | null;
+  terms_accepted_at: string | null;
+  privacy_accepted_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -134,6 +136,13 @@ export const authApi = {
 
   user() {
     return api<{ user: User }>('/api/user');
+  },
+
+  acceptTermsAndPrivacy(body: { terms_accepted: true; privacy_accepted: true }) {
+    return api<{ user: User }>('/api/user/accept-terms-privacy', {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
   },
 };
 

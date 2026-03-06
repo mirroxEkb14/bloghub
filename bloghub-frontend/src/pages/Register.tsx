@@ -5,7 +5,7 @@ import InputWithIcon from '../components/InputWithIcon';
 import PasswordField from '../components/PasswordField';
 import { useAuth } from '../contexts/AuthContext';
 
-type FormKey = 'name' | 'username' | 'email' | 'password' | 'password_confirmation';
+type FormKey = 'name' | 'username' | 'email' | 'password' | 'password_confirmation' | 'terms_accepted' | 'privacy_accepted';
 
 export default function Register() {
   const { register, error, clearError } = useAuth();
@@ -16,6 +16,8 @@ export default function Register() {
     email: '',
     password: '',
     password_confirmation: '',
+    terms_accepted: false,
+    privacy_accepted: false,
   });
   const [submitting, setSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<FormKey, string>>>({});
@@ -24,7 +26,7 @@ export default function Register() {
     clearError();
   }, [clearError]);
 
-  function update(f: FormKey, value: string) {
+  function update(f: FormKey, value: string | boolean) {
     setForm((prev) => ({ ...prev, [f]: value }));
     setFieldErrors((prev) => {
       const next = { ...prev };
@@ -46,6 +48,14 @@ export default function Register() {
       return;
     }
 
+    if (!form.terms_accepted || !form.privacy_accepted) {
+      setFieldErrors({
+        terms_accepted: !form.terms_accepted ? 'You must accept the Terms of Service' : undefined,
+        privacy_accepted: !form.privacy_accepted ? 'You must accept the Privacy Policy' : undefined,
+      });
+      return;
+    }
+
     setSubmitting(true);
     try {
       await register({
@@ -54,14 +64,17 @@ export default function Register() {
         email: form.email,
         password: form.password,
         password_confirmation: form.password_confirmation,
+        terms_accepted: true,
+        privacy_accepted: true,
       });
       navigate('/', { replace: true });
     } catch (err) {
       if (err instanceof ValidationError) {
         const next: Partial<Record<FormKey, string>> = {};
+        const keys: FormKey[] = ['name', 'username', 'email', 'password', 'password_confirmation', 'terms_accepted', 'privacy_accepted'];
         for (const [key, messages] of Object.entries(err.errors)) {
           const k = key as FormKey;
-          if (messages?.length && (k === 'name' || k === 'username' || k === 'email' || k === 'password' || k === 'password_confirmation')) {
+          if (messages?.length && keys.includes(k)) {
             next[k] = messages[0];
           }
         }
@@ -143,6 +156,30 @@ export default function Register() {
             autoComplete="new-password"
             error={fieldErrors.password_confirmation}
           />
+          <div className="form-group accept-legal-checkboxes">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={form.terms_accepted}
+                onChange={(e) => update('terms_accepted', e.target.checked)}
+              />
+              <span>
+                I accept the <Link to="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</Link>
+              </span>
+            </label>
+            {fieldErrors.terms_accepted && <p className="field-error">{fieldErrors.terms_accepted}</p>}
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={form.privacy_accepted}
+                onChange={(e) => update('privacy_accepted', e.target.checked)}
+              />
+              <span>
+                I accept the <Link to="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>
+              </span>
+            </label>
+            {fieldErrors.privacy_accepted && <p className="field-error">{fieldErrors.privacy_accepted}</p>}
+          </div>
           <div className="form-actions">
             <button type="submit" className="btn btn-primary" disabled={submitting}>
               {submitting ? 'Creating account...' : 'Register'}
