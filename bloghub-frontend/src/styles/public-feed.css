@@ -111,6 +111,11 @@
   aspect-ratio: 16 / 9;
 }
 
+.public-feed-list .post-card-media.post-card-media-audio {
+  aspect-ratio: auto;
+  min-height: 0;
+}
+
 .public-feed-list .post-card-excerpt {
   font-size: 0.875rem;
   line-height: 1.45;
