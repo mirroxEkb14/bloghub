@@ -7,9 +7,15 @@ if [ ! -f ".env" ]; then
   cp .env.example .env
 fi
 
-mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions storage/logs bootstrap/cache storage/app/private storage/app/public
+mkdir -p \
+  storage/framework/views storage/framework/cache storage/framework/sessions \
+  storage/logs bootstrap/cache storage/app/private storage/app/public \
+  storage/app/public/creator-profiles/avatars \
+  storage/app/public/creator-profiles/covers \
+  storage/app/public/users/avatars
 chmod -R 775 storage bootstrap/cache || true
-chown -R www-data:www-data storage bootstrap/cache || true
+chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
+chmod -R 777 storage/app/public
 
 if [ ! -f "vendor/autoload.php" ]; then
   composer install --no-interaction
