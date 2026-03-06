@@ -4,9 +4,9 @@ import { creatorProfilesApi, tagsApi, type CreatorProfile, type Tag } from '../a
 import LoadingPage from '../components/LoadingPage';
 
 const TAG_PARAM = 'tag';
-const DISCOVER_SCROLL_KEY = 'discover-scroll';
+const EXPLORE_SCROLL_KEY = 'explore-scroll';
 
-export default function Discovery() {
+export default function ExplorePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const tagFromUrl = searchParams.get(TAG_PARAM);
 
@@ -19,9 +19,9 @@ export default function Discovery() {
   const savedScrollRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const y = sessionStorage.getItem(DISCOVER_SCROLL_KEY);
+    const y = sessionStorage.getItem(EXPLORE_SCROLL_KEY);
     if (y !== null) {
-      sessionStorage.removeItem(DISCOVER_SCROLL_KEY);
+      sessionStorage.removeItem(EXPLORE_SCROLL_KEY);
       savedScrollRef.current = parseInt(y, 10);
     }
   }, []);
@@ -29,7 +29,7 @@ export default function Discovery() {
   useEffect(() => {
     let tick: ReturnType<typeof setTimeout> | null = null;
     const saveScroll = () => {
-      sessionStorage.setItem(DISCOVER_SCROLL_KEY, String(window.scrollY));
+      sessionStorage.setItem(EXPLORE_SCROLL_KEY, String(window.scrollY));
     };
     const onScroll = () => {
       if (tick !== null) clearTimeout(tick);
@@ -94,22 +94,22 @@ export default function Discovery() {
   };
 
   return (
-    <div className="discovery-page">
-      <div className="discovery-header">
-        <h1 className="discovery-title">Discover creators</h1>
-        <p className="discovery-subtitle">Find and follow your favorite creators</p>
+    <div className="explore-page">
+      <div className="explore-header">
+        <h1 className="explore-title">Explore creators</h1>
+        <p className="explore-subtitle">Find and follow your favorite creators</p>
       </div>
 
-      <div className="discovery-toolbar">
+      <div className="explore-toolbar">
         <input
           type="search"
-          className="discovery-search"
+          className="explore-search"
           placeholder="Search by name or username..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           aria-label="Search creators"
         />
-        <div className="discovery-tags" role="group" aria-label="Filter by tag">
+        <div className="explore-tags" role="group" aria-label="Filter by tag">
           <button
             type="button"
             className={`tag-chip ${tagSlug === null ? 'active' : ''}`}
@@ -131,15 +131,15 @@ export default function Discovery() {
       </div>
 
       {loading ? (
-        <LoadingPage message="Discovering creators..." />
+        <LoadingPage message="Exploring creators..." />
       ) : profiles.length === 0 ? (
-        <div className="discovery-empty">
+        <div className="explore-empty">
           <p>No creators found. Try another search or tag</p>
         </div>
       ) : (
         <>
           {meta && (
-            <p className="discovery-meta">
+            <p className="explore-meta">
               Showing {profiles.length} of {meta.total} creator{meta.total !== 1 ? 's' : ''}
             </p>
           )}

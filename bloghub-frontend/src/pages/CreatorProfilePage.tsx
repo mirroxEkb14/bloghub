@@ -354,8 +354,8 @@ export default function CreatorProfilePage() {
         <div className="card" style={{ maxWidth: 420 }}>
           <h1 className="form-title">Creator not found</h1>
           <p className="form-subtitle">{error ?? 'This profile may have been removed.'}</p>
-          <Link to="/discover" className="btn btn-primary" style={{ display: 'inline-block', marginTop: '1rem' }}>
-            Discover creators
+          <Link to="/explore" className="btn btn-primary" style={{ display: 'inline-block', marginTop: '1rem' }}>
+            Explore creators
           </Link>
         </div>
       </div>
@@ -674,7 +674,7 @@ export default function CreatorProfilePage() {
                 {profile.tags.map((t) => (
                   <Link
                     key={t.id}
-                    to={`/discover?tag=${encodeURIComponent(t.slug)}`}
+                    to={`/explore?tag=${encodeURIComponent(t.slug)}`}
                     className="creator-tag creator-tag-pill creator-tag-link"
                   >
                     {t.name}

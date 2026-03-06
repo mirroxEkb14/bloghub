@@ -94,10 +94,12 @@ export type User = {
   username: string;
   email: string;
   email_verified_at: string | null;
+  avatar_url?: string | null;
   terms_accepted_at: string | null;
   privacy_accepted_at: string | null;
   created_at: string;
   updated_at: string;
+  creator_profile?: { id: number; user_id: number; slug: string } | null;
 };
 
 export type AuthResponse = {

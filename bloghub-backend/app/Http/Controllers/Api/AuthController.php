@@ -29,6 +29,7 @@ class AuthController extends Controller
         ]);
 
         $token = $user->createToken('auth')->plainTextToken;
+        $user->load('creatorProfile:id,user_id,slug');
 
         return response()->json([
             'user' => $user,
@@ -56,6 +57,7 @@ class AuthController extends Controller
         $user->tokens()->delete();
 
         $token = $user->createToken('auth')->plainTextToken;
+        $user->load('creatorProfile:id,user_id,slug');
 
         return response()->json([
             'user' => $user,
@@ -73,8 +75,11 @@ class AuthController extends Controller
 
     public function user(Request $request): JsonResponse
     {
+        $user = $request->user();
+        $user->load('creatorProfile:id,user_id,slug');
+
         return response()->json([
-            'user' => $request->user(),
+            'user' => $user,
         ]);
     }
 
