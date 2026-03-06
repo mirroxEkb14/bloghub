@@ -704,7 +704,7 @@ export default function CreatorProfilePage() {
                             className="btn btn-secondary btn-sm tier-card-join"
                             onClick={() => navigate('/login', { state: { from: location.pathname } })}
                           >
-                            Log in to subscribe
+                            Log in to Subscribe
                           </button>
                         )}
                       </div>

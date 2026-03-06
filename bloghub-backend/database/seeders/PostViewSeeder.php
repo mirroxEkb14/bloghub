@@ -12,47 +12,33 @@ use Illuminate\Database\Seeder;
 
 class PostViewSeeder extends Seeder
 {
-    private const VIEWER_NAME_MAP = [
-        'Caroline' => 'Caroline',
-        'Freeman' => 'Gordon Freeman',
-        'Scully' => 'Dana Scully',
-        'Mulder' => 'Fox Mulder',
-        'Neo' => 'Thomas A. Anderson',
-        'Trinity' => 'Tiffany Zion',
-        'Ripley' => 'Ellen Ripley',
-        'Maggie' => 'Maggie Rhee',
-        'Negan' => 'Negan',
-        'House' => 'Gregory House',
-        'CJ' => 'Carl Johnson',
-    ];
-
     private const PUBLIC_POST_VIEWS = [
         'Caroline' => [
-            'The Borealis: A Lesson in Spontaneous Relocation' => ['Freeman', 'Scully', 'Mulder', 'Neo', 'Trinity'],
-            'The Black Mesa Anomaly: A Study in Incompetence' => ['Ripley', 'Freeman', 'Maggie', 'Negan'],
+            'The Borealis: A Lesson in Spontaneous Relocation' => ['Gordon Freeman', 'Dana Scully', 'Fox Mulder', 'Thomas A. Anderson', 'Tiffany Zion'],
+            'The Black Mesa Anomaly: A Study in Incompetence' => ['Ellen Ripley', 'Gordon Freeman', 'Maggie Rhee', 'Negan'],
         ],
         'Dana Scully' => [
-            'Case File: 6x21 — The Brown Mountain Symbiosis' => ['Mulder', 'House', 'Maggie'],
-            'Case File: 6x06 — The Holiday Solstice' => ['Mulder', 'House', 'Negan', 'CJ'],
+            'Case File: 6x21 — The Brown Mountain Symbiosis' => ['Fox Mulder', 'Gregory House', 'Maggie Rhee'],
+            'Case File: 6x06 — The Holiday Solstice' => ['Fox Mulder', 'Gregory House', 'Negan', 'Carl Johnson'],
         ],
         'Ellen Ripley' => [
-            'XX121: The Predator Perfection' => ['Caroline', 'Scully', 'House', 'Negan'],
-            'The Acheron (LV-426) Site' => ['Caroline', 'Scully', 'Mulder'],
+            'XX121: The Predator Perfection' => ['Caroline', 'Dana Scully', 'Gregory House', 'Negan'],
+            'The Acheron (LV-426) Site' => ['Caroline', 'Dana Scully', 'Fox Mulder'],
         ],
         'Fox Mulder' => [
-            'The Blackwood Anomaly and the Texas Bio-Lobby' => ['Caroline', 'Scully', 'Ripley', 'Freeman', 'House'],
+            'The Blackwood Anomaly and the Texas Bio-Lobby' => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Gordon Freeman', 'Gregory House'],
         ],
         'Gordon Freeman' => [
-            "The Universal 'Combine' Union" => ['Caroline', 'Scully', 'Ripley', 'Mulder', 'Neo', 'Trinity'],
-            '"Xenocrystal Bloom"' => ['Caroline'],
-            'Resonance Cascade Event – Video Insight' => ['Caroline', 'Scully', 'Ripley', 'Mulder'],
-            'Resonance Cascade Event' => ['Caroline', 'Scully', 'Ripley', 'Mulder', 'House', 'Maggie', 'Negan', 'Neo', 'Trinity', 'CJ'],
+            "The Universal 'Combine' Union" => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder', 'Thomas A. Anderson', 'Tiffany Zion'],
+            '"Xenocrystal Bloom" - Sound Insight' => ['Caroline'],
+            'Resonance Cascade Event – Video Insight' => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder'],
+            'Resonance Cascade Event' => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder', 'Gregory House', 'Maggie Rhee', 'Negan', 'Thomas A. Anderson', 'Tiffany Zion', 'Carl Johnson'],
         ],
         'Maggie Rhee' => [
-            'From Survivor to Architect' => ['House', 'Negan'],
+            'From Survivor to Architect' => ['Gregory House', 'Negan'],
         ],
         'Negan' => [
-            'A Retrospective on Staying Alive' => ['Caroline', 'Freeman', 'House', 'Maggie'],
+            'A Retrospective on Staying Alive' => ['Caroline', 'Gordon Freeman', 'Gregory House', 'Maggie Rhee'],
         ],
     ];
 
@@ -121,7 +107,7 @@ class PostViewSeeder extends Seeder
                 continue;
             }
 
-            foreach ($titleToViewers as $postTitle => $viewerShortNames) {
+            foreach ($titleToViewers as $postTitle => $viewerNames) {
                 $post = Post::where('creator_profile_id', $profile->id)
                     ->where('title', $postTitle)
                     ->first();
@@ -130,9 +116,8 @@ class PostViewSeeder extends Seeder
                 }
 
                 $postCreatedAt = Carbon::parse($post->created_at);
-                foreach ($viewerShortNames as $shortName) {
-                    $viewerUserName = self::VIEWER_NAME_MAP[$shortName] ?? $shortName;
-                    $viewer = User::where('name', $viewerUserName)->first();
+                foreach ($viewerNames as $viewerName) {
+                    $viewer = User::where('name', $viewerName)->first();
                     if (! $viewer || $viewer->id === $creator->id) {
                         continue;
                     }
