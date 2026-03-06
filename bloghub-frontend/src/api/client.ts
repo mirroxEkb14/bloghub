@@ -190,6 +190,8 @@ export type Post = {
   views_count?: number;
   user_has_viewed?: boolean;
   comments_count?: number;
+  likes_count?: number;
+  user_has_liked?: boolean;
   created_at?: string;
   updated_at?: string;
 };
@@ -355,6 +357,20 @@ export const postsApi = {
     return api<unknown>(
       `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts/${encodeURIComponent(postSlug)}/view`,
       { method: 'POST' }
+    );
+  },
+
+  like(creatorSlug: string, postSlug: string) {
+    return api<unknown>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts/${encodeURIComponent(postSlug)}/like`,
+      { method: 'POST' }
+    );
+  },
+
+  unlike(creatorSlug: string, postSlug: string) {
+    return api<unknown>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts/${encodeURIComponent(postSlug)}/like`,
+      { method: 'DELETE' }
     );
   },
 };

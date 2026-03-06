@@ -22,6 +22,7 @@ export default function PostPage() {
   const [commentError, setCommentError] = useState<string | null>(null);
   const [newCommentText, setNewCommentText] = useState('');
   const [submittingComment, setSubmittingComment] = useState(false);
+  const [togglingLike, setTogglingLike] = useState(false);
 
   useEffect(() => {
     if (window.location.hash !== '#comments') {
@@ -102,6 +103,40 @@ export default function PostPage() {
     }
   };
 
+  const handleToggleLike = async () => {
+    if (!slug || !postSlug || !post || !user || togglingLike) return;
+    const nextLiked = !post.user_has_liked;
+    setTogglingLike(true);
+    setPost((prev) =>
+      prev
+        ? {
+            ...prev,
+            likes_count: (prev.likes_count ?? 0) + (nextLiked ? 1 : -1),
+            user_has_liked: nextLiked,
+          }
+        : null
+    );
+    try {
+      if (nextLiked) {
+        await postsApi.like(slug, postSlug);
+      } else {
+        await postsApi.unlike(slug, postSlug);
+      }
+    } catch {
+      setPost((prev) =>
+        prev
+          ? {
+              ...prev,
+              likes_count: (prev.likes_count ?? 0) + (nextLiked ? -1 : 1),
+              user_has_liked: !nextLiked,
+            }
+          : null
+      );
+    } finally {
+      setTogglingLike(false);
+    }
+  };
+
   if (loading) {
     return <LoadingPage message="Loading post..." />;
   }
@@ -165,7 +200,25 @@ export default function PostPage() {
               <span className="post-page-metric-icon" aria-hidden>👁</span> {post.views_count ?? 0}
             </span>
             <span className="post-page-metric" title="Likes">
-              <span className="post-page-metric-icon" aria-hidden>♥</span> 0
+              {user ? (
+                <button
+                  type="button"
+                  className="post-page-metric-btn"
+                  aria-pressed={post.user_has_liked ?? false}
+                  aria-label={post.user_has_liked ? 'Unlike' : 'Like'}
+                  disabled={togglingLike}
+                  onClick={handleToggleLike}
+                >
+                  <span className="post-page-metric-icon" aria-hidden>
+                    {post.user_has_liked ? '♥' : '♡'}
+                  </span>{' '}
+                  {post.likes_count ?? 0}
+                </button>
+              ) : (
+                <>
+                  <span className="post-page-metric-icon" aria-hidden>♥</span> {post.likes_count ?? 0}
+                </>
+              )}
             </span>
             <span className="post-page-metric" title="Comments">
               <span className="post-page-metric-icon" aria-hidden>💬</span> {comments.length}

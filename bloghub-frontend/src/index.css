@@ -1395,6 +1395,28 @@ label {
   text-decoration: underline;
 }
 
+.post-card-stat-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.post-card-stat-btn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+.post-card-stat-btn:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+.post-card-stat-like[aria-pressed="true"] .post-card-stat-icon {
+  color: var(--accent, #e11d48);
+}
+
 .post-card-stat-bookmark {
   margin-left: auto;
 }
@@ -1580,6 +1602,28 @@ label {
 
 .post-page-metric-icon {
   font-size: 1rem;
+}
+
+.post-page-metric-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.post-page-metric-btn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+.post-page-metric-btn:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+.post-page-metric-btn[aria-pressed="true"] .post-page-metric-icon {
+  color: var(--accent, #e11d48);
 }
 
 .post-media {
