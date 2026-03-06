@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CreatorProfileController;
+use App\Http\Controllers\Api\UserUploadController;
 use App\Http\Controllers\Api\CreatorProfilePostController;
 use App\Http\Controllers\Api\CreatorProfileTierController;
 use App\Http\Controllers\Api\CreatorProfileUploadController;
@@ -31,7 +32,9 @@ Route::get('/creator-profiles/{slug}', [CreatorProfileController::class, 'show']
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+    Route::patch('/user', [AuthController::class, 'updateProfile']);
     Route::patch('/user/accept-terms-privacy', [AuthController::class, 'acceptTermsAndPrivacy']);
+    Route::post('/user/upload-avatar', [UserUploadController::class, 'avatar']);
 
     Route::get('/me/creator-profile', [CreatorProfileController::class, 'me']);
     Route::post('/creator-profiles', [CreatorProfileController::class, 'store']);

@@ -95,6 +95,7 @@ export type User = {
   email: string;
   email_verified_at: string | null;
   avatar_url?: string | null;
+  phone?: string | null;
   terms_accepted_at: string | null;
   privacy_accepted_at: string | null;
   created_at: string;
@@ -138,6 +139,17 @@ export const authApi = {
 
   user() {
     return api<{ user: User }>('/api/user');
+  },
+
+  updateProfile(body: { name: string; username: string; email: string; phone?: string | null }) {
+    return api<{ user: User }>('/api/user', {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
+  },
+
+  uploadUserAvatar(file: File) {
+    return uploadApi<{ path: string; url: string }>('/api/user/upload-avatar', 'avatar', file);
   },
 
   acceptTermsAndPrivacy(body: { terms_accepted: true; privacy_accepted: true }) {
