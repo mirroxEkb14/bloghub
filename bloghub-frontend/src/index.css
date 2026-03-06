@@ -5,6 +5,7 @@
 @import './styles/layout-misc.css';
 @import './styles/explore.css';
 @import './styles/creator-profile.css';
+@import './styles/public-feed.css';
 @import './styles/post.css';
 @import './styles/toasts.css';
 @import './styles/post-preview.css';

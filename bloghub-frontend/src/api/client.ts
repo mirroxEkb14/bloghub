@@ -217,6 +217,7 @@ export type Post = {
   user_has_liked?: boolean;
   created_at?: string;
   updated_at?: string;
+  creator_profile?: { slug: string; display_name: string; profile_avatar_url?: string | null } | null;
 };
 
 export type CommentUser = {
@@ -357,6 +358,21 @@ export const creatorProfilesApi = {
 export type PostsByCreatorParams = {
   per_page?: number;
   page?: number;
+};
+
+export type PublicFeedParams = {
+  per_page?: number;
+  page?: number;
+};
+
+export const feedApi = {
+  getPublicFeed(params: PublicFeedParams = {}) {
+    const sp = new URLSearchParams();
+    if (params.per_page != null) sp.set('per_page', String(params.per_page));
+    if (params.page != null) sp.set('page', String(params.page));
+    const q = sp.toString();
+    return api<PaginatedResponse<Post>>(`/api/me/feed/public${q ? `?${q}` : ''}`);
+  },
 };
 
 export const postsApi = {
