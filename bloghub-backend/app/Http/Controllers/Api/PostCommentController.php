@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\SubStatus;
+use App\Enums\UserRoleEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use App\Models\CreatorProfile;
@@ -44,28 +45,34 @@ class PostCommentController extends Controller
                     ], 403),
                 ];
             }
-            $hasAccess = Subscription::query()
-                ->where('user_id', $user->id)
-                ->where('sub_status', SubStatus::Active)
-                ->where('end_date', '>', now())
-                ->whereHas('tier', function ($q) use ($post) {
-                    $q->where('creator_profile_id', $post->creator_profile_id)
-                        ->where('level', '>=', $post->requiredTier->level);
-                })
-                ->exists();
-            if (! $hasAccess) {
-                return [
-                    null,
-                    response()->json([
-                        'message' => __('This post is for subscribers only'),
-                        'requires_subscription' => true,
-                        'required_tier' => [
-                            'id' => $post->requiredTier->id,
-                            'tier_name' => $post->requiredTier->tier_name,
-                            'level' => $post->requiredTier->level,
-                        ],
-                    ], 403),
-                ];
+            $isProfileOwner = $user->id === $profile->user_id;
+            $isSuperAdmin = $user->hasRole(UserRoleEnum::SuperAdmin->value);
+            $hasFullAccess = $isProfileOwner || $isSuperAdmin;
+
+            if (! $hasFullAccess) {
+                $hasAccess = Subscription::query()
+                    ->where('user_id', $user->id)
+                    ->where('sub_status', SubStatus::Active)
+                    ->where('end_date', '>', now())
+                    ->whereHas('tier', function ($q) use ($post) {
+                        $q->where('creator_profile_id', $post->creator_profile_id)
+                            ->where('level', '>=', $post->requiredTier->level);
+                    })
+                    ->exists();
+                if (! $hasAccess) {
+                    return [
+                        null,
+                        response()->json([
+                            'message' => __('This post is for subscribers only'),
+                            'requires_subscription' => true,
+                            'required_tier' => [
+                                'id' => $post->requiredTier->id,
+                                'tier_name' => $post->requiredTier->tier_name,
+                                'level' => $post->requiredTier->level,
+                            ],
+                        ], 403),
+                    ];
+                }
             }
         }
 

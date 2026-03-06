@@ -135,6 +135,10 @@ export default function CreatorProfilePage() {
   }, [slug, user]);
 
   useEffect(() => {
+    if (!user) setPreviewPost(null);
+  }, [user]);
+
+  useEffect(() => {
     const params = new URLSearchParams(location.search);
     const subscribeResult = params.get('subscribe');
     const sessionId = params.get('session_id');
@@ -262,7 +266,7 @@ export default function CreatorProfilePage() {
       }
     })();
     return () => { cancelled = true; };
-  }, [slug, postsPage, postsRefetchTrigger]);
+  }, [slug, postsPage, postsRefetchTrigger, user]);
 
   useEffect(() => {
     if (postsPage === prevPostsPageRef.current) return;
@@ -525,16 +529,38 @@ export default function CreatorProfilePage() {
                                   </figure>
                                 )}
                                 <footer className="post-card-footer">
+                                  <span className="post-card-stat" title="Unique views (full page)">
+                                    <span className="post-card-stat-icon" aria-hidden>👁</span>{' '}
+                                    {post.views_count ?? 0}
+                                  </span>
                                   <span className="post-card-stat">
                                     <span className="post-card-stat-icon" aria-hidden>♥</span> 0
                                   </span>
                                   <span className="post-card-stat">
                                     <span className="post-card-stat-icon" aria-hidden>💬</span>{' '}
-                                    {post.comments_count ?? 0}
+                                    {(post.comments_count ?? 0) > 0 && slug ? (
+                                      <Link
+                                        to={`/creator/${slug}/post/${post.slug}#comments`}
+                                        className="post-card-stat-link"
+                                        title="Jump to comments"
+                                        onClick={() => {
+                                          sessionStorage.setItem(`creator-scroll-${slug}`, String(window.scrollY));
+                                        }}
+                                      >
+                                        {post.comments_count}
+                                      </Link>
+                                    ) : (
+                                      post.comments_count ?? 0
+                                    )}
                                   </span>
                                   <span className="post-card-stat post-card-stat-bookmark">
                                     <span className="post-card-stat-icon" aria-hidden>🔖</span>
                                   </span>
+                                  {post.user_has_viewed && (
+                                    <span className="post-card-seen" title="You've already viewed this post">
+                                      Seen
+                                    </span>
+                                  )}
                                 </footer>
                               </>
                             )}
@@ -678,7 +704,7 @@ export default function CreatorProfilePage() {
                             className="btn btn-secondary btn-sm tier-card-join"
                             onClick={() => navigate('/login', { state: { from: location.pathname } })}
                           >
-                            Log in to subscribe
+                            Log in to Subscribe
                           </button>
                         )}
                       </div>

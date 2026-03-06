@@ -40,7 +40,7 @@ class TierSeeder extends Seeder
         'Caroline' => [
             ['level' => 1, 'tier_name' => 'Test Subject #1498', 'price' => 199, 'currency' => Currency::CZK, 'tier_desc' => 'Test Subject #1498: The Companion Cube, Aperture Science Handheld Portal Device, The Cake', 'cover_base' => 'Test-Subject_cover'],
             ['level' => 2, 'tier_name' => 'Maintenance Specialist (Level 4)', 'price' => 1399, 'currency' => Currency::CZK, 'tier_desc' => 'Maintenance Specialist (Level 4): Aperture Science Long Fall Boots, The Curiosity Core', 'cover_base' => 'Advanced-Prototype_cover'],
-            ['level' => 3, 'tier_name' => 'Central AI Overseer', 'price' => 5299, 'currency' => Currency::CZK, 'tier_desc' => 'Central AI Overseer: Atlas & P-Body Blueprints, Neurotoxin Delivery Controls, The Morality Core', 'cover_base' => 'Aperture-Core-Member_cover'],
+            ['level' => 3, 'tier_name' => 'Central AI Overseer', 'price' => 5299, 'currency' => Currency::CZK, 'tier_desc' => 'Central AI Overseer: Atlas & P-Body blueprints, Neurotoxin delivery controls, The Morality Core', 'cover_base' => 'Aperture-Core-Member_cover'],
         ],
         'Ellen Ripley' => [
             ['level' => 1, 'tier_name' => 'Sole Survivor', 'price' => 99, 'currency' => Currency::CZK, 'tier_desc' => 'Sole Survivor: Insights on the Nostromo\'s flight path, LV-426 landing reports', 'cover_base' => 'Crew-Member_cover'],

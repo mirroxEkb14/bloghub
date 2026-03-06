@@ -1387,8 +1387,23 @@ label {
   font-size: 1rem;
 }
 
+.post-card-stat-link {
+  color: inherit;
+  text-decoration: none;
+}
+.post-card-stat-link:hover {
+  text-decoration: underline;
+}
+
 .post-card-stat-bookmark {
   margin-left: auto;
+}
+
+.post-card-seen {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  opacity: 0.85;
+  font-style: italic;
 }
 
 /* Locked post */

@@ -24,8 +24,17 @@ export default function PostPage() {
   const [submittingComment, setSubmittingComment] = useState(false);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    if (window.location.hash !== '#comments') {
+      window.scrollTo(0, 0);
+    }
   }, [slug, postSlug]);
+
+  useEffect(() => {
+    if (window.location.hash === '#comments' && post && !loading) {
+      const el = document.getElementById('comments');
+      el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [post, loading]);
 
   useEffect(() => {
     if (!slug || !postSlug) return;
@@ -53,6 +62,11 @@ export default function PostPage() {
     })();
     return () => { cancelled = true; };
   }, [slug, postSlug]);
+
+  useEffect(() => {
+    if (!user || !slug || !postSlug || !post) return;
+    postsApi.recordView(slug, postSlug).catch(() => { /* ignore */ });
+  }, [user, slug, postSlug, post]);
 
   const fetchComments = useCallback(async () => {
     if (!slug || !postSlug) return;
@@ -168,7 +182,7 @@ export default function PostPage() {
         </div>
       )}
 
-      <section className="comments-section" aria-label="Comments">
+      <section id="comments" className="comments-section" aria-label="Comments">
         <h2 className="comments-section-title">
           Comments {comments.length > 0 && `(${comments.length})`}
         </h2>

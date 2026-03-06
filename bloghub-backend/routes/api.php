@@ -46,4 +46,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel']);
 
     Route::post('/creator-profiles/{slug}/posts/{postSlug}/comments', [PostCommentController::class, 'store']);
+    Route::post('/creator-profiles/{slug}/posts/{postSlug}/view', [CreatorProfilePostController::class, 'recordView']);
 });

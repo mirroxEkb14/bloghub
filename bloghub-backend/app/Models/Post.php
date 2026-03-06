@@ -38,4 +38,9 @@ class Post extends Model
     {
         return $this->hasMany(Comment::class);
     }
+
+    public function postViews(): HasMany
+    {
+        return $this->hasMany(PostView::class);
+    }
 }

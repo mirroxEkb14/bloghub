@@ -60,13 +60,13 @@ class PostSeeder extends Seeder
                     null,
                     'Resonance Cascade Event – Video Insight',
                 ],
-                'xenocrystal-bloom' => [
+                'xenocrystal-bloom-sound-insight' => [
                     MediaType::Audio->value,
                     'Shimmering, crystalline chimes provide a sharp contrast to the low-end drones, while distant, reverb-heavy screeches and the leathery flutter of wings evoke the presence of unseen predators. Wet, rhythmic squelches and granular clicks that simulate bioluminescent life.',
                     'A high-fidelity atmospheric journey into a non-terrestrial ecosystem',
                     '2025-11-06',
                     null,
-                    '"Xenocrystal Bloom"',
+                    '"Xenocrystal Bloom" - Sound Insight',
                 ],
             ],
         ],
