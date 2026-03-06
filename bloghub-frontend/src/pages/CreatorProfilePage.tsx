@@ -354,8 +354,8 @@ export default function CreatorProfilePage() {
         <div className="card" style={{ maxWidth: 420 }}>
           <h1 className="form-title">Creator not found</h1>
           <p className="form-subtitle">{error ?? 'This profile may have been removed.'}</p>
-          <Link to="/discover" className="btn btn-primary" style={{ display: 'inline-block', marginTop: '1rem' }}>
-            Discover creators
+          <Link to="/explore" className="btn btn-primary" style={{ display: 'inline-block', marginTop: '1rem' }}>
+            Explore creators
           </Link>
         </div>
       </div>
@@ -496,6 +496,15 @@ export default function CreatorProfilePage() {
                                     className="post-card-dropdown-item"
                                     onClick={() => handleSharePost(post)}
                                   >
+                                    <span className="post-card-dropdown-item-icon" aria-hidden>
+                                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <circle cx="6" cy="12" r="3" />
+                                        <circle cx="18" cy="5" r="3" />
+                                        <circle cx="18" cy="19" r="3" />
+                                        <line x1="6" y1="12" x2="18" y2="5" />
+                                        <line x1="6" y1="12" x2="18" y2="19" />
+                                      </svg>
+                                    </span>
                                     Share
                                   </button>
                                 </div>
@@ -674,7 +683,7 @@ export default function CreatorProfilePage() {
                 {profile.tags.map((t) => (
                   <Link
                     key={t.id}
-                    to={`/discover?tag=${encodeURIComponent(t.slug)}`}
+                    to={`/explore?tag=${encodeURIComponent(t.slug)}`}
                     className="creator-tag creator-tag-pill creator-tag-link"
                   >
                     {t.name}
@@ -710,6 +719,9 @@ export default function CreatorProfilePage() {
                         setSubscriptionStatus(status);
                         setSubscriptionSuccess(`Subscribed to ${tier.tier_name}.`);
                         setPostsRefetchTrigger((t) => t + 1);
+                      }
+                      if (result.type === 'already_subscribed') {
+                        setSubscriptionSuccess(result.message ?? 'You already have access to all tiers');
                       }
                     } catch (e) {
                       setSubscriptionError({

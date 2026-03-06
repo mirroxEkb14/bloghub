@@ -20,6 +20,13 @@ class SubscriptionCheckoutController extends Controller
         $tierId = (int) $request->input('tier_id');
         $tier = Tier::query()->with('creatorProfile')->findOrFail($tierId);
 
+        if ($user->hasRole('super_admin')) {
+            return response()->json([
+                'type' => 'already_subscribed',
+                'message' => __('You already have access to all tiers as Super Admin'),
+            ]);
+        }
+
         if ($tier->price <= 0) {
             $startDate = now();
             $endDate = $startDate->copy()->addMonth();

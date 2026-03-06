@@ -12,6 +12,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Spatie\Permission\Traits\HasRoles;
 use App\Rules\PhoneRule;
+use App\Support\StorageUrlSupport;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -21,6 +22,7 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'username',
         'email',
+        'avatar_path',
         'phone',
         'password',
         'locale',
@@ -29,6 +31,8 @@ class User extends Authenticatable implements FilamentUser
         'privacy_accepted_at',
         'stripe_customer_id',
     ];
+
+    protected $appends = ['avatar_url'];
 
     protected $hidden = [
         'password',
@@ -44,6 +48,11 @@ class User extends Authenticatable implements FilamentUser
             'terms_accepted_at' => 'datetime',
             'privacy_accepted_at' => 'datetime',
         ];
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        return StorageUrlSupport::publicUrl($this->attributes['avatar_path'] ?? null);
     }
 
     public function creatorProfile(): HasOne

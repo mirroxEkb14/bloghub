@@ -230,7 +230,7 @@ export default function CreatorProfileForm({ mode }: Props) {
         navigate(`/creator/${created.slug}`, { replace: true });
       } else if (profile) {
         const updated = await creatorProfilesApi.update(profile.id, buildPayload());
-        navigate(updated.slug ? `/creator/${updated.slug}` : '/discover', { replace: true });
+        navigate(updated.slug ? `/creator/${updated.slug}` : '/explore', { replace: true });
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong');
@@ -263,12 +263,12 @@ export default function CreatorProfileForm({ mode }: Props) {
     <div className="page-center">
       <div className="card creator-form-card">
         <h1 className="form-title">
-          {mode === 'create' ? 'Create creator profile' : 'Edit creator profile'}
+          {mode === 'create' ? 'Become a Creator' : 'Edit Creator'}
         </h1>
         <p className="form-subtitle">
           {mode === 'create'
             ? 'Set up your public Creator page'
-            : 'Update your Display name, About, and Tags'}
+            : 'Update your public data'}
         </p>
 
         {error && <div className="auth-error">{error}</div>}
@@ -411,7 +411,7 @@ export default function CreatorProfileForm({ mode }: Props) {
                   ? 'Create profile'
                   : 'Save changes'}
             </button>
-            <Link to={profile?.slug ? `/creator/${profile.slug}` : '/discover'} className="btn btn-secondary">
+            <Link to={profile?.slug ? `/creator/${profile.slug}` : '/explore'} className="btn btn-secondary">
               Cancel
             </Link>
           </div>

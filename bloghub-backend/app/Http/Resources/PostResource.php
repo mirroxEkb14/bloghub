@@ -44,6 +44,11 @@ class PostResource extends JsonResource
             'user_has_liked' => $this->when(isset($this->user_has_liked), fn () => (bool) $this->user_has_liked),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
+            'creator_profile' => $this->whenLoaded('creatorProfile', fn () => [
+                'slug' => $this->creatorProfile->slug,
+                'display_name' => $this->creatorProfile->display_name,
+                'profile_avatar_url' => $this->creatorProfile->profile_avatar_url,
+            ]),
         ];
     }
 }

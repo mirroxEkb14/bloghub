@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CreatorProfileController;
+use App\Http\Controllers\Api\UserUploadController;
 use App\Http\Controllers\Api\CreatorProfilePostController;
 use App\Http\Controllers\Api\CreatorProfileTierController;
 use App\Http\Controllers\Api\CreatorProfileUploadController;
 use App\Http\Controllers\Api\PostCommentController;
 use App\Http\Controllers\Api\StripeWebhookController;
+use App\Http\Controllers\Api\FeedController;
 use App\Http\Controllers\Api\SubscriptionCheckoutController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\TagController;
@@ -31,7 +33,9 @@ Route::get('/creator-profiles/{slug}', [CreatorProfileController::class, 'show']
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+    Route::patch('/user', [AuthController::class, 'updateProfile']);
     Route::patch('/user/accept-terms-privacy', [AuthController::class, 'acceptTermsAndPrivacy']);
+    Route::post('/user/upload-avatar', [UserUploadController::class, 'avatar']);
 
     Route::get('/me/creator-profile', [CreatorProfileController::class, 'me']);
     Route::post('/creator-profiles', [CreatorProfileController::class, 'store']);
@@ -39,6 +43,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/creator-profiles/upload-cover', [CreatorProfileUploadController::class, 'cover']);
     Route::put('/creator-profiles/{creatorProfile}', [CreatorProfileController::class, 'update']);
 
+    Route::get('/me/feed/public', [FeedController::class, 'publicFeed']);
+    Route::get('/me/feed/tier', [FeedController::class, 'tierFeed']);
     Route::get('/me/subscriptions', [SubscriptionController::class, 'index']);
     Route::post('/subscriptions', [SubscriptionController::class, 'store']);
     Route::post('/subscriptions/create-checkout-session', [SubscriptionCheckoutController::class, 'createCheckoutSession']);

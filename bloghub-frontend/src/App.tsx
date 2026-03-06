@@ -1,17 +1,21 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Discovery from './pages/Discovery';
+import ExplorePage from './pages/Explore';
 import CreatorProfilePage from './pages/CreatorProfilePage';
 import CreatorProfileForm from './pages/CreatorProfileForm';
 import PostPage from './pages/PostPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
+import PublicPostsPage from './pages/PublicPostsPage';
+import TierPostsPage from './pages/TierPostsPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
+import ProfilePage from './pages/ProfilePage';
 import './index.css';
 
 function App() {
@@ -23,11 +27,14 @@ function App() {
 
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
+      <ToastProvider>
+        <BrowserRouter>
+          <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/discover" element={<Discovery />} />
+            <Route path="/explore" element={<ExplorePage />} />
+            <Route path="/feed/public" element={<PublicPostsPage />} />
+            <Route path="/feed/tier" element={<TierPostsPage />} />
             <Route path="/creator/new" element={<CreatorProfileForm mode="create" />} />
             <Route path="/creator/edit" element={<CreatorProfileForm mode="edit" />} />
             <Route path="/creator/:slug" element={<CreatorProfilePage />} />
@@ -37,10 +44,12 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>
       </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   );
 }

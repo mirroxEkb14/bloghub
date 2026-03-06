@@ -94,10 +94,13 @@ export type User = {
   username: string;
   email: string;
   email_verified_at: string | null;
+  avatar_url?: string | null;
+  phone?: string | null;
   terms_accepted_at: string | null;
   privacy_accepted_at: string | null;
   created_at: string;
   updated_at: string;
+  creator_profile?: { id: number; user_id: number; slug: string } | null;
 };
 
 export type AuthResponse = {
@@ -136,6 +139,17 @@ export const authApi = {
 
   user() {
     return api<{ user: User }>('/api/user');
+  },
+
+  updateProfile(body: { name: string; username: string; email: string; phone?: string | null }) {
+    return api<{ user: User }>('/api/user', {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
+  },
+
+  uploadUserAvatar(file: File) {
+    return uploadApi<{ path: string; url: string }>('/api/user/upload-avatar', 'avatar', file);
   },
 
   acceptTermsAndPrivacy(body: { terms_accepted: true; privacy_accepted: true }) {
@@ -203,6 +217,7 @@ export type Post = {
   user_has_liked?: boolean;
   created_at?: string;
   updated_at?: string;
+  creator_profile?: { slug: string; display_name: string; profile_avatar_url?: string | null } | null;
 };
 
 export type CommentUser = {
@@ -345,6 +360,34 @@ export type PostsByCreatorParams = {
   page?: number;
 };
 
+export type PublicFeedParams = {
+  per_page?: number;
+  page?: number;
+};
+
+export type TierFeedParams = {
+  per_page?: number;
+  page?: number;
+};
+
+export const feedApi = {
+  getPublicFeed(params: PublicFeedParams = {}) {
+    const sp = new URLSearchParams();
+    if (params.per_page != null) sp.set('per_page', String(params.per_page));
+    if (params.page != null) sp.set('page', String(params.page));
+    const q = sp.toString();
+    return api<PaginatedResponse<Post>>(`/api/me/feed/public${q ? `?${q}` : ''}`);
+  },
+
+  getTierFeed(params: TierFeedParams = {}) {
+    const sp = new URLSearchParams();
+    if (params.per_page != null) sp.set('per_page', String(params.per_page));
+    if (params.page != null) sp.set('page', String(params.page));
+    const q = sp.toString();
+    return api<PaginatedResponse<Post>>(`/api/me/feed/tier${q ? `?${q}` : ''}`);
+  },
+};
+
 export const postsApi = {
   listByCreator(creatorSlug: string, params: PostsByCreatorParams = {}) {
     const sp = new URLSearchParams();
@@ -434,7 +477,8 @@ export type SubscriptionStatusResponse = {
 
 export type CheckoutSessionResponse =
   | { type: 'free'; subscription: SubscriptionWithTier }
-  | { type: 'checkout'; checkout_url: string };
+  | { type: 'checkout'; checkout_url: string }
+  | { type: 'already_subscribed'; message?: string };
 
 export const subscriptionsApi = {
   list() {

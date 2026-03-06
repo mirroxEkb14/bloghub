@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AcceptTermsPrivacyRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\Api\UpdateUserProfileRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,6 +30,7 @@ class AuthController extends Controller
         ]);
 
         $token = $user->createToken('auth')->plainTextToken;
+        $user->load('creatorProfile:id,user_id,slug');
 
         return response()->json([
             'user' => $user,
@@ -56,6 +58,7 @@ class AuthController extends Controller
         $user->tokens()->delete();
 
         $token = $user->createToken('auth')->plainTextToken;
+        $user->load('creatorProfile:id,user_id,slug');
 
         return response()->json([
             'user' => $user,
@@ -73,8 +76,11 @@ class AuthController extends Controller
 
     public function user(Request $request): JsonResponse
     {
+        $user = $request->user();
+        $user->load('creatorProfile:id,user_id,slug');
+
         return response()->json([
-            'user' => $request->user(),
+            'user' => $user,
         ]);
     }
 
@@ -88,6 +94,17 @@ class AuthController extends Controller
 
         return response()->json([
             'user' => $user->fresh(),
+        ]);
+    }
+
+    public function updateProfile(UpdateUserProfileRequest $request): JsonResponse
+    {
+        $user = $request->user();
+        $user->update($request->validated());
+        $user->load('creatorProfile:id,user_id,slug');
+
+        return response()->json([
+            'user' => $user,
         ]);
     }
 }
