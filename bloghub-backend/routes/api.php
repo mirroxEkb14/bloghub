@@ -47,4 +47,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/creator-profiles/{slug}/posts/{postSlug}/comments', [PostCommentController::class, 'store']);
     Route::post('/creator-profiles/{slug}/posts/{postSlug}/view', [CreatorProfilePostController::class, 'recordView']);
+    Route::post('/creator-profiles/{slug}/posts/{postSlug}/like', [CreatorProfilePostController::class, 'like']);
+    Route::delete('/creator-profiles/{slug}/posts/{postSlug}/like', [CreatorProfilePostController::class, 'unlike']);
 });

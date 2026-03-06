@@ -56,6 +56,7 @@ export default function CreatorProfilePage() {
   const [openMenuPostId, setOpenMenuPostId] = useState<number | null>(null);
   const [shareToast, setShareToast] = useState(false);
   const [postsRefetchTrigger, setPostsRefetchTrigger] = useState(0);
+  const [likingPostId, setLikingPostId] = useState<number | null>(null);
   const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevPostsPageRef = useRef(1);
   const sidebarRef = useRef<HTMLElement | null>(null);
@@ -75,15 +76,15 @@ export default function CreatorProfilePage() {
   }, [slug]);
 
   useEffect(() => {
-    if (!loading && savedScrollRef.current !== null) {
+    if (!loading && !loadingPosts && savedScrollRef.current !== null) {
       const y = savedScrollRef.current;
       savedScrollRef.current = null;
       const id = setTimeout(() => {
         window.scrollTo(0, y);
-      }, 50);
+      }, 100);
       return () => clearTimeout(id);
     }
-  }, [loading]);
+  }, [loading, loadingPosts]);
 
   useEffect(() => {
     if (!slug) return;
@@ -242,6 +243,44 @@ export default function CreatorProfilePage() {
       setShareToast(true);
     } catch {
       // ignore
+    }
+  }
+
+  async function handleTogglePostLike(post: Post) {
+    if (!slug || !user) return;
+    const nextLiked = !post.user_has_liked;
+    setLikingPostId(post.id);
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === post.id
+          ? {
+              ...p,
+              likes_count: (p.likes_count ?? 0) + (nextLiked ? 1 : -1),
+              user_has_liked: nextLiked,
+            }
+          : p
+      )
+    );
+    try {
+      if (nextLiked) {
+        await postsApi.like(slug, post.slug);
+      } else {
+        await postsApi.unlike(slug, post.slug);
+      }
+    } catch {
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id === post.id
+            ? {
+                ...p,
+                likes_count: (p.likes_count ?? 0) + (nextLiked ? -1 : 1),
+                user_has_liked: !nextLiked,
+              }
+            : p
+        )
+      );
+    } finally {
+      setLikingPostId(null);
     }
   }
 
@@ -533,8 +572,31 @@ export default function CreatorProfilePage() {
                                     <span className="post-card-stat-icon" aria-hidden>👁</span>{' '}
                                     {post.views_count ?? 0}
                                   </span>
-                                  <span className="post-card-stat">
-                                    <span className="post-card-stat-icon" aria-hidden>♥</span> 0
+                                  <span className="post-card-stat" title="Likes">
+                                    {user ? (
+                                      <button
+                                        type="button"
+                                        className="post-card-stat-btn post-card-stat-like"
+                                        aria-pressed={post.user_has_liked ?? false}
+                                        aria-label={post.user_has_liked ? 'Unlike' : 'Like'}
+                                        disabled={likingPostId === post.id}
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          handleTogglePostLike(post);
+                                        }}
+                                      >
+                                        <span className="post-card-stat-icon" aria-hidden>
+                                          {post.user_has_liked ? '♥' : '♡'}
+                                        </span>{' '}
+                                        {post.likes_count ?? 0}
+                                      </button>
+                                    ) : (
+                                      <>
+                                        <span className="post-card-stat-icon" aria-hidden>♥</span>{' '}
+                                        {post.likes_count ?? 0}
+                                      </>
+                                    )}
                                   </span>
                                   <span className="post-card-stat">
                                     <span className="post-card-stat-icon" aria-hidden>💬</span>{' '}
@@ -554,7 +616,7 @@ export default function CreatorProfilePage() {
                                     )}
                                   </span>
                                   <span className="post-card-stat post-card-stat-bookmark">
-                                    <span className="post-card-stat-icon" aria-hidden>🔖</span>
+                                    <span className="post-card-stat-icon" aria-hidden>🔖</span> 0
                                   </span>
                                   {post.user_has_viewed && (
                                     <span className="post-card-seen" title="You've already viewed this post">

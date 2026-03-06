@@ -40,6 +40,8 @@ class PostResource extends JsonResource
             'views_count' => $this->when(isset($this->views_count), fn () => (int) $this->views_count),
             'user_has_viewed' => $this->when(isset($this->user_has_viewed), fn () => (bool) $this->user_has_viewed),
             'comments_count' => $this->when(isset($this->comments_count), fn () => (int) $this->comments_count),
+            'likes_count' => $this->when(isset($this->likes_count), fn () => (int) $this->likes_count),
+            'user_has_liked' => $this->when(isset($this->user_has_liked), fn () => (bool) $this->user_has_liked),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];
