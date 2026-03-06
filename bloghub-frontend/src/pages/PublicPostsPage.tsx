@@ -7,6 +7,7 @@ import LoadingPage from '../components/LoadingPage';
 import { formatDateTimeLocal } from '../utils/date';
 
 const PER_PAGE = 15;
+const SHOW_PUBLIC_FEED_ORNAMENT = false;
 
 export default function PublicPostsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -121,8 +122,9 @@ export default function PublicPostsPage() {
 
   return (
     <div className="profile-page public-feed-page">
-      <div className="profile-main">
-        <header className="profile-header public-feed-header">
+      <div className="public-feed-layout">
+        <div className="profile-main">
+          <header className="profile-header public-feed-header">
           <div className="public-feed-header-inner">
             <h1 className="profile-name">Public posts</h1>
             <p className="profile-meta">
@@ -328,6 +330,18 @@ export default function PublicPostsPage() {
               </div>
             )}
           </>
+        )}
+        </div>
+        {SHOW_PUBLIC_FEED_ORNAMENT && (
+          <aside className="public-feed-ornament-wrap" aria-hidden>
+            <img
+              src="/images/public-feed-ornament.png"
+              alt=""
+              className="public-feed-ornament"
+              width={600}
+              height={1080}
+            />
+          </aside>
         )}
       </div>
     </div>
