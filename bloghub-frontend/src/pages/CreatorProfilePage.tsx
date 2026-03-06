@@ -720,6 +720,9 @@ export default function CreatorProfilePage() {
                         setSubscriptionSuccess(`Subscribed to ${tier.tier_name}.`);
                         setPostsRefetchTrigger((t) => t + 1);
                       }
+                      if (result.type === 'already_subscribed') {
+                        setSubscriptionSuccess(result.message ?? 'You already have access to all tiers');
+                      }
                     } catch (e) {
                       setSubscriptionError({
                         tierId: tier.id,

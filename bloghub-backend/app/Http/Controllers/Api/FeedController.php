@@ -16,27 +16,31 @@ class FeedController extends Controller
     {
         $user = $request->user();
 
-        $subscribedProfileIds = Subscription::query()
-            ->where('user_id', $user->id)
-            ->where('sub_status', SubStatus::Active)
-            ->where(function ($q) {
-                $q->whereNull('end_date')->orWhere('end_date', '>', now());
-            })
-            ->with('tier:id,creator_profile_id')
-            ->whereHas('tier')
-            ->get()
-            ->pluck('tier.creator_profile_id')
-            ->filter()
-            ->unique()
-            ->values()
-            ->all();
-
-        if (count($subscribedProfileIds) === 0) {
-            $query = Post::query()->whereRaw('1 = 0');
+        if ($user->hasRole('super_admin')) {
+            $query = Post::query()->whereNull('required_tier_id');
         } else {
-            $query = Post::query()
-                ->whereIn('creator_profile_id', $subscribedProfileIds)
-                ->whereNull('required_tier_id');
+            $subscribedProfileIds = Subscription::query()
+                ->where('user_id', $user->id)
+                ->where('sub_status', SubStatus::Active)
+                ->where(function ($q) {
+                    $q->whereNull('end_date')->orWhere('end_date', '>', now());
+                })
+                ->with('tier:id,creator_profile_id')
+                ->whereHas('tier')
+                ->get()
+                ->pluck('tier.creator_profile_id')
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+
+            if (count($subscribedProfileIds) === 0) {
+                $query = Post::query()->whereRaw('1 = 0');
+            } else {
+                $query = Post::query()
+                    ->whereIn('creator_profile_id', $subscribedProfileIds)
+                    ->whereNull('required_tier_id');
+            }
         }
 
         $query
@@ -52,7 +56,7 @@ class FeedController extends Controller
         $posts = $query->paginate($perPage);
 
         $request->attributes->set('creator_profile_is_owner', false);
-        $request->attributes->set('creator_profile_is_super_admin', false);
+        $request->attributes->set('creator_profile_is_super_admin', $user->hasRole('super_admin'));
         $request->attributes->set('creator_profile_user_tier_level', null);
 
         return PostResource::collection($posts);

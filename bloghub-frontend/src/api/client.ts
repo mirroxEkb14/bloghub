@@ -464,7 +464,8 @@ export type SubscriptionStatusResponse = {
 
 export type CheckoutSessionResponse =
   | { type: 'free'; subscription: SubscriptionWithTier }
-  | { type: 'checkout'; checkout_url: string };
+  | { type: 'checkout'; checkout_url: string }
+  | { type: 'already_subscribed'; message?: string };
 
 export const subscriptionsApi = {
   list() {

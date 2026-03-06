@@ -6,6 +6,7 @@ use App\Enums\SubStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\SubscribeRequest;
 use App\Http\Resources\SubscriptionResource;
+use App\Http\Resources\TierResource;
 use App\Models\CreatorProfile;
 use App\Models\Subscription;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -61,6 +62,35 @@ class SubscriptionController extends Controller
             return response()->json([
                 'subscribed' => false,
                 'active_subscription' => null,
+            ]);
+        }
+
+        if ($user->hasRole('super_admin')) {
+            $topTier = $profile->tiers()->orderByDesc('level')->first();
+            $activeSubscription = null;
+            if ($topTier) {
+                $topTier->load('creatorProfile');
+                $activeSubscription = [
+                    'id' => 0,
+                    'user_id' => $user->id,
+                    'tier_id' => $topTier->id,
+                    'start_date' => null,
+                    'end_date' => null,
+                    'sub_status' => 'active',
+                    'created_at' => null,
+                    'updated_at' => null,
+                    'tier' => (new TierResource($topTier))->toArray(request()),
+                    'creator' => [
+                        'id' => $profile->id,
+                        'slug' => $profile->slug,
+                        'display_name' => $profile->display_name,
+                        'profile_avatar_url' => $profile->profile_avatar_url,
+                    ],
+                ];
+            }
+            return response()->json([
+                'subscribed' => $topTier !== null,
+                'active_subscription' => $activeSubscription,
             ]);
         }
 
