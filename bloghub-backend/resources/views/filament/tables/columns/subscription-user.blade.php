@@ -3,7 +3,7 @@
     $name = $getState() ?? '';
     $initial = $name !== '' ? mb_strtoupper(mb_substr($name, 0, 1)) : '?';
     $username = $record->user?->username ?? '';
-    $avatarUrl = $record->user?->creatorProfile?->profile_avatar_url ?? null;
+    $avatarUrl = $record->user?->avatar_url ?? null;
     $nameLimit = 25;
     $usernameLimit = 20;
     $nameDisplay = Str::limit($name, $nameLimit);
