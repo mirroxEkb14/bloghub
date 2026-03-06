@@ -104,6 +104,11 @@ export default function Layout() {
     ? `/creator/${user.creator_profile.slug}`
     : '/creator/new';
 
+  const isMyPageActive =
+    location.pathname === '/creator/edit' ||
+    (!!user?.creator_profile?.slug && location.pathname === `/creator/${user.creator_profile.slug}`);
+  const showEditCreatorSubItem = isMyPageActive && !!user?.creator_profile?.slug;
+
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -139,7 +144,18 @@ export default function Layout() {
 
             {user && (
               <section className="sidebar-section" aria-label="Account">
-                <NavLink to={myPageHref} icon={Icons.MyPage}>My page</NavLink>
+                <div className="sidebar-my-page-group">
+                  <NavLink to={myPageHref} icon={Icons.MyPage}>My page</NavLink>
+                  {showEditCreatorSubItem && (
+                    <Link
+                      to="/creator/edit"
+                      className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/edit' ? 'active' : ''}`}
+                    >
+                      <span className="sidebar-link-icon"><Icons.Profile /></span>
+                      <span className="sidebar-link-label">Edit Creator</span>
+                    </Link>
+                  )}
+                </div>
                 <NavLink to="/feed/public" icon={Icons.PublicPosts}>Public posts</NavLink>
                 <NavLink to="/feed/tier" icon={Icons.TierPosts}>Tier posts</NavLink>
               </section>

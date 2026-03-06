@@ -542,6 +542,17 @@ label {
   min-width: 0;
 }
 
+.sidebar-my-page-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.sidebar-link-sub {
+  padding-left: 2.5rem;
+  font-size: 0.9rem;
+}
+
 .sidebar-footer {
   position: relative;
   padding: 1rem 1rem 1.25rem;

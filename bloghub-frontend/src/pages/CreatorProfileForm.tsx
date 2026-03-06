@@ -263,12 +263,12 @@ export default function CreatorProfileForm({ mode }: Props) {
     <div className="page-center">
       <div className="card creator-form-card">
         <h1 className="form-title">
-          {mode === 'create' ? 'Become a Creator' : 'Edit creator profile'}
+          {mode === 'create' ? 'Become a Creator' : 'Edit Creator'}
         </h1>
         <p className="form-subtitle">
           {mode === 'create'
             ? 'Set up your public Creator page'
-            : 'Update your Display name, About, and Tags'}
+            : 'Update your public data'}
         </p>
 
         {error && <div className="auth-error">{error}</div>}
