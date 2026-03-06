@@ -167,7 +167,10 @@ class CommentSeeder extends Seeder
                         continue;
                     }
 
-                    $commentCreatedAt = $postCreatedAt->copy()->addHours($offsetHours);
+                    $commentCreatedAt = $postCreatedAt->copy()
+                        ->addHours($offsetHours)
+                        ->addMinutes(random_int(0, 59))
+                        ->addSeconds(random_int(0, 59));
 
                     Comment::firstOrCreate(
                         [
@@ -181,7 +184,7 @@ class CommentSeeder extends Seeder
                         ]
                     );
 
-                    $offsetHours += 2;
+                    $offsetHours += 1 + random_int(1, 2);
                 }
             }
         }
