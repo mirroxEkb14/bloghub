@@ -543,6 +543,9 @@ export default function CreatorProfilePage() {
                                         to={`/creator/${slug}/post/${post.slug}#comments`}
                                         className="post-card-stat-link"
                                         title="Jump to comments"
+                                        onClick={() => {
+                                          sessionStorage.setItem(`creator-scroll-${slug}`, String(window.scrollY));
+                                        }}
                                       >
                                         {post.comments_count}
                                       </Link>
