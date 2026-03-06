@@ -1555,6 +1555,31 @@ label {
   margin: 0 0 1.25rem 0;
   font-size: 0.9rem;
   color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.post-page-meta-date {
+  min-width: 160px;
+}
+
+.post-page-metrics {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  white-space: nowrap;
+}
+
+.post-page-metric {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.post-page-metric-icon {
+  font-size: 1rem;
 }
 
 .post-media {

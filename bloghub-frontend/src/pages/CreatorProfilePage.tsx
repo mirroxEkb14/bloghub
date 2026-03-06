@@ -554,7 +554,7 @@ export default function CreatorProfilePage() {
                                     )}
                                   </span>
                                   <span className="post-card-stat post-card-stat-bookmark">
-                                    <span className="post-card-stat-icon" aria-hidden>🔖</span>
+                                    <span className="post-card-stat-icon" aria-hidden>🔖</span> 0
                                   </span>
                                   {post.user_has_viewed && (
                                     <span className="post-card-seen" title="You've already viewed this post">
