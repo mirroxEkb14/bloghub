@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import AcceptLegalModal from './AcceptLegalModal';
 
 export default function Layout() {
   const { user, loading, logout } = useAuth();
@@ -11,6 +12,7 @@ export default function Layout() {
 
   return (
     <>
+      <AcceptLegalModal />
       <header className="app-header">
         <Link to="/" className="app-logo">
           BlogHub

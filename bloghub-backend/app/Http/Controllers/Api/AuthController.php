@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AcceptTermsPrivacyRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
@@ -74,6 +75,19 @@ class AuthController extends Controller
     {
         return response()->json([
             'user' => $request->user(),
+        ]);
+    }
+
+    public function acceptTermsAndPrivacy(AcceptTermsPrivacyRequest $request): JsonResponse
+    {
+        $user = $request->user();
+        $user->update([
+            'terms_accepted_at' => now(),
+            'privacy_accepted_at' => now(),
+        ]);
+
+        return response()->json([
+            'user' => $user->fresh(),
         ]);
     }
 }

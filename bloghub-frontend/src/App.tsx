@@ -10,6 +10,8 @@ import CreatorProfilePage from './pages/CreatorProfilePage';
 import CreatorProfileForm from './pages/CreatorProfileForm';
 import PostPage from './pages/PostPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
 import './index.css';
 
 function App() {
@@ -33,6 +35,8 @@ function App() {
             <Route path="/subscriptions" element={<SubscriptionsPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>

@@ -21,6 +21,8 @@ type AuthContextValue = AuthState & {
   login: (email: string, password: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
+  acceptTermsAndPrivacy: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   clearError: () => void;
 };
 
@@ -110,6 +112,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const acceptTermsAndPrivacy = useCallback(async () => {
+    const res = await authApi.acceptTermsAndPrivacy({
+      terms_accepted: true,
+      privacy_accepted: true,
+    });
+    setUser(res.user);
+  }, []);
+
   const value: AuthContextValue = {
     user,
     token,
@@ -118,6 +128,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     register,
     logout,
+    acceptTermsAndPrivacy,
+    refreshUser: fetchUser,
     clearError,
   };
 

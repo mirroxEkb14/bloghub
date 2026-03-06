@@ -34,8 +34,8 @@ class RegisterRequest extends FormRequest
             ],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'phone' => ['nullable', 'string', new PhoneRule],
-            'terms_accepted' => ['nullable', 'boolean'],
-            'privacy_accepted' => ['nullable', 'boolean'],
+            'terms_accepted' => ['required', 'boolean', 'accepted'],
+            'privacy_accepted' => ['required', 'boolean', 'accepted'],
         ];
     }
 }
