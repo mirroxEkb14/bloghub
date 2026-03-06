@@ -75,15 +75,15 @@ export default function CreatorProfilePage() {
   }, [slug]);
 
   useEffect(() => {
-    if (!loading && savedScrollRef.current !== null) {
+    if (!loading && !loadingPosts && savedScrollRef.current !== null) {
       const y = savedScrollRef.current;
       savedScrollRef.current = null;
       const id = setTimeout(() => {
         window.scrollTo(0, y);
-      }, 50);
+      }, 100);
       return () => clearTimeout(id);
     }
-  }, [loading]);
+  }, [loading, loadingPosts]);
 
   useEffect(() => {
     if (!slug) return;
