@@ -61,4 +61,65 @@ class FeedController extends Controller
 
         return PostResource::collection($posts);
     }
+
+    public function tierFeed(Request $request): AnonymousResourceCollection
+    {
+        $user = $request->user();
+
+        if ($user->hasRole('super_admin')) {
+            $query = Post::query()->whereNotNull('required_tier_id');
+        } else {
+            $subscriptions = Subscription::query()
+                ->where('user_id', $user->id)
+                ->where('sub_status', SubStatus::Active)
+                ->where(function ($q) {
+                    $q->whereNull('end_date')->orWhere('end_date', '>', now());
+                })
+                ->with('tier:id,creator_profile_id,level')
+                ->whereHas('tier')
+                ->get();
+
+            $creatorLevels = $subscriptions
+                ->pluck('tier')
+                ->filter()
+                ->groupBy('creator_profile_id')
+                ->map(fn ($tiers) => $tiers->max('level'))
+                ->all();
+
+            if (count($creatorLevels) === 0) {
+                $query = Post::query()->whereRaw('1 = 0');
+            } else {
+                $profileIds = array_keys($creatorLevels);
+                $query = Post::query()
+                    ->whereNotNull('required_tier_id')
+                    ->whereIn('creator_profile_id', $profileIds)
+                    ->whereHas('requiredTier', function ($q) use ($creatorLevels) {
+                        $q->where(function ($q2) use ($creatorLevels) {
+                            foreach ($creatorLevels as $profileId => $level) {
+                                $q2->orWhere(fn ($q3) => $q3->where('creator_profile_id', $profileId)->where('level', '<=', $level));
+                            }
+                        });
+                    });
+            }
+        }
+
+        $query
+            ->with('creatorProfile:id,slug,display_name,profile_avatar_path')
+            ->with('requiredTier:id,creator_profile_id,level,tier_name')
+            ->withCount('comments')
+            ->withCount('likes')
+            ->withCount(['postViews as views_count'])
+            ->withCount(['postViews as user_has_viewed' => fn ($q) => $q->where('user_id', $user->id)])
+            ->withCount(['likes as user_has_liked' => fn ($q) => $q->where('user_id', $user->id)])
+            ->orderByDesc('created_at');
+
+        $perPage = min((int) $request->input('per_page', 15), 50);
+        $posts = $query->paginate($perPage);
+
+        $request->attributes->set('creator_profile_is_owner', false);
+        $request->attributes->set('creator_profile_is_super_admin', $user->hasRole('super_admin'));
+        $request->attributes->set('creator_profile_user_tier_level', PHP_INT_MAX);
+
+        return PostResource::collection($posts);
+    }
 }

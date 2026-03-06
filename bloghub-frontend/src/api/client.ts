@@ -365,6 +365,11 @@ export type PublicFeedParams = {
   page?: number;
 };
 
+export type TierFeedParams = {
+  per_page?: number;
+  page?: number;
+};
+
 export const feedApi = {
   getPublicFeed(params: PublicFeedParams = {}) {
     const sp = new URLSearchParams();
@@ -372,6 +377,14 @@ export const feedApi = {
     if (params.page != null) sp.set('page', String(params.page));
     const q = sp.toString();
     return api<PaginatedResponse<Post>>(`/api/me/feed/public${q ? `?${q}` : ''}`);
+  },
+
+  getTierFeed(params: TierFeedParams = {}) {
+    const sp = new URLSearchParams();
+    if (params.per_page != null) sp.set('per_page', String(params.per_page));
+    if (params.page != null) sp.set('page', String(params.page));
+    const q = sp.toString();
+    return api<PaginatedResponse<Post>>(`/api/me/feed/tier${q ? `?${q}` : ''}`);
   },
 };
 

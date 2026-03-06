@@ -44,6 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/creator-profiles/{creatorProfile}', [CreatorProfileController::class, 'update']);
 
     Route::get('/me/feed/public', [FeedController::class, 'publicFeed']);
+    Route::get('/me/feed/tier', [FeedController::class, 'tierFeed']);
     Route::get('/me/subscriptions', [SubscriptionController::class, 'index']);
     Route::post('/subscriptions', [SubscriptionController::class, 'store']);
     Route::post('/subscriptions/create-checkout-session', [SubscriptionCheckoutController::class, 'createCheckoutSession']);
