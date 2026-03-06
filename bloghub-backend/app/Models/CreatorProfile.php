@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Str;
 
 class CreatorProfile extends Model
@@ -70,6 +71,11 @@ class CreatorProfile extends Model
     public function tiers(): HasMany
     {
         return $this->hasMany(Tier::class);
+    }
+
+    public function subscriptions(): HasManyThrough
+    {
+        return $this->hasManyThrough(Subscription::class, Tier::class, 'creator_profile_id', 'tier_id', 'id', 'id');
     }
 
     public function tags(): BelongsToMany

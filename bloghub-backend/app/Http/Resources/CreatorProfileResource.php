@@ -7,9 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CreatorProfileResource extends JsonResource
 {
-    /**
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
@@ -26,6 +23,7 @@ class CreatorProfileResource extends JsonResource
             ]),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
             'posts_count' => $this->when(isset($this->posts_count), fn () => $this->posts_count),
+            'subscriptions_count' => $this->when(isset($this->subscriptions_count), fn () => (int) $this->subscriptions_count),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

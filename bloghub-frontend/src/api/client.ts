@@ -190,6 +190,7 @@ export type CreatorProfile = {
   user?: CreatorProfileUser;
   tags?: Tag[];
   posts_count?: number;
+  subscriptions_count?: number;
   created_at?: string;
   updated_at?: string;
 };
@@ -286,6 +287,15 @@ function normalizeUploadResponse(r: unknown): { path: string; url: string } {
   const previewUrl = url ?? `${API_BASE.replace(/\/$/, '')}/storage/${path.replace(/^\//, '')}`;
   return { path, url: previewUrl };
 }
+
+export const exploreApi = {
+  getPopularCreators() {
+    return api<{ data: CreatorProfile[] }>('/api/explore/popular-creators').then((r) => ((r && typeof r === 'object' && 'data' in r ? (r as { data: CreatorProfile[] }).data : undefined) ?? []) as CreatorProfile[]);
+  },
+  getTrendingPosts() {
+    return api<{ data: Post[] } | Post[]>('/api/explore/trending-posts').then((r) => (Array.isArray(r) ? r : (r && typeof r === 'object' && 'data' in r ? (r as { data: Post[] }).data : [])) ?? []);
+  },
+};
 
 export const creatorProfilesApi = {
   list(params: CreatorProfilesParams = {}) {

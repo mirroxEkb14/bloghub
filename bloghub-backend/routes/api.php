@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\CreatorProfileTierController;
 use App\Http\Controllers\Api\CreatorProfileUploadController;
 use App\Http\Controllers\Api\PostCommentController;
 use App\Http\Controllers\Api\StripeWebhookController;
+use App\Http\Controllers\Api\ExploreController;
 use App\Http\Controllers\Api\FeedController;
 use App\Http\Controllers\Api\SubscriptionCheckoutController;
 use App\Http\Controllers\Api\SubscriptionController;
@@ -29,6 +30,10 @@ Route::get('/creator-profiles/{slug}/posts/{postSlug}/comments', [PostCommentCon
     ->middleware('auth.sanctum.optional');
 Route::get('/creator-profiles/{slug}/tiers', [CreatorProfileTierController::class, 'index']);
 Route::get('/creator-profiles/{slug}', [CreatorProfileController::class, 'show']);
+
+Route::get('/explore/popular-creators', [ExploreController::class, 'popularCreators']);
+Route::get('/explore/trending-posts', [ExploreController::class, 'trendingPosts'])
+    ->middleware('auth.sanctum.optional');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
