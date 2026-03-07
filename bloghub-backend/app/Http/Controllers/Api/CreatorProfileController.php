@@ -49,7 +49,7 @@ class CreatorProfileController extends Controller
         $profile = CreatorProfile::query()
             ->where('slug', $slug)
             ->with(['user:id,name,username', 'tags'])
-            ->withCount('posts')
+            ->withCount(['posts', 'subscriptions'])
             ->first();
 
         if ($profile === null) {
