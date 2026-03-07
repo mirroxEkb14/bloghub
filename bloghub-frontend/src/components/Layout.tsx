@@ -277,7 +277,7 @@ export default function Layout() {
                         className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/post/new' ? 'active' : ''}`}
                       >
                         <span className="sidebar-link-icon"><Icons.NewPost /></span>
-                        <span className="sidebar-link-label">New post</span>
+                        <span className="sidebar-link-label">New Post</span>
                       </Link>
                     </>
                   )}

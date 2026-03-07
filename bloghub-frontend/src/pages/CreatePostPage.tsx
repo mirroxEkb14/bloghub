@@ -191,7 +191,7 @@ export default function CreatePostPage() {
   return (
     <div className="page-center">
       <div className="card creator-form-card" style={{ maxWidth: 560 }}>
-        <h1 className="form-title">New post</h1>
+        <h1 className="form-title">New Post</h1>
         <p className="form-subtitle">Publish a post on your creator page</p>
 
         {error && <div className="auth-error">{error}</div>}
