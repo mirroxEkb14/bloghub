@@ -489,6 +489,13 @@ export const postsApi = {
       { method: 'DELETE' }
     );
   },
+
+  deleteMine(postSlug: string) {
+    return api<unknown>(
+      `/api/me/creator-profile/posts/${encodeURIComponent(postSlug)}`,
+      { method: 'DELETE' }
+    );
+  },
 };
 
 export const commentsApi = {

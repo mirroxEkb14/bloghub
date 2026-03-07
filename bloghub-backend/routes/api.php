@@ -59,6 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/me/creator-profile/posts/upload-media', [PostMediaUploadController::class, 'upload']);
     Route::post('/me/creator-profile/posts', [MeCreatorPostController::class, 'store']);
+    Route::delete('/me/creator-profile/posts/{postSlug}', [MeCreatorPostController::class, 'destroy']);
 
     Route::get('/me/feed', [FeedController::class, 'homeFeed']);
     Route::get('/me/feed/public', [FeedController::class, 'publicFeed']);

@@ -13,6 +13,7 @@ import {
   type Tier,
 } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import LoadingPage from '../components/LoadingPage';
 import { formatDateTimeLocal } from '../utils/date';
 
@@ -57,6 +58,10 @@ export default function CreatorProfilePage() {
   const [shareToast, setShareToast] = useState(false);
   const [postsRefetchTrigger, setPostsRefetchTrigger] = useState(0);
   const [likingPostId, setLikingPostId] = useState<number | null>(null);
+  const [deleteConfirmPost, setDeleteConfirmPost] = useState<Post | null>(null);
+  const [deletingPostId, setDeletingPostId] = useState<number | null>(null);
+  const { showToast } = useToast();
+  const isOwnProfile = Boolean(slug && user?.creator_profile?.slug === slug);
   const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevPostsPageRef = useRef(1);
   const sidebarRef = useRef<HTMLElement | null>(null);
@@ -243,6 +248,21 @@ export default function CreatorProfilePage() {
       setShareToast(true);
     } catch {
       // ignore
+    }
+  }
+
+  async function handleDeletePost(post: Post) {
+    setDeletingPostId(post.id);
+    try {
+      await postsApi.deleteMine(post.slug);
+      setPosts((prev) => prev.filter((p) => p.id !== post.id));
+      setDeleteConfirmPost(null);
+      setOpenMenuPostId(null);
+      showToast('Post deleted', 'success');
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : 'Failed to delete post', 'error');
+    } finally {
+      setDeletingPostId(null);
     }
   }
 
@@ -490,6 +510,27 @@ export default function CreatorProfilePage() {
                               </button>
                               {openMenuPostId === post.id && (
                                 <div className="post-card-dropdown" role="menu">
+                                  {isOwnProfile && (
+                                    <button
+                                      type="button"
+                                      role="menuitem"
+                                      className="post-card-dropdown-item post-card-dropdown-item-danger"
+                                      onClick={() => {
+                                        setOpenMenuPostId(null);
+                                        setDeleteConfirmPost(post);
+                                      }}
+                                    >
+                                      <span className="post-card-dropdown-item-icon" aria-hidden>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                          <polyline points="3 6 5 6 21 6" />
+                                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                          <line x1="10" y1="11" x2="10" y2="17" />
+                                          <line x1="14" y1="11" x2="14" y2="17" />
+                                        </svg>
+                                      </span>
+                                      Delete
+                                    </button>
+                                  )}
                                   <button
                                     type="button"
                                     role="menuitem"
@@ -887,6 +928,40 @@ export default function CreatorProfilePage() {
             ×
           </button>
           <div className="subscription-toast-timer" aria-hidden />
+        </div>
+      )}
+
+      {deleteConfirmPost && (
+        <div
+          className="tier-delete-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="post-delete-title"
+        >
+          <div className="tier-delete-card card">
+            <h2 id="post-delete-title" className="form-title">Delete post?</h2>
+            <p className="form-subtitle" style={{ marginBottom: '1rem' }}>
+              This cannot be undone
+            </p>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                disabled={deletingPostId !== null}
+                onClick={() => deleteConfirmPost && handleDeletePost(deleteConfirmPost)}
+              >
+                {deletingPostId !== null ? 'Deleting…' : 'Delete'}
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setDeleteConfirmPost(null)}
+                disabled={deletingPostId !== null}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

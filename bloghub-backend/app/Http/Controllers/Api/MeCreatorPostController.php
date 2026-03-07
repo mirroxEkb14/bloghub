@@ -24,4 +24,24 @@ class MeCreatorPostController extends Controller
 
         return response()->json(new PostResource($post), 201);
     }
+
+    public function destroy(string $postSlug): JsonResponse
+    {
+        $profile = request()->user()->creatorProfile;
+        if (! $profile) {
+            return response()->json(['message' => 'Creator profile required'], 403);
+        }
+
+        $post = Post::query()
+            ->where('creator_profile_id', $profile->id)
+            ->where('slug', $postSlug)
+            ->first();
+
+        if (! $post) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+
+        $post->delete();
+        return response()->json(null, 204);
+    }
 }

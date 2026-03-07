@@ -563,6 +563,14 @@
   background: var(--bg-input);
 }
 
+.post-card-dropdown-item-danger {
+  color: var(--color-error, #dc2626);
+}
+
+.post-card-dropdown-item-danger:hover {
+  background: rgba(220, 38, 38, 0.08);
+}
+
 .post-card-body {
   padding: 0 1.25rem 1rem;
   position: relative;
