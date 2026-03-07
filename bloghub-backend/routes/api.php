@@ -48,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/creator-profiles/upload-cover', [CreatorProfileUploadController::class, 'cover']);
     Route::put('/creator-profiles/{creatorProfile}', [CreatorProfileController::class, 'update']);
 
+    Route::get('/me/feed', [FeedController::class, 'homeFeed']);
     Route::get('/me/feed/public', [FeedController::class, 'publicFeed']);
     Route::get('/me/feed/tier', [FeedController::class, 'tierFeed']);
     Route::get('/me/subscriptions', [SubscriptionController::class, 'index']);

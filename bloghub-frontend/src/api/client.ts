@@ -216,6 +216,7 @@ export type Post = {
   comments_count?: number;
   likes_count?: number;
   user_has_liked?: boolean;
+  bookmarks_count?: number;
   created_at?: string;
   updated_at?: string;
   creator_profile?: { slug: string; display_name: string; profile_avatar_url?: string | null } | null;
@@ -370,6 +371,12 @@ export type PostsByCreatorParams = {
   page?: number;
 };
 
+export type HomeFeedParams = {
+  per_page?: number;
+  page?: number;
+  q?: string;
+};
+
 export type PublicFeedParams = {
   per_page?: number;
   page?: number;
@@ -383,6 +390,15 @@ export type TierFeedParams = {
 };
 
 export const feedApi = {
+  getHomeFeed(params: HomeFeedParams = {}) {
+    const sp = new URLSearchParams();
+    if (params.per_page != null) sp.set('per_page', String(params.per_page));
+    if (params.page != null) sp.set('page', String(params.page));
+    if (params.q != null && params.q.trim() !== '') sp.set('q', params.q.trim());
+    const queryString = sp.toString();
+    return api<PaginatedResponse<Post>>(`/api/me/feed${queryString ? `?${queryString}` : ''}`);
+  },
+
   getPublicFeed(params: PublicFeedParams = {}) {
     const sp = new URLSearchParams();
     if (params.per_page != null) sp.set('per_page', String(params.per_page));
