@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   creatorProfilesApi,
   tagsApi,
+  ValidationError,
   type CreatorProfile,
   type Tag,
 } from '../api/client';
@@ -253,6 +254,7 @@ export default function CreatorProfileForm({ mode }: Props) {
 
       if (mode === 'create') {
         const created = await creatorProfilesApi.create(payload);
+        showToast('Creator Profile created!', 'success');
         navigate(`/creator/${created.slug}`, { replace: true });
       } else if (profile) {
         if (hasNoChanges(payload)) {
@@ -264,7 +266,17 @@ export default function CreatorProfileForm({ mode }: Props) {
         navigate(updated.slug ? `/creator/${updated.slug}` : '/explore', { replace: true });
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong');
+      const rawMessage = e instanceof Error ? e.message : 'Something went wrong';
+      const isSlugTaken =
+        rawMessage.toLowerCase().includes('already been taken') ||
+        (e instanceof ValidationError &&
+          Array.isArray((e as ValidationError).errors?.slug) &&
+          (e as ValidationError).errors!.slug.some((m) => m.toLowerCase().includes('already been taken')));
+      const message = isSlugTaken
+        ? 'This slug is already taken. Please choose a different slug'
+        : rawMessage;
+      showToast(message, 'error');
+      setError(null);
     } finally {
       setSubmitting(false);
     }

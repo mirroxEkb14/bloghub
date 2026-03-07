@@ -4,11 +4,13 @@ import { ValidationError } from '../api/client';
 import InputWithIcon from '../components/InputWithIcon';
 import PasswordField from '../components/PasswordField';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 
 type FormKey = 'name' | 'username' | 'email' | 'password' | 'password_confirmation' | 'terms_accepted' | 'privacy_accepted';
 
 export default function Register() {
   const { register, error, clearError } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const [form, setForm] = useState({
     name: '',
@@ -67,6 +69,7 @@ export default function Register() {
         terms_accepted: true,
         privacy_accepted: true,
       });
+      showToast('Welcome to BlogHub!', 'success');
       navigate('/', { replace: true });
     } catch (err) {
       if (err instanceof ValidationError) {
