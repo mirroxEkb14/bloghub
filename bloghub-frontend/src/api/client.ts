@@ -638,3 +638,27 @@ export const subscriptionsApi = {
     );
   },
 };
+
+export type PaymentSubscriptionContext = {
+  id: number;
+  tier_name: string | null;
+  creator: { slug: string; display_name: string } | null;
+};
+
+export type PaymentForUser = {
+  id: number;
+  amount: number;
+  currency: string | null;
+  checkout_date: string | null;
+  card_last4: string | null;
+  payment_status: string;
+  subscription: PaymentSubscriptionContext;
+};
+
+export const paymentsApi = {
+  list() {
+    return api<{ data: PaymentForUser[] } | PaymentForUser[]>(
+      '/api/me/payments'
+    ).then((r) => (Array.isArray(r) ? r : (r as { data: PaymentForUser[] }).data ?? []));
+  },
+};
