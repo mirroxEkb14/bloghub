@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { authApi } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useToast } from '../contexts/ToastContext';
 import AcceptLegalModal from './AcceptLegalModal';
 
 const iconSize = 22;
@@ -38,6 +40,21 @@ const Icons = {
       <path d="M7 11V7a5 5 0 0 1 10 0v4" />
     </svg>
   ),
+  Memberships: () => (
+    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <line x1="2" y1="10" x2="22" y2="10" />
+    </svg>
+  ),
+  Billings: () => (
+    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="12" x2="8" y2="12" />
+      <line x1="16" y1="16" x2="8" y2="16" />
+      <line x1="10" y1="8" x2="8" y2="8" />
+    </svg>
+  ),
   Tiers: () => (
     <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <rect x="4" y="4" width="16" height="4" rx="1" />
@@ -64,6 +81,13 @@ const Icons = {
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
       <polyline points="16 17 21 12 16 7" />
       <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+  ),
+  Social: () => (
+    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="12" r="3" />
+      <line x1="6" y1="12" x2="18" y2="12" />
     </svg>
   ),
   Register: () => (
@@ -112,9 +136,12 @@ function NavLink({
   to,
   children,
   icon: Icon,
-}: { to: string; children: React.ReactNode; icon: React.ComponentType }) {
+  exact,
+}: { to: string; children: React.ReactNode; icon: React.ComponentType; exact?: boolean }) {
   const location = useLocation();
-  const isActive = location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
+  const isActive = exact
+    ? location.pathname === to
+    : location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
   return (
     <Link to={to} className={`sidebar-link ${isActive ? 'active' : ''}`}>
       <span className="sidebar-link-icon"><Icon /></span>
@@ -124,8 +151,9 @@ function NavLink({
 }
 
 export default function Layout() {
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logout, refreshUser } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { showToast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -156,6 +184,42 @@ export default function Layout() {
       return () => document.removeEventListener('click', handleClickOutside);
     }
   }, [menuOpen]);
+
+  const [resendVerificationLoading, setResendVerificationLoading] = useState(false);
+  const verificationHandledRef = useRef(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const verified = params.get('email_verified');
+    const error = params.get('error');
+    if (verified === null && error === null) {
+      verificationHandledRef.current = false;
+      return;
+    }
+    if (verificationHandledRef.current) return;
+    verificationHandledRef.current = true;
+    if (verified === '1') {
+      showToast('Email verified. You can use your account fully now', 'success');
+      navigate(location.pathname || '/', { replace: true });
+    } else if (verified === '0' && error === 'invalid') {
+      showToast('Verification link is invalid or expired.', 'error');
+      navigate(location.pathname || '/', { replace: true });
+    }
+  }, [location.search, location.pathname, navigate, showToast]);
+
+  async function handleResendVerification() {
+    if (resendVerificationLoading) return;
+    setResendVerificationLoading(true);
+    try {
+      await authApi.resendVerificationEmail();
+      showToast('Verification email sent. Check your inbox', 'success');
+      refreshUser();
+    } catch {
+      showToast('Failed to send verification email', 'error');
+    } finally {
+      setResendVerificationLoading(false);
+    }
+  }
 
   async function handleLogout() {
     await logout();
@@ -209,6 +273,13 @@ export default function Layout() {
                         <span className="sidebar-link-label">Edit Creator</span>
                       </Link>
                       <Link
+                        to="/profile/social"
+                        className={`sidebar-link sidebar-link-sub ${location.pathname === '/profile/social' ? 'active' : ''}`}
+                      >
+                        <span className="sidebar-link-icon"><Icons.Social /></span>
+                        <span className="sidebar-link-label">Social networks</span>
+                      </Link>
+                      <Link
                         to="/creator/tiers"
                         className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/tiers' ? 'active' : ''}`}
                       >
@@ -220,13 +291,23 @@ export default function Layout() {
                         className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/post/new' ? 'active' : ''}`}
                       >
                         <span className="sidebar-link-icon"><Icons.NewPost /></span>
-                        <span className="sidebar-link-label">New post</span>
+                        <span className="sidebar-link-label">New Post</span>
                       </Link>
                     </>
                   )}
                 </div>
                 <NavLink to="/feed/public" icon={Icons.PublicPosts}>Public posts</NavLink>
                 <NavLink to="/feed/tier" icon={Icons.TierPosts}>Tier posts</NavLink>
+                <div className="sidebar-my-page-group">
+                  <NavLink to="/memberships" icon={Icons.Memberships} exact>Memberships</NavLink>
+                  <Link
+                    to="/memberships/billings"
+                    className={`sidebar-link sidebar-link-sub ${location.pathname === '/memberships/billings' ? 'active' : ''}`}
+                  >
+                    <span className="sidebar-link-icon"><Icons.Billings /></span>
+                    <span className="sidebar-link-label">Billings</span>
+                  </Link>
+                </div>
               </section>
             )}
 
@@ -287,9 +368,24 @@ export default function Layout() {
             </div>
           )}
         </aside>
-        <main className="app-main">
-          <Outlet />
-        </main>
+        <div className="app-main-wrap">
+          {user && !user.email_verified_at && (
+            <div className="email-verify-banner">
+              <span className="email-verify-banner-text">Please verify your email to get the most out of BlogHub</span>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={handleResendVerification}
+                disabled={resendVerificationLoading}
+              >
+                {resendVerificationLoading ? 'Sending…' : 'Resend verification email'}
+              </button>
+            </div>
+          )}
+          <main className="app-main">
+            <Outlet />
+          </main>
+        </div>
       </div>
     </>
   );

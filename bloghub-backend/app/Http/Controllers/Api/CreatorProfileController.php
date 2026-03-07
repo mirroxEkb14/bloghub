@@ -49,7 +49,7 @@ class CreatorProfileController extends Controller
         $profile = CreatorProfile::query()
             ->where('slug', $slug)
             ->with(['user:id,name,username', 'tags'])
-            ->withCount('posts')
+            ->withCount(['posts', 'subscriptions'])
             ->first();
 
         if ($profile === null) {
@@ -73,6 +73,10 @@ class CreatorProfileController extends Controller
 
     public function store(StoreCreatorProfileRequest $request): JsonResponse
     {
+        if (! $request->user()->hasVerifiedEmail()) {
+            return response()->json(['message' => 'You must verify your email before creating a creator profile'], 403);
+        }
+
         $data = $request->validatedWithSlug();
         $tagIds = $data['tag_ids'] ?? [];
         unset($data['tag_ids']);

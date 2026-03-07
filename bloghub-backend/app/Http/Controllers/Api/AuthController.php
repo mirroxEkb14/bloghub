@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Events\Verified;
 
 class AuthController extends Controller
 {
@@ -28,6 +29,8 @@ class AuthController extends Controller
             'terms_accepted_at' => ! empty($data['terms_accepted']) ? now() : null,
             'privacy_accepted_at' => ! empty($data['privacy_accepted']) ? now() : null,
         ]);
+
+        $user->sendEmailVerificationNotification();
 
         $token = $user->createToken('auth')->plainTextToken;
         $user->load('creatorProfile:id,user_id,slug');
@@ -106,5 +109,51 @@ class AuthController extends Controller
         return response()->json([
             'user' => $user,
         ]);
+    }
+
+    public function verifyEmail(Request $request, string $id, string $hash): JsonResponse|\Illuminate\Http\RedirectResponse
+    {
+        $user = User::findOrFail((int) $id);
+
+        if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Invalid verification link'], 403);
+            }
+            return redirect()->to(config('services.frontend_url', '/').'?email_verified=0&error=invalid');
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            $url = config('services.frontend_url').'/?email_verified=1';
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Email already verified', 'verified' => true, 'redirect_url' => $url]);
+            }
+            return redirect()->to($url);
+        }
+
+        $user->markEmailAsVerified();
+        event(new Verified($user));
+
+        $url = config('services.frontend_url').'/?email_verified=1';
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Email verified successfully',
+                'verified' => true,
+                'redirect_url' => $url,
+            ]);
+        }
+        return redirect()->to($url);
+    }
+
+    public function resendVerificationEmail(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email already verified'], 422);
+        }
+
+        $user->sendEmailVerificationNotification();
+
+        return response()->json(['message' => 'Verification link sent']);
     }
 }

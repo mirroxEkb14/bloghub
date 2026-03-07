@@ -69,7 +69,7 @@ export default function Register() {
         terms_accepted: true,
         privacy_accepted: true,
       });
-      showToast('Welcome to BlogHub!', 'success');
+      showToast('Account created. Please check your email to verify your account', 'success');
       navigate('/', { replace: true });
     } catch (err) {
       if (err instanceof ValidationError) {

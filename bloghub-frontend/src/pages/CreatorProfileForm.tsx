@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
+  authApi,
   creatorProfilesApi,
   tagsApi,
   ValidationError,
@@ -24,7 +25,7 @@ function slugify(text: string): string {
 }
 
 export default function CreatorProfileForm({ mode }: Props) {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, refreshUser } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<CreatorProfile | null>(null);
@@ -43,6 +44,7 @@ export default function CreatorProfileForm({ mode }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState<'avatar' | 'cover' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [resendVerificationLoading, setResendVerificationLoading] = useState(false);
 
   const ACCEPT_IMAGE = 'image/jpeg,image/png,image/webp';
   const MAX_FILE_MB = 5;
@@ -114,6 +116,20 @@ export default function CreatorProfileForm({ mode }: Props) {
         : { ...prev, tag_ids: [...prev.tag_ids, id] }
     );
   }, []);
+
+  const handleResendVerification = useCallback(async () => {
+    if (resendVerificationLoading) return;
+    setResendVerificationLoading(true);
+    try {
+      await authApi.resendVerificationEmail();
+      showToast('Verification email sent. Check your inbox', 'success');
+      refreshUser();
+    } catch {
+      showToast('Failed to send verification email', 'error');
+    } finally {
+      setResendVerificationLoading(false);
+    }
+  }, [resendVerificationLoading, showToast, refreshUser]);
 
   const handleAvatarFile = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -287,6 +303,31 @@ export default function CreatorProfileForm({ mode }: Props) {
   }
 
   if (!user) return null;
+
+  if (mode === 'create' && !user.email_verified_at) {
+    return (
+      <div className="page-center">
+        <div className="card" style={{ maxWidth: 420 }}>
+          <h1 className="form-title">Verify your email</h1>
+          <p className="form-subtitle">
+            You need to verify your email address before you can create a Creator page
+          </p>
+          <p className="form-subtitle" style={{ marginTop: '0.5rem' }}>
+            Check your inbox for the verification link, or request a new one below
+          </p>
+          <button
+            type="button"
+            className="btn btn-primary"
+            style={{ marginTop: '1rem' }}
+            onClick={handleResendVerification}
+            disabled={resendVerificationLoading}
+          >
+            {resendVerificationLoading ? 'Sending…' : 'Resend verification email'}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (mode === 'edit' && !profileLoading && !profile) {
     return (

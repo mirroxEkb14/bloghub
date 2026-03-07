@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\PostCommentController;
 use App\Http\Controllers\Api\StripeWebhookController;
 use App\Http\Controllers\Api\ExploreController;
 use App\Http\Controllers\Api\FeedController;
+use App\Http\Controllers\Api\MePaymentController;
 use App\Http\Controllers\Api\SubscriptionCheckoutController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\TagController;
@@ -22,6 +23,10 @@ Route::post('/webhooks/stripe', StripeWebhookController::class);
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
+    ->middleware('signed')
+    ->name('verification.verify');
 
 Route::get('/tags', [TagController::class, 'index']);
 Route::get('/creator-profiles', [CreatorProfileController::class, 'index']);
@@ -42,6 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
     Route::patch('/user', [AuthController::class, 'updateProfile']);
+    Route::post('/email/resend', [AuthController::class, 'resendVerificationEmail']);
     Route::patch('/user/accept-terms-privacy', [AuthController::class, 'acceptTermsAndPrivacy']);
     Route::post('/user/upload-avatar', [UserUploadController::class, 'avatar']);
 
@@ -65,6 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me/feed/public', [FeedController::class, 'publicFeed']);
     Route::get('/me/feed/tier', [FeedController::class, 'tierFeed']);
     Route::get('/me/subscriptions', [SubscriptionController::class, 'index']);
+    Route::get('/me/payments', [MePaymentController::class, 'index']);
     Route::post('/subscriptions', [SubscriptionController::class, 'store']);
     Route::post('/subscriptions/create-checkout-session', [SubscriptionCheckoutController::class, 'createCheckoutSession']);
     Route::post('/subscriptions/confirm-checkout', [SubscriptionCheckoutController::class, 'confirmCheckout']);

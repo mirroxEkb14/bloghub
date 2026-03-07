@@ -27,8 +27,15 @@
 
 .sidebar-nav {
   flex: 1;
+  min-height: 0;
   padding: 1rem 0.75rem;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .sidebar-section {
@@ -219,9 +226,33 @@
   opacity: 0.9;
 }
 
+.app-main-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .app-main {
   flex: 1;
   min-width: 0;
+}
+
+.email-verify-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 1rem;
+  background: var(--active-overlay);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.email-verify-banner-text {
+  color: var(--text-secondary);
 }
 
 .avatar {

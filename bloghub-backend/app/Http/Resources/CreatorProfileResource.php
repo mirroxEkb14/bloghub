@@ -16,6 +16,12 @@ class CreatorProfileResource extends JsonResource
             'about' => $this->about,
             'profile_avatar_url' => $this->profile_avatar_url,
             'profile_cover_url' => $this->profile_cover_url,
+            'telegram_url' => $this->telegram_url,
+            'instagram_url' => $this->instagram_url,
+            'facebook_url' => $this->facebook_url,
+            'youtube_url' => $this->youtube_url,
+            'twitch_url' => $this->twitch_url,
+            'website_url' => $this->website_url,
             'user' => $this->whenLoaded('user', fn () => [
                 'id' => $this->user->id,
                 'name' => $this->user->name,

@@ -137,6 +137,10 @@ export const authApi = {
     return api<unknown>('/api/logout', { method: 'POST' });
   },
 
+  resendVerificationEmail() {
+    return api<{ message: string }>('/api/email/resend', { method: 'POST' });
+  },
+
   user() {
     return api<{ user: User }>('/api/user');
   },
@@ -187,6 +191,12 @@ export type CreatorProfile = {
   about: string | null;
   profile_avatar_url: string | null;
   profile_cover_url: string | null;
+  telegram_url?: string | null;
+  instagram_url?: string | null;
+  facebook_url?: string | null;
+  youtube_url?: string | null;
+  twitch_url?: string | null;
+  website_url?: string | null;
   user?: CreatorProfileUser;
   tags?: Tag[];
   posts_count?: number;
@@ -341,6 +351,12 @@ export const creatorProfilesApi = {
     about?: string | null;
     profile_avatar_path?: string | null;
     profile_cover_path?: string | null;
+    telegram_url?: string | null;
+    instagram_url?: string | null;
+    facebook_url?: string | null;
+    youtube_url?: string | null;
+    twitch_url?: string | null;
+    website_url?: string | null;
     tag_ids?: number[];
   }) {
     return api<CreatorProfile | { data: CreatorProfile }>(`/api/creator-profiles/${id}`, {
@@ -632,5 +648,29 @@ export const subscriptionsApi = {
       `/api/subscriptions/${subscriptionId}/cancel`,
       { method: 'PATCH' }
     );
+  },
+};
+
+export type PaymentSubscriptionContext = {
+  id: number;
+  tier_name: string | null;
+  creator: { slug: string; display_name: string } | null;
+};
+
+export type PaymentForUser = {
+  id: number;
+  amount: number;
+  currency: string | null;
+  checkout_date: string | null;
+  card_last4: string | null;
+  payment_status: string;
+  subscription: PaymentSubscriptionContext;
+};
+
+export const paymentsApi = {
+  list() {
+    return api<{ data: PaymentForUser[] } | PaymentForUser[]>(
+      '/api/me/payments'
+    ).then((r) => (Array.isArray(r) ? r : (r as { data: PaymentForUser[] }).data ?? []));
   },
 };
