@@ -20,11 +20,15 @@ type CreateFormState = TierCreatePayload & {
   priceDisplay: string;
 };
 
+const TIER_DESC_PLACEHOLDER = `• Pocit bratrství
+• Zednářská zástěra
+• Symbolický oděv a rukavice`;
+
 const emptyForm: CreateFormState = {
   tier_name: '',
   tier_desc: '',
   price: 0,
-  tier_currency: 'USD',
+  tier_currency: 'CZK',
   tier_cover_path: null,
   tier_cover_preview_url: null,
   priceDisplay: '',
@@ -430,17 +434,18 @@ export default function CreatorTiersPage() {
                         <div className="tier-price-currency-row" style={{ marginBottom: 0 }}>
                           <div className="tier-price-wrap">
                             <label htmlFor="tier_price" className="tier-price-currency-label">Price</label>
-                            <input
-                              id="tier_price"
-                              type="number"
-                              min={0}
-                              value={form.priceDisplay}
-                              onChange={(e) => {
-                                const v = e.target.value;
-                                setForm((f) => ({ ...f, priceDisplay: v, price: v === '' ? 0 : parseInt(v, 10) || 0 }));
-                              }}
-                              className="tier-price-input"
-                            />
+                        <input
+                          id="tier_price"
+                          type="number"
+                          min={0}
+                          value={form.priceDisplay}
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            setForm((f) => ({ ...f, priceDisplay: v, price: v === '' ? 0 : parseInt(v, 10) || 0 }));
+                          }}
+                          className="tier-price-input"
+                          placeholder="199"
+                        />
                           </div>
                           <div className="tier-currency-wrap">
                             <span className="tier-price-currency-label" id="tier_currency_label">Currency</span>
@@ -471,7 +476,7 @@ export default function CreatorTiersPage() {
                         type="text"
                         value={form.tier_name}
                         onChange={(e) => setForm((f) => ({ ...f, tier_name: e.target.value }))}
-                        placeholder="e.g. Supporter"
+                        placeholder="Učeň"
                         required
                         maxLength={50}
                       />
@@ -482,13 +487,13 @@ export default function CreatorTiersPage() {
                         id="tier_desc"
                         value={form.tier_desc}
                         onChange={(e) => setForm((f) => ({ ...f, tier_desc: e.target.value }))}
-                        placeholder="What do subscribers get?"
+                        placeholder={TIER_DESC_PLACEHOLDER}
                         rows={6}
                         maxLength={255}
                         className="form-textarea tier-desc-textarea"
                         required
                       />
-                      <span className="form-hint">Max 255 characters</span>
+                      <span className="form-hint">Recommended: use • for bullets; shown in max 3 rows on your page. Max 255 chars</span>
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                       <button type="submit" className="btn btn-primary" disabled={submitting}>
