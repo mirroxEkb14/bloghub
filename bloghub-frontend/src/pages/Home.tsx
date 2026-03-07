@@ -279,9 +279,9 @@ export default function Home() {
 
           {posts.length === 0 ? (
             <div className="profile-posts-empty">
-              <p>You&apos;re not subscribed to any creators yet.</p>
+              <p>You&apos;re not subscribed to any creators yet</p>
               <p className="profile-meta" style={{ marginTop: '0.5rem' }}>
-                Explore to find creators and subscribe to see their posts here.
+                Explore to find creators and subscribe to see their posts here
               </p>
               <Link to="/explore" className="btn btn-primary" style={{ marginTop: '1rem' }}>
                 Explore creators
