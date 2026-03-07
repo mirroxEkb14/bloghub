@@ -170,9 +170,9 @@ export default function TierPostsPage() {
 
           {posts.length === 0 ? (
             <div className="profile-posts-empty">
-              <p>No tier posts yet.</p>
+              <p>No tier posts yet</p>
               <p className="profile-meta" style={{ marginTop: '0.5rem' }}>
-                Subscribe to creators&apos; tiers to see their exclusive posts here.
+                Subscribe to creators&apos; tiers to see their exclusive posts here
               </p>
               <Link to="/explore" className="btn btn-primary" style={{ marginTop: '1rem' }}>
                 Explore creators
