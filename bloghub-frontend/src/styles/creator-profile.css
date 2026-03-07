@@ -317,6 +317,9 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  min-width: 0;
 }
 
 .tier-card-price {
@@ -560,6 +563,14 @@
   background: var(--bg-input);
 }
 
+.post-card-dropdown-item-danger {
+  color: var(--color-error, #dc2626);
+}
+
+.post-card-dropdown-item-danger:hover {
+  background: rgba(220, 38, 38, 0.08);
+}
+
 .post-card-body {
   padding: 0 1.25rem 1rem;
   position: relative;
@@ -778,4 +789,171 @@
 
 .post-card-join-btn {
   min-width: 140px;
+}
+
+/* Creator Tiers page */
+.creator-tiers-empty-hint {
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+}
+
+.tier-price-input {
+  width: 6rem;
+  box-sizing: border-box;
+}
+.tier-price-input::-webkit-outer-spin-button,
+.tier-price-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.tier-price-input {
+  -moz-appearance: textfield;
+}
+
+.tier-price-currency-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem 1.5rem;
+}
+.tier-price-wrap,
+.tier-currency-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.tier-price-currency-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+}
+.tier-currency-chips {
+  margin: 0;
+}
+.tier-currency-chips .tag-chip {
+  min-width: 3rem;
+  text-align: center;
+}
+
+/* Tier form */
+.tier-desc-textarea {
+  min-height: 8em;
+  resize: vertical;
+}
+
+.creator-tiers-card .form-title {
+  margin-bottom: 0.5rem;
+}
+
+.tier-create-top-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1.25rem 1.5rem;
+}
+
+.tier-create-top-row .tier-cover-cell {
+  flex: 0 0 auto;
+}
+
+.tier-create-top-row .tier-price-currency-cell {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+/* Tier list */
+.tier-list-with-add {
+  margin-bottom: 0.5rem !important;
+}
+
+.tier-add-wrap {
+  margin-top: 0.5rem;
+}
+
+/* Tier card */
+.tier-card-content {
+  min-width: 0;
+}
+
+.tier-card-actions-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+/* Tier list (manage page) */
+.tier-list-sidebar .tier-card-body {
+  padding-bottom: 0.75rem;
+}
+
+.tier-list-sidebar .tier-card-price {
+  margin-bottom: 0.25rem;
+}
+
+/* Edit form */
+.tier-edit-top-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1.25rem 1.5rem;
+}
+
+.tier-edit-top-row .tier-cover-cell {
+  flex: 0 0 auto;
+}
+
+.tier-edit-top-row .tier-price-currency-cell {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+/* Delete tier confirmation modal */
+.tier-delete-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  animation: tier-delete-fade 0.15s ease-out;
+}
+
+@keyframes tier-delete-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.tier-delete-card {
+  max-width: 400px;
+  width: 100%;
+}
+
+/* Create post */
+.post-create-media-access-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1.25rem 1.5rem;
+}
+
+.post-create-media-access-row .post-create-media-cell {
+  flex: 0 0 auto;
+}
+
+.post-create-media-access-row .post-create-access-cell {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.post-create-media-box {
+  background: var(--bg-input);
+}
+
+.post-create-media-box video,
+.post-create-media-box audio {
+  display: block;
+  max-height: 200px;
 }

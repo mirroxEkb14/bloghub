@@ -418,7 +418,41 @@ export const feedApi = {
   },
 };
 
+export type PostCreatePayload = {
+  slug: string;
+  title: string;
+  content_text: string;
+  excerpt?: string | null;
+  media_url?: string | null;
+  media_type?: string | null;
+  required_tier_id?: number | null;
+};
+
+export type PostMediaUploadResponse = {
+  path: string;
+  url: string;
+  media_type: string;
+};
+
 export const postsApi = {
+  uploadMedia(file: File) {
+    return uploadApi<PostMediaUploadResponse | { data: PostMediaUploadResponse }>(
+      '/api/me/creator-profile/posts/upload-media',
+      'media',
+      file
+    ).then((r) => {
+      const raw = r != null && typeof r === 'object' && 'data' in r ? (r as { data: PostMediaUploadResponse }).data : r;
+      return raw as PostMediaUploadResponse;
+    });
+  },
+
+  create(payload: PostCreatePayload) {
+    return api<Post | { data: Post }>(
+      '/api/me/creator-profile/posts',
+      { method: 'POST', body: JSON.stringify(payload) }
+    ).then((r) => (r != null && typeof r === 'object' && 'data' in r ? (r as { data: Post }).data : r) as Post);
+  },
+
   listByCreator(creatorSlug: string, params: PostsByCreatorParams = {}) {
     const sp = new URLSearchParams();
     if (params.per_page != null) sp.set('per_page', String(params.per_page));
@@ -455,6 +489,13 @@ export const postsApi = {
       { method: 'DELETE' }
     );
   },
+
+  deleteMine(postSlug: string) {
+    return api<unknown>(
+      `/api/me/creator-profile/posts/${encodeURIComponent(postSlug)}`,
+      { method: 'DELETE' }
+    );
+  },
 };
 
 export const commentsApi = {
@@ -472,11 +513,53 @@ export const commentsApi = {
   },
 };
 
+export type TierCreatePayload = {
+  tier_name: string;
+  tier_desc: string;
+  price: number;
+  tier_currency: string;
+  tier_cover_path?: string | null;
+};
+
+export type TierUpdatePayload = Partial<TierCreatePayload>;
+
 export const tiersApi = {
   listByCreator(creatorSlug: string) {
     return api<{ data: Tier[] } | Tier[]>(
       `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/tiers`
     ).then((r) => (Array.isArray(r) ? r : (r as { data: Tier[] }).data ?? []));
+  },
+
+  listMine() {
+    return api<{ data: Tier[] } | Tier[]>(
+      '/api/me/creator-profile/tiers'
+    ).then((r) => (Array.isArray(r) ? r : (r as { data: Tier[] }).data ?? []));
+  },
+
+  uploadCover(file: File) {
+    return uploadApi<{ path: string; url: string | null } | { data: { path: string; url: string | null } }>(
+      '/api/me/creator-profile/tiers/upload-cover',
+      'cover',
+      file
+    ).then(normalizeUploadResponse);
+  },
+
+  create(payload: TierCreatePayload) {
+    return api<Tier | { data: Tier }>(
+      '/api/me/creator-profile/tiers',
+      { method: 'POST', body: JSON.stringify(payload) }
+    ).then((r) => (r != null && typeof r === 'object' && 'data' in r ? (r as { data: Tier }).data : r) as Tier);
+  },
+
+  update(tierId: number, payload: TierUpdatePayload) {
+    return api<Tier | { data: Tier }>(
+      `/api/me/creator-profile/tiers/${tierId}`,
+      { method: 'PUT', body: JSON.stringify(payload) }
+    ).then((r) => (r != null && typeof r === 'object' && 'data' in r ? (r as { data: Tier }).data : r) as Tier);
+  },
+
+  delete(tierId: number) {
+    return api<void>(`/api/me/creator-profile/tiers/${tierId}`, { method: 'DELETE' });
   },
 };
 

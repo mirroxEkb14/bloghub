@@ -37,6 +37,13 @@ const Icons = {
       <path d="M7 11V7a5 5 0 0 1 10 0v4" />
     </svg>
   ),
+  Tiers: () => (
+    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <rect x="4" y="4" width="16" height="4" rx="1" />
+      <rect x="4" y="10" width="16" height="4" rx="1" />
+      <rect x="4" y="16" width="16" height="4" rx="1" />
+    </svg>
+  ),
   Privacy: () => (
     <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -70,6 +77,14 @@ const Icons = {
     <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
       <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+    </svg>
+  ),
+  NewPost: () => (
+    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="12" y1="18" x2="12" y2="12" />
+      <line x1="9" y1="15" x2="15" y2="15" />
     </svg>
   ),
 };
@@ -106,8 +121,9 @@ export default function Layout() {
 
   const isMyPageActive =
     location.pathname === '/creator/edit' ||
+    location.pathname === '/creator/tiers' ||
     (!!user?.creator_profile?.slug && location.pathname === `/creator/${user.creator_profile.slug}`);
-  const showEditCreatorSubItem = isMyPageActive && !!user?.creator_profile?.slug;
+  const showEditCreatorSubItems = !!user?.creator_profile?.slug;
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -146,14 +162,30 @@ export default function Layout() {
               <section className="sidebar-section" aria-label="Account">
                 <div className="sidebar-my-page-group">
                   <NavLink to={myPageHref} icon={Icons.MyPage}>My page</NavLink>
-                  {showEditCreatorSubItem && (
-                    <Link
-                      to="/creator/edit"
-                      className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/edit' ? 'active' : ''}`}
-                    >
-                      <span className="sidebar-link-icon"><Icons.Profile /></span>
-                      <span className="sidebar-link-label">Edit Creator</span>
-                    </Link>
+                  {showEditCreatorSubItems && (
+                    <>
+                      <Link
+                        to="/creator/edit"
+                        className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/edit' ? 'active' : ''}`}
+                      >
+                        <span className="sidebar-link-icon"><Icons.Profile /></span>
+                        <span className="sidebar-link-label">Edit Creator</span>
+                      </Link>
+                      <Link
+                        to="/creator/tiers"
+                        className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/tiers' ? 'active' : ''}`}
+                      >
+                        <span className="sidebar-link-icon"><Icons.Tiers /></span>
+                        <span className="sidebar-link-label">Edit Tiers</span>
+                      </Link>
+                      <Link
+                        to="/creator/post/new"
+                        className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/post/new' ? 'active' : ''}`}
+                      >
+                        <span className="sidebar-link-icon"><Icons.NewPost /></span>
+                        <span className="sidebar-link-label">New post</span>
+                      </Link>
+                    </>
                   )}
                 </div>
                 <NavLink to="/feed/public" icon={Icons.PublicPosts}>Public posts</NavLink>

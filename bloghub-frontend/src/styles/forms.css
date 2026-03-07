@@ -373,3 +373,8 @@ label {
   font-size: 0.9rem;
   color: var(--text-muted);
 }
+
+label.form-label-required::after {
+  content: '*';
+  color: var(--color-error, #dc2626);
+}

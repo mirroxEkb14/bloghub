@@ -5,6 +5,9 @@ use App\Http\Controllers\Api\CreatorProfileController;
 use App\Http\Controllers\Api\UserUploadController;
 use App\Http\Controllers\Api\CreatorProfilePostController;
 use App\Http\Controllers\Api\CreatorProfileTierController;
+use App\Http\Controllers\Api\MeCreatorPostController;
+use App\Http\Controllers\Api\PostMediaUploadController;
+use App\Http\Controllers\Api\TierCoverUploadController;
 use App\Http\Controllers\Api\CreatorProfileUploadController;
 use App\Http\Controllers\Api\PostCommentController;
 use App\Http\Controllers\Api\StripeWebhookController;
@@ -47,6 +50,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/creator-profiles/upload-avatar', [CreatorProfileUploadController::class, 'avatar']);
     Route::post('/creator-profiles/upload-cover', [CreatorProfileUploadController::class, 'cover']);
     Route::put('/creator-profiles/{creatorProfile}', [CreatorProfileController::class, 'update']);
+
+    Route::get('/me/creator-profile/tiers', [CreatorProfileTierController::class, 'indexMy']);
+    Route::post('/me/creator-profile/tiers/upload-cover', [TierCoverUploadController::class, 'cover']);
+    Route::post('/me/creator-profile/tiers', [CreatorProfileTierController::class, 'store']);
+    Route::put('/me/creator-profile/tiers/{tier}', [CreatorProfileTierController::class, 'update']);
+    Route::delete('/me/creator-profile/tiers/{tier}', [CreatorProfileTierController::class, 'destroy']);
+
+    Route::post('/me/creator-profile/posts/upload-media', [PostMediaUploadController::class, 'upload']);
+    Route::post('/me/creator-profile/posts', [MeCreatorPostController::class, 'store']);
+    Route::delete('/me/creator-profile/posts/{postSlug}', [MeCreatorPostController::class, 'destroy']);
 
     Route::get('/me/feed', [FeedController::class, 'homeFeed']);
     Route::get('/me/feed/public', [FeedController::class, 'publicFeed']);
