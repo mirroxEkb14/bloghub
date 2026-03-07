@@ -275,7 +275,7 @@ export default function CreatorProfileForm({ mode }: Props) {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="display_name">Display name</label>
+            <label htmlFor="display_name" className="form-label-required">Display name</label>
             <input
               id="display_name"
               type="text"
@@ -350,7 +350,7 @@ export default function CreatorProfileForm({ mode }: Props) {
             </div>
           </div>
           <div className="form-group">
-            <label htmlFor="slug">URL slug (optional)</label>
+            <label htmlFor="slug">URL slug</label>
             <input
               id="slug"
               type="text"

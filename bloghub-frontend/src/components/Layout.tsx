@@ -79,6 +79,14 @@ const Icons = {
       <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
     </svg>
   ),
+  NewPost: () => (
+    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="12" y1="18" x2="12" y2="12" />
+      <line x1="9" y1="15" x2="15" y2="15" />
+    </svg>
+  ),
 };
 
 function NavLink({
@@ -169,6 +177,13 @@ export default function Layout() {
                       >
                         <span className="sidebar-link-icon"><Icons.Tiers /></span>
                         <span className="sidebar-link-label">Edit Tiers</span>
+                      </Link>
+                      <Link
+                        to="/creator/post/new"
+                        className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/post/new' ? 'active' : ''}`}
+                      >
+                        <span className="sidebar-link-icon"><Icons.NewPost /></span>
+                        <span className="sidebar-link-label">New post</span>
                       </Link>
                     </>
                   )}

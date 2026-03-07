@@ -922,3 +922,30 @@
   max-width: 400px;
   width: 100%;
 }
+
+/* Create post */
+.post-create-media-access-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1.25rem 1.5rem;
+}
+
+.post-create-media-access-row .post-create-media-cell {
+  flex: 0 0 auto;
+}
+
+.post-create-media-access-row .post-create-access-cell {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.post-create-media-box {
+  background: var(--bg-input);
+}
+
+.post-create-media-box video,
+.post-create-media-box audio {
+  display: block;
+  max-height: 200px;
+}

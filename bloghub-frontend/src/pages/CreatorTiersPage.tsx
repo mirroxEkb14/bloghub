@@ -314,7 +314,7 @@ export default function CreatorTiersPage() {
                           </div>
                         </div>
                         <div className="form-group">
-                          <label>Tier name</label>
+                          <label className="form-label-required">Tier name</label>
                           <input
                             type="text"
                             value={editForm.tier_name ?? tier.tier_name}
@@ -325,7 +325,7 @@ export default function CreatorTiersPage() {
                           />
                         </div>
                         <div className="form-group">
-                          <label>Description</label>
+                          <label className="form-label-required">Description</label>
                           <textarea
                             value={editForm.tier_desc !== undefined ? editForm.tier_desc : (tier.tier_desc ?? '')}
                             onChange={(e) => setEditForm((f) => ({ ...f, tier_desc: e.target.value }))}
@@ -470,7 +470,7 @@ export default function CreatorTiersPage() {
                       </div>
                     </div>
                     <div className="form-group">
-                      <label htmlFor="tier_name">Tier name</label>
+                      <label htmlFor="tier_name" className="form-label-required">Tier name</label>
                       <input
                         id="tier_name"
                         type="text"
@@ -482,7 +482,7 @@ export default function CreatorTiersPage() {
                       />
                     </div>
                     <div className="form-group">
-                      <label htmlFor="tier_desc">Description</label>
+                      <label htmlFor="tier_desc" className="form-label-required">Description</label>
                       <textarea
                         id="tier_desc"
                         value={form.tier_desc}

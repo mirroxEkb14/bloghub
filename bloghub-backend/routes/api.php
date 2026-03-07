@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\CreatorProfileController;
 use App\Http\Controllers\Api\UserUploadController;
 use App\Http\Controllers\Api\CreatorProfilePostController;
 use App\Http\Controllers\Api\CreatorProfileTierController;
+use App\Http\Controllers\Api\MeCreatorPostController;
+use App\Http\Controllers\Api\PostMediaUploadController;
 use App\Http\Controllers\Api\TierCoverUploadController;
 use App\Http\Controllers\Api\CreatorProfileUploadController;
 use App\Http\Controllers\Api\PostCommentController;
@@ -54,6 +56,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/me/creator-profile/tiers', [CreatorProfileTierController::class, 'store']);
     Route::put('/me/creator-profile/tiers/{tier}', [CreatorProfileTierController::class, 'update']);
     Route::delete('/me/creator-profile/tiers/{tier}', [CreatorProfileTierController::class, 'destroy']);
+
+    Route::post('/me/creator-profile/posts/upload-media', [PostMediaUploadController::class, 'upload']);
+    Route::post('/me/creator-profile/posts', [MeCreatorPostController::class, 'store']);
 
     Route::get('/me/feed', [FeedController::class, 'homeFeed']);
     Route::get('/me/feed/public', [FeedController::class, 'publicFeed']);

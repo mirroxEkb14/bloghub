@@ -228,7 +228,7 @@ export default function ProfilePage() {
           />
           <div className="form-group">
             <label htmlFor="profile-phone">
-              Phone (optional)
+              Phone
             </label>
             <div className={`input-with-prefix ${fieldErrors.phone ? 'has-error' : ''}`}>
               <span className="input-with-prefix-addon" aria-hidden>+</span>
