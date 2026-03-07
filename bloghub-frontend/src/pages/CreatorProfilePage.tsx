@@ -692,9 +692,23 @@ export default function CreatorProfilePage() {
               </div>
             )}
           </section>
-          {tiers.length > 0 && (
-            <section id="profile-tiers" className="profile-tiers">
-              <h2 className="profile-section-title">Subscription Tiers</h2>
+          <section id="profile-tiers" className="profile-tiers">
+            <h2 className="profile-section-title">Subscription Tiers</h2>
+            {tiers.length === 0 ? (
+              <div className="profile-posts-empty" role="status" aria-live="polite">
+                <div className="profile-posts-empty-icon" aria-hidden>
+                  <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="8" y="8" width="32" height="8" rx="1" />
+                    <rect x="8" y="20" width="32" height="8" rx="1" />
+                    <rect x="8" y="32" width="32" height="8" rx="1" />
+                  </svg>
+                </div>
+                <h3 className="profile-posts-empty-title">No subscription tiers yet</h3>
+                <p className="profile-posts-empty-desc">
+                  {displayName} hasn’t set up any subscription tiers yet. Check back later
+                </p>
+              </div>
+            ) : (
               <ul className="tier-list tier-list-sidebar">
                 {tiers.map((tier) => {
                   const isSubscribed = subscriptionStatus?.subscribed && subscriptionStatus?.active_subscription?.tier_id === tier.id;
@@ -782,12 +796,12 @@ export default function CreatorProfilePage() {
                           </button>
                         )}
                       </div>
-                    </li>
+                      </li>
                   );
                 })}
               </ul>
-            </section>
-          )}
+            )}
+          </section>
         </aside>
       </div>
 
