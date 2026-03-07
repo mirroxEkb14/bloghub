@@ -83,14 +83,14 @@ input:focus {
 }
 .password-field-toggle:hover {
   color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--input-hover);
 }
 .password-field-toggle:focus {
   outline: none;
 }
 .password-field-toggle:focus-visible {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--input-focus);
 }
 
 /* Text/email input */
