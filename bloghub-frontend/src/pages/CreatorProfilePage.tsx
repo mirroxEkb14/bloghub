@@ -64,6 +64,7 @@ export default function CreatorProfilePage() {
   const isOwnProfile = Boolean(slug && user?.creator_profile?.slug === slug);
   const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevPostsPageRef = useRef(1);
+  const scrollToPaginationAfterLoadRef = useRef(false);
   const sidebarRef = useRef<HTMLElement | null>(null);
   const paginationRef = useRef<HTMLDivElement | null>(null);
   const savedScrollRef = useRef<number | null>(null);
@@ -334,9 +335,19 @@ export default function CreatorProfilePage() {
     if (postsPage > prev) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      paginationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      scrollToPaginationAfterLoadRef.current = true;
     }
   }, [postsPage]);
+
+  useEffect(() => {
+    if (!loadingPosts && scrollToPaginationAfterLoadRef.current) {
+      scrollToPaginationAfterLoadRef.current = false;
+      const id = setTimeout(() => {
+        paginationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }, 100);
+      return () => clearTimeout(id);
+    }
+  }, [loadingPosts]);
 
   useEffect(() => {
     const el = sidebarRef.current;
