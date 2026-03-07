@@ -73,6 +73,10 @@ class CreatorProfileController extends Controller
 
     public function store(StoreCreatorProfileRequest $request): JsonResponse
     {
+        if (! $request->user()->hasVerifiedEmail()) {
+            return response()->json(['message' => 'You must verify your email before creating a creator profile'], 403);
+        }
+
         $data = $request->validatedWithSlug();
         $tagIds = $data['tag_ids'] ?? [];
         unset($data['tag_ids']);

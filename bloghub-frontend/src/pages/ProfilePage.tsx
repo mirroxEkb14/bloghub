@@ -164,14 +164,20 @@ export default function ProfilePage() {
 
         <div className="profile-avatar-row">
           <label className="profile-avatar-label" htmlFor="profile-avatar-input">
-            {avatarPreviewUrl ? (
-              <img src={avatarPreviewUrl} alt="" className="profile-avatar-img" />
-            ) : (
-              <span className="profile-avatar-initial">{initial}</span>
-            )}
-            <span className="profile-avatar-hint">
-              Change photo
+            <span className="profile-avatar-preview-wrap">
+              {avatarPreviewUrl ? (
+                <img src={avatarPreviewUrl} alt="" className="profile-avatar-img" />
+              ) : (
+                <span className="profile-avatar-initial">{initial}</span>
+              )}
+              <span className="profile-avatar-camera-icon" aria-hidden>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                  <circle cx="12" cy="13" r="4" />
+                </svg>
+              </span>
             </span>
+            <span className="profile-avatar-hint">Recommended: 256×256 px. Max 5 MB.</span>
           </label>
           <input
             id="profile-avatar-input"

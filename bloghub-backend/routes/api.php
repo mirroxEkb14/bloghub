@@ -23,6 +23,10 @@ Route::post('/webhooks/stripe', StripeWebhookController::class);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
+    ->middleware('signed')
+    ->name('verification.verify');
+
 Route::get('/tags', [TagController::class, 'index']);
 Route::get('/creator-profiles', [CreatorProfileController::class, 'index']);
 Route::get('/creator-profiles/{slug}/posts', [CreatorProfilePostController::class, 'index'])
@@ -42,6 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
     Route::patch('/user', [AuthController::class, 'updateProfile']);
+    Route::post('/email/resend', [AuthController::class, 'resendVerificationEmail']);
     Route::patch('/user/accept-terms-privacy', [AuthController::class, 'acceptTermsAndPrivacy']);
     Route::post('/user/upload-avatar', [UserUploadController::class, 'avatar']);
 

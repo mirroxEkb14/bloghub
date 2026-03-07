@@ -137,6 +137,10 @@ export const authApi = {
     return api<unknown>('/api/logout', { method: 'POST' });
   },
 
+  resendVerificationEmail() {
+    return api<{ message: string }>('/api/email/resend', { method: 'POST' });
+  },
+
   user() {
     return api<{ user: User }>('/api/user');
   },

@@ -174,6 +174,17 @@ Pro simulaci procesu plateb projekt používá platební bránu  <a href='https:
 
 ---
 
+## 📧 E-mail verifikace
+
+V současné (07.03.2026) implementaci projekt využívá e-mailové verifikace. Pro testování této logiky je potřeba:
+1. Vytvořit **App Password** pro Google účet, z něhož budou posílány e-mailové zprávy:
+    - **Google Account** -> **Security & sign-in** -> **App passwords**.
+    - **Poznámka**: Aby Google pustil do sekce Hesel aplikací, musí být zapnuto **2-Step Verification**.
+2. Zadat e-mailovou adresu a vygenerované 16mistné heslo do příslušných proměnných prostředí v `.env`:
+    - `MAIL_USERNAME`, `MAIL_PASSWORD` a `MAIL_FROM_ADDRESS`.
+
+---
+
 ## 🔐 Přístup do admin panelu
 
 Výchozí účty (z `.env`):

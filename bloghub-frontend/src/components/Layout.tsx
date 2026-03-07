@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { authApi } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useToast } from '../contexts/ToastContext';
 import AcceptLegalModal from './AcceptLegalModal';
 
 const iconSize = 22;
@@ -124,8 +126,9 @@ function NavLink({
 }
 
 export default function Layout() {
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logout, refreshUser } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { showToast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -156,6 +159,42 @@ export default function Layout() {
       return () => document.removeEventListener('click', handleClickOutside);
     }
   }, [menuOpen]);
+
+  const [resendVerificationLoading, setResendVerificationLoading] = useState(false);
+  const verificationHandledRef = useRef(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const verified = params.get('email_verified');
+    const error = params.get('error');
+    if (verified === null && error === null) {
+      verificationHandledRef.current = false;
+      return;
+    }
+    if (verificationHandledRef.current) return;
+    verificationHandledRef.current = true;
+    if (verified === '1') {
+      showToast('Email verified. You can use your account fully now', 'success');
+      navigate(location.pathname || '/', { replace: true });
+    } else if (verified === '0' && error === 'invalid') {
+      showToast('Verification link is invalid or expired.', 'error');
+      navigate(location.pathname || '/', { replace: true });
+    }
+  }, [location.search, location.pathname, navigate, showToast]);
+
+  async function handleResendVerification() {
+    if (resendVerificationLoading) return;
+    setResendVerificationLoading(true);
+    try {
+      await authApi.resendVerificationEmail();
+      showToast('Verification email sent. Check your inbox', 'success');
+      refreshUser();
+    } catch {
+      showToast('Failed to send verification email', 'error');
+    } finally {
+      setResendVerificationLoading(false);
+    }
+  }
 
   async function handleLogout() {
     await logout();
@@ -287,9 +326,24 @@ export default function Layout() {
             </div>
           )}
         </aside>
-        <main className="app-main">
-          <Outlet />
-        </main>
+        <div className="app-main-wrap">
+          {user && !user.email_verified_at && (
+            <div className="email-verify-banner">
+              <span className="email-verify-banner-text">Please verify your email to get the most out of BlogHub</span>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={handleResendVerification}
+                disabled={resendVerificationLoading}
+              >
+                {resendVerificationLoading ? 'Sending…' : 'Resend verification email'}
+              </button>
+            </div>
+          )}
+          <main className="app-main">
+            <Outlet />
+          </main>
+        </div>
       </div>
     </>
   );
