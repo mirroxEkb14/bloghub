@@ -3,11 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   creatorProfilesApi,
   tagsApi,
+  ValidationError,
   type CreatorProfile,
   type Tag,
 } from '../api/client';
 import LoadingPage from '../components/LoadingPage';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 
 type Props = {
   mode: 'create' | 'edit';
@@ -23,6 +25,7 @@ function slugify(text: string): string {
 
 export default function CreatorProfileForm({ mode }: Props) {
   const { user, loading: authLoading } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<CreatorProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(mode === 'edit');
@@ -122,7 +125,7 @@ export default function CreatorProfileForm({ mode }: Props) {
         return;
       }
       if (file.size > MAX_FILE_BYTES) {
-        setError(`Image must be under ${MAX_FILE_MB} MB`);
+        showToast('Image must be under 5 MB', 'error');
         return;
       }
       setError(null);
@@ -157,7 +160,7 @@ export default function CreatorProfileForm({ mode }: Props) {
         return;
       }
       if (file.size > MAX_FILE_BYTES) {
-        setError(`Image must be under ${MAX_FILE_MB} MB`);
+        showToast('Image must be under 5 MB', 'error');
         return;
       }
       setError(null);
@@ -200,40 +203,80 @@ export default function CreatorProfileForm({ mode }: Props) {
     setError(null);
   }, []);
 
+  const buildPayload = useCallback(() => {
+    const p: Parameters<typeof creatorProfilesApi.create>[0] = {
+      display_name: form.display_name.trim(),
+      slug: form.slug.trim() || undefined,
+      about: form.about.trim() || null,
+      tag_ids: form.tag_ids,
+    };
+    if (typeof form.profile_avatar_path === 'string' && form.profile_avatar_path.trim()) {
+      p.profile_avatar_path = form.profile_avatar_path;
+    } else if (form.profile_avatar_path === null) {
+      p.profile_avatar_path = null;
+    }
+    if (typeof form.profile_cover_path === 'string' && form.profile_cover_path.trim()) {
+      p.profile_cover_path = form.profile_cover_path;
+    } else if (form.profile_cover_path === null) {
+      p.profile_cover_path = null;
+    }
+    return p;
+  }, [form]);
+
+  const hasNoChanges = useCallback(
+    (payload: ReturnType<typeof buildPayload>) => {
+      if (!profile) return false;
+      const same = (a: string | undefined | null, b: string | undefined | null) =>
+        (a ?? '') === (b ?? '');
+      const tagIds = profile.tags?.map((t) => t.id).sort() ?? [];
+      const formTagIds = [...form.tag_ids].sort();
+      const sameTags =
+        tagIds.length === formTagIds.length &&
+        tagIds.every((id, i) => id === formTagIds[i]);
+      return (
+        same(payload.display_name, profile.display_name) &&
+        same(payload.slug, profile.slug) &&
+        same(payload.about, profile.about) &&
+        sameTags &&
+        form.profile_avatar_path === undefined &&
+        form.profile_cover_path === undefined
+      );
+    },
+    [profile, form.display_name, form.slug, form.about, form.tag_ids, form.profile_avatar_path, form.profile_cover_path]
+  );
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
     try {
-      const buildPayload = () => {
-        const p: Parameters<typeof creatorProfilesApi.create>[0] = {
-          display_name: form.display_name.trim(),
-          slug: form.slug.trim() || undefined,
-          about: form.about.trim() || null,
-          tag_ids: form.tag_ids,
-        };
-        if (typeof form.profile_avatar_path === 'string' && form.profile_avatar_path.trim()) {
-          p.profile_avatar_path = form.profile_avatar_path;
-        } else if (form.profile_avatar_path === null) {
-          p.profile_avatar_path = null;
-        }
-        if (typeof form.profile_cover_path === 'string' && form.profile_cover_path.trim()) {
-          p.profile_cover_path = form.profile_cover_path;
-        } else if (form.profile_cover_path === null) {
-          p.profile_cover_path = null;
-        }
-        return p;
-      };
+      const payload = buildPayload();
 
       if (mode === 'create') {
-        const created = await creatorProfilesApi.create(buildPayload());
+        const created = await creatorProfilesApi.create(payload);
+        showToast('Creator Profile created!', 'success');
         navigate(`/creator/${created.slug}`, { replace: true });
       } else if (profile) {
-        const updated = await creatorProfilesApi.update(profile.id, buildPayload());
+        if (hasNoChanges(payload)) {
+          showToast("No changes to save", 'warning');
+          return;
+        }
+        const updated = await creatorProfilesApi.update(profile.id, payload);
+        showToast("Profile updated", 'success');
         navigate(updated.slug ? `/creator/${updated.slug}` : '/explore', { replace: true });
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong');
+      const rawMessage = e instanceof Error ? e.message : 'Something went wrong';
+      const isSlugTaken =
+        rawMessage.toLowerCase().includes('already been taken') ||
+        (e instanceof ValidationError &&
+          Array.isArray((e as ValidationError).errors?.slug) &&
+          (e as ValidationError).errors!.slug.some((m) => m.toLowerCase().includes('already been taken')));
+      const message = isSlugTaken
+        ? 'This slug is already taken. Please choose a different slug'
+        : rawMessage;
+      showToast(message, 'error');
+      setError(null);
     } finally {
       setSubmitting(false);
     }

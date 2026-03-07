@@ -112,19 +112,25 @@ export default function ExplorePage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [tagSlug, setTagSlug] = useState<string | null>(tagFromUrl);
+  const [browsePage, setBrowsePage] = useState(1);
   const [meta, setMeta] = useState<{ current_page: number; last_page: number; total: number } | null>(null);
   const savedScrollRef = useRef<number | null>(null);
+  const prevBrowsePageRef = useRef(1);
+  const scrollToPaginationAfterLoadRef = useRef(false);
+  const browsePaginationRef = useRef<HTMLDivElement | null>(null);
 
   const dragPopular = useHorizontalDragScroll();
   const dragTrending = useHorizontalDragScroll();
 
   useEffect(() => {
     const y = sessionStorage.getItem(EXPLORE_SCROLL_KEY);
-    if (y !== null) {
+    if (y !== null && !tagFromUrl) {
       sessionStorage.removeItem(EXPLORE_SCROLL_KEY);
       savedScrollRef.current = parseInt(y, 10);
+    } else if (tagFromUrl && y !== null) {
+      sessionStorage.removeItem(EXPLORE_SCROLL_KEY);
     }
-  }, []);
+  }, [tagFromUrl]);
 
   useEffect(() => {
     let tick: ReturnType<typeof setTimeout> | null = null;
@@ -158,6 +164,22 @@ export default function ExplorePage() {
   }, [tagFromUrl]);
 
   useEffect(() => {
+    setBrowsePage(1);
+  }, [search, tagSlug]);
+
+  const browseSectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!tagFromUrl || loading) return;
+    const el = browseSectionRef.current;
+    if (!el) return;
+    const timeoutId = setTimeout(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+    return () => clearTimeout(timeoutId);
+  }, [tagFromUrl, loading]);
+
+  useEffect(() => {
     let cancelled = false;
     exploreApi.getPopularCreators().then((data) => {
       if (!cancelled) setPopularCreators(data ?? []);
@@ -183,6 +205,7 @@ export default function ExplorePage() {
 
   useEffect(() => {
     let cancelled = false;
+    setLoading(true);
     (async () => {
       try {
         const [tagsRes, listRes] = await Promise.all([
@@ -191,7 +214,7 @@ export default function ExplorePage() {
             search: search || undefined,
             tag: tagSlug ?? undefined,
             per_page: 12,
-            page: 1,
+            page: browsePage,
           }),
         ]);
         if (!cancelled) {
@@ -206,7 +229,24 @@ export default function ExplorePage() {
       }
     })();
     return () => { cancelled = true; };
-  }, [search, tagSlug]);
+  }, [search, tagSlug, browsePage]);
+
+  useEffect(() => {
+    if (browsePage > prevBrowsePageRef.current) {
+      prevBrowsePageRef.current = browsePage;
+      window.scrollTo(0, browseSectionRef.current?.offsetTop ?? 0);
+    } else if (browsePage < prevBrowsePageRef.current) {
+      prevBrowsePageRef.current = browsePage;
+      scrollToPaginationAfterLoadRef.current = true;
+    }
+  }, [browsePage]);
+
+  useEffect(() => {
+    if (!loading && scrollToPaginationAfterLoadRef.current) {
+      scrollToPaginationAfterLoadRef.current = false;
+      browsePaginationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, [loading]);
 
   const setTagFilter = (slug: string | null) => {
     setSearchParams((prev) => {
@@ -396,21 +436,22 @@ export default function ExplorePage() {
         </div>
       </div>
 
-      {!showMainContent ? (
-        <LoadingPage message="Exploring creators..." />
-      ) : profiles.length === 0 ? (
-        <div className="explore-empty">
-          <p>No creators found. Try another search or tag</p>
-        </div>
-      ) : (
-        <>
-          <h2 className="explore-section-title">Browse creators</h2>
-          {meta && (
-            <p className="explore-meta">
-              Showing {profiles.length} of {meta.total} creator{meta.total !== 1 ? 's' : ''}
-            </p>
-          )}
-          <ul className="creator-grid">
+      <div ref={browseSectionRef} id="browse-creators">
+        {!showMainContent ? (
+          <LoadingPage message="Exploring creators..." />
+        ) : profiles.length === 0 ? (
+          <div className="explore-empty">
+            <p>No creators found. Try another search or tag</p>
+          </div>
+        ) : (
+          <>
+            <h2 className="explore-section-title">Browse creators</h2>
+            {meta && (
+              <p className="explore-meta">
+                Showing {profiles.length} of {meta.total} creator{meta.total !== 1 ? 's' : ''}
+              </p>
+            )}
+            <ul className="creator-grid">
             {profiles.map((profile) => (
               <li key={profile.id}>
                 <Link to={`/creator/${profile.slug}`} className="creator-card">
@@ -460,8 +501,32 @@ export default function ExplorePage() {
               </li>
             ))}
           </ul>
-        </>
-      )}
+            {meta && meta.last_page > 1 && (
+              <div ref={browsePaginationRef} className="post-list-pagination" style={{ marginTop: '1rem' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  disabled={browsePage <= 1}
+                  onClick={() => setBrowsePage((p) => Math.max(1, p - 1))}
+                >
+                  Previous
+                </button>
+                <span className="post-list-pagination-meta">
+                  Page {meta.current_page} of {meta.last_page}
+                </span>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  disabled={browsePage >= meta.last_page}
+                  onClick={() => setBrowsePage((p) => p + 1)}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

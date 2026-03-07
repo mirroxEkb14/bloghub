@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   postsApi,
   tiersApi,
+  ValidationError,
   type PostCreatePayload,
   type Tier,
 } from '../api/client';
@@ -102,7 +103,17 @@ export default function CreatePostPage() {
         navigate(creatorSlug ? `/creator/${creatorSlug}` : '/', { replace: true });
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to create post');
+      const rawMessage = e instanceof Error ? e.message : 'Failed to create post';
+      const isSlugTaken =
+        rawMessage.toLowerCase().includes('already been taken') ||
+        (e instanceof ValidationError &&
+          Array.isArray(e.errors?.slug) &&
+          e.errors.slug.some((m) => m.toLowerCase().includes('already been taken')));
+      const message = isSlugTaken
+        ? 'This slug is already taken. Please choose a different slug'
+        : rawMessage;
+      showToast(message, 'error');
+      setError(null);
     } finally {
       setSubmitting(false);
     }

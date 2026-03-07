@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   ApiError,
@@ -64,6 +65,7 @@ export default function CreatorProfilePage() {
   const isOwnProfile = Boolean(slug && user?.creator_profile?.slug === slug);
   const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevPostsPageRef = useRef(1);
+  const scrollToPaginationAfterLoadRef = useRef(false);
   const sidebarRef = useRef<HTMLElement | null>(null);
   const paginationRef = useRef<HTMLDivElement | null>(null);
   const savedScrollRef = useRef<number | null>(null);
@@ -315,8 +317,18 @@ export default function CreatorProfilePage() {
           page: postsPage,
         });
         if (!cancelled) {
-          setPosts(res.data);
-          setPostsMeta(res.meta);
+          if (scrollToPaginationAfterLoadRef.current) {
+            scrollToPaginationAfterLoadRef.current = false;
+            flushSync(() => {
+              setPosts(res.data);
+              setPostsMeta(res.meta);
+              setLoadingPosts(false);
+            });
+            paginationRef.current?.scrollIntoView({ behavior: 'auto', block: 'end' });
+          } else {
+            setPosts(res.data);
+            setPostsMeta(res.meta);
+          }
         }
       } catch {
         if (!cancelled) setPosts([]);
@@ -334,7 +346,7 @@ export default function CreatorProfilePage() {
     if (postsPage > prev) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      paginationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      scrollToPaginationAfterLoadRef.current = true;
     }
   }, [postsPage]);
 

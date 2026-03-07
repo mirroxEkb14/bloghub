@@ -1,6 +1,8 @@
-/* Theme */
-:root {
+/* Dark mode (theme) */
+:root,
+[data-theme="dark"] {
   --bg-primary: #1a131a;
+  --bg-sidebar: rgba(26, 19, 26, 0.95);
   --bg-card: #251c28;
   --bg-input: #2d2430;
   --accent: #e91e8c;
@@ -10,6 +12,12 @@
   --text: #ffffff;
   --text-muted: #a78bfa;
   --text-secondary: #9ca3af;
+  --overlay: rgba(0, 0, 0, 0.85);
+  --shadow-drop: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --hover-overlay: rgba(167, 139, 250, 0.08);
+  --active-overlay: rgba(124, 58, 237, 0.25);
+  --input-hover: rgba(255, 255, 255, 0.05);
+  --input-focus: rgba(255, 255, 255, 0.08);
   --radius: 12px;
   --radius-sm: 8px;
 
@@ -22,6 +30,27 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Light mode */
+[data-theme="light"] {
+  --bg-primary: #f8f6fa;
+  --bg-sidebar: rgba(255, 255, 255, 0.95);
+  --bg-card: #ffffff;
+  --bg-input: #f1eef4;
+  --accent: #c2185b;
+  --accent-hover: #ad1457;
+  --accent-muted: #6d1b7d;
+  --border: rgba(109, 27, 125, 0.2);
+  --text: #1a131a;
+  --text-muted: #6d1b7d;
+  --text-secondary: #5c4d63;
+  --overlay: rgba(0, 0, 0, 0.5);
+  --shadow-drop: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --hover-overlay: rgba(109, 27, 125, 0.08);
+  --active-overlay: rgba(109, 27, 125, 0.18);
+  --input-hover: rgba(0, 0, 0, 0.05);
+  --input-focus: rgba(0, 0, 0, 0.08);
 }
 
 * {

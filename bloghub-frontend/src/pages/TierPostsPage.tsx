@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { feedApi, postsApi, type Post } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
@@ -21,6 +22,9 @@ export default function TierPostsPage() {
   const [likingPostId, setLikingPostId] = useState<number | null>(null);
   const [searchInput, setSearchInput] = useState('');
   const [searchParam, setSearchParam] = useState('');
+  const prevPageRef = useRef(1);
+  const scrollToPaginationAfterLoadRef = useRef(false);
+  const paginationRef = useRef<HTMLDivElement | null>(null);
 
   const getPostUrl = useCallback((creatorSlug: string, postSlug: string) => {
     return `${typeof window !== 'undefined' ? window.location.origin : ''}/creator/${creatorSlug}/post/${postSlug}`;
@@ -54,8 +58,18 @@ export default function TierPostsPage() {
       .getTierFeed({ page, per_page: PER_PAGE, q: searchParam || undefined })
       .then((res) => {
         if (!cancelled) {
-          setPosts(res.data);
-          setMeta(res.meta);
+          if (scrollToPaginationAfterLoadRef.current) {
+            scrollToPaginationAfterLoadRef.current = false;
+            flushSync(() => {
+              setPosts(res.data);
+              setMeta(res.meta);
+              setLoading(false);
+            });
+            paginationRef.current?.scrollIntoView({ behavior: 'auto', block: 'end' });
+          } else {
+            setPosts(res.data);
+            setMeta(res.meta);
+          }
         }
       })
       .catch(() => {
@@ -68,6 +82,16 @@ export default function TierPostsPage() {
       cancelled = true;
     };
   }, [user, authLoading, navigate, page, searchParam]);
+
+  useEffect(() => {
+    if (page > prevPageRef.current) {
+      prevPageRef.current = page;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (page < prevPageRef.current) {
+      prevPageRef.current = page;
+      scrollToPaginationAfterLoadRef.current = true;
+    }
+  }, [page]);
 
   async function handleSharePost(post: Post) {
     const slug = post.creator_profile?.slug;
@@ -170,9 +194,9 @@ export default function TierPostsPage() {
 
           {posts.length === 0 ? (
             <div className="profile-posts-empty">
-              <p>No tier posts yet.</p>
+              <p>No tier posts yet</p>
               <p className="profile-meta" style={{ marginTop: '0.5rem' }}>
-                Subscribe to creators&apos; tiers to see their exclusive posts here.
+                Subscribe to creators&apos; tiers to see their exclusive posts here
               </p>
               <Link to="/explore" className="btn btn-primary" style={{ marginTop: '1rem' }}>
                 Explore creators
@@ -337,7 +361,7 @@ export default function TierPostsPage() {
                 })}
               </ul>
               {meta && meta.last_page > 1 && (
-                <div className="post-list-pagination">
+                <div ref={paginationRef} className="post-list-pagination">
                   <button
                     type="button"
                     className="btn btn-secondary btn-sm"
