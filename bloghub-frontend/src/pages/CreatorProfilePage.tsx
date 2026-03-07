@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   ApiError,
@@ -316,8 +317,18 @@ export default function CreatorProfilePage() {
           page: postsPage,
         });
         if (!cancelled) {
-          setPosts(res.data);
-          setPostsMeta(res.meta);
+          if (scrollToPaginationAfterLoadRef.current) {
+            scrollToPaginationAfterLoadRef.current = false;
+            flushSync(() => {
+              setPosts(res.data);
+              setPostsMeta(res.meta);
+              setLoadingPosts(false);
+            });
+            paginationRef.current?.scrollIntoView({ behavior: 'auto', block: 'end' });
+          } else {
+            setPosts(res.data);
+            setPostsMeta(res.meta);
+          }
         }
       } catch {
         if (!cancelled) setPosts([]);
@@ -338,16 +349,6 @@ export default function CreatorProfilePage() {
       scrollToPaginationAfterLoadRef.current = true;
     }
   }, [postsPage]);
-
-  useEffect(() => {
-    if (!loadingPosts && scrollToPaginationAfterLoadRef.current) {
-      scrollToPaginationAfterLoadRef.current = false;
-      const id = setTimeout(() => {
-        paginationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }, 100);
-      return () => clearTimeout(id);
-    }
-  }, [loadingPosts]);
 
   useEffect(() => {
     const el = sidebarRef.current;
