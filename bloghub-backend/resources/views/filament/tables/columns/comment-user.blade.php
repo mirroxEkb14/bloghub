@@ -2,7 +2,7 @@
     $name = $getState() ?? '';
     $initial = $name !== '' ? mb_strtoupper(mb_substr($name, 0, 1)) : '?';
     $username = $record->user?->username ?? '';
-    $avatarUrl = $record->user?->creatorProfile?->profile_avatar_url ?? null;
+    $avatarUrl = $record->user?->avatar_url ?? null;
 @endphp
 
 <div style="display: flex; align-items: center; gap: 0.75rem;">

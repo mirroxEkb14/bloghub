@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\CreatorProfileTierController;
 use App\Http\Controllers\Api\CreatorProfileUploadController;
 use App\Http\Controllers\Api\PostCommentController;
 use App\Http\Controllers\Api\StripeWebhookController;
+use App\Http\Controllers\Api\ExploreController;
 use App\Http\Controllers\Api\FeedController;
 use App\Http\Controllers\Api\SubscriptionCheckoutController;
 use App\Http\Controllers\Api\SubscriptionController;
@@ -30,6 +31,10 @@ Route::get('/creator-profiles/{slug}/posts/{postSlug}/comments', [PostCommentCon
 Route::get('/creator-profiles/{slug}/tiers', [CreatorProfileTierController::class, 'index']);
 Route::get('/creator-profiles/{slug}', [CreatorProfileController::class, 'show']);
 
+Route::get('/explore/popular-creators', [ExploreController::class, 'popularCreators']);
+Route::get('/explore/trending-posts', [ExploreController::class, 'trendingPosts'])
+    ->middleware('auth.sanctum.optional');
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
@@ -43,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/creator-profiles/upload-cover', [CreatorProfileUploadController::class, 'cover']);
     Route::put('/creator-profiles/{creatorProfile}', [CreatorProfileController::class, 'update']);
 
+    Route::get('/me/feed', [FeedController::class, 'homeFeed']);
     Route::get('/me/feed/public', [FeedController::class, 'publicFeed']);
     Route::get('/me/feed/tier', [FeedController::class, 'tierFeed']);
     Route::get('/me/subscriptions', [SubscriptionController::class, 'index']);

@@ -15,13 +15,18 @@ class PostResource extends JsonResource
             $mediaUrl = StorageUrlSupport::publicUrl($mediaUrl);
         }
 
-        $isProfileOwner = (bool) $request->attributes->get('creator_profile_is_owner', false);
-        $isSuperAdmin = (bool) $request->attributes->get('creator_profile_is_super_admin', false);
-        $userTierLevel = $request->attributes->get('creator_profile_user_tier_level');
-        $userHasAccess = $isProfileOwner
-            || $isSuperAdmin
-            || $this->required_tier_id === null
-            || ($userTierLevel !== null && $this->requiredTier && $userTierLevel >= $this->requiredTier->level);
+        $model = $this->resource;
+        if (isset($model->user_has_access)) {
+            $userHasAccess = (bool) $model->user_has_access;
+        } else {
+            $isProfileOwner = (bool) $request->attributes->get('creator_profile_is_owner', false);
+            $isSuperAdmin = (bool) $request->attributes->get('creator_profile_is_super_admin', false);
+            $userTierLevel = $request->attributes->get('creator_profile_user_tier_level');
+            $userHasAccess = $isProfileOwner
+                || $isSuperAdmin
+                || $this->required_tier_id === null
+                || ($userTierLevel !== null && $this->requiredTier && $userTierLevel >= $this->requiredTier->level);
+        }
 
         return [
             'id' => $this->id,

@@ -8,6 +8,7 @@ import { formatDateTimeLocal } from '../utils/date';
 
 const PER_PAGE = 15;
 const SHOW_PUBLIC_FEED_ORNAMENT = false;
+const SEARCH_DEBOUNCE_MS = 300;
 
 export default function PublicPostsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -19,6 +20,8 @@ export default function PublicPostsPage() {
   const [page, setPage] = useState(1);
   const [openMenuPostId, setOpenMenuPostId] = useState<number | null>(null);
   const [likingPostId, setLikingPostId] = useState<number | null>(null);
+  const [searchInput, setSearchInput] = useState('');
+  const [searchParam, setSearchParam] = useState('');
 
   const getPostUrl = useCallback((creatorSlug: string, postSlug: string) => {
     return `${typeof window !== 'undefined' ? window.location.origin : ''}/creator/${creatorSlug}/post/${postSlug}`;
@@ -32,6 +35,15 @@ export default function PublicPostsPage() {
   }, [openMenuPostId]);
 
   useEffect(() => {
+    const trimmed = searchInput.trim();
+    const t = setTimeout(() => {
+      setSearchParam(trimmed);
+      setPage(1);
+    }, SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(t);
+  }, [searchInput]);
+
+  useEffect(() => {
     if (!user && !authLoading) {
       navigate('/login', { replace: true });
       return;
@@ -40,7 +52,7 @@ export default function PublicPostsPage() {
     let cancelled = false;
     setLoading(true);
     feedApi
-      .getPublicFeed({ page, per_page: PER_PAGE })
+      .getPublicFeed({ page, per_page: PER_PAGE, q: searchParam || undefined })
       .then((res) => {
         if (!cancelled) {
           setPosts(res.data);
@@ -56,7 +68,7 @@ export default function PublicPostsPage() {
     return () => {
       cancelled = true;
     };
-  }, [user, authLoading, navigate, page]);
+  }, [user, authLoading, navigate, page, searchParam]);
 
   async function handleSharePost(post: Post) {
     const slug = post.creator_profile?.slug;
@@ -130,19 +142,37 @@ export default function PublicPostsPage() {
             <p className="profile-meta">
               Public posts from creators you&apos;re subscribed to
             </p>
-            {meta && posts.length > 0 && (
-              <p className="public-feed-count">
-                {meta.total} post{meta.total !== 1 ? 's' : ''}
-              </p>
-            )}
+            <div className="public-feed-filter-row">
+              <div className="public-feed-search-wrap">
+                <span className="public-feed-search-icon" aria-hidden>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                  </svg>
+                </span>
+                <input
+                  type="search"
+                  className="public-feed-search-input"
+                  placeholder="Search by creator or post title"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  aria-label="Search by creator name or post title"
+                />
+              </div>
+              {meta != null && (
+                <span className="public-feed-count-inline">
+                  {meta.total} post{meta.total !== 1 ? 's' : ''}
+                </span>
+              )}
+            </div>
           </div>
         </header>
 
         {posts.length === 0 ? (
           <div className="profile-posts-empty">
-            <p>No public posts yet.</p>
+            <p>No public posts yet</p>
             <p className="profile-meta" style={{ marginTop: '0.5rem' }}>
-              Subscribe to creators to see their public posts here.
+              Subscribe to creators to see their public posts here
             </p>
             <Link to="/explore" className="btn btn-primary" style={{ marginTop: '1rem' }}>
               Explore creators

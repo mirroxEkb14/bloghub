@@ -5,11 +5,16 @@ namespace Database\Seeders;
 use App\Enums\UserRoleEnum;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Http\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 
 class UsersSeeder extends Seeder
 {
+    private const FIXTURES_AVATARS = 'database/seeders/fixtures/avatars';
+
+    private const STORAGE_AVATAR_DIR = 'users/avatars';
     private const SEED_USERS = [
         ['name' => 'Fox Mulder', 'username' => 'trust_no1', 'email' => 'trust_no1@gmail.com', 'is_creator' => true],
         ['name' => 'Dana Scully', 'username' => 'queequeg', 'email' => 'queequeg@gmail.com', 'is_creator' => true],
@@ -82,7 +87,7 @@ class UsersSeeder extends Seeder
 
         $seedPassword = Hash::make('app');
         foreach (self::SEED_USERS as $index => $data) {
-            User::firstOrCreate(
+            $user = User::firstOrCreate(
                 ['email' => $data['email']],
                 [
                     'name' => $data['name'],
@@ -95,6 +100,22 @@ class UsersSeeder extends Seeder
                     'password' => $seedPassword,
                 ]
             );
+            $this->copyUserAvatar($user);
         }
+    }
+
+    private function copyUserAvatar(User $user): void
+    {
+        $fixturePath = base_path(self::FIXTURES_AVATARS).DIRECTORY_SEPARATOR.$user->username.'.png';
+        if (! is_file($fixturePath)) {
+            return;
+        }
+
+        $stored = Storage::disk('public')->putFileAs(
+            self::STORAGE_AVATAR_DIR,
+            new File($fixturePath),
+            $user->username.'.png'
+        );
+        $user->update(['avatar_path' => $stored]);
     }
 }

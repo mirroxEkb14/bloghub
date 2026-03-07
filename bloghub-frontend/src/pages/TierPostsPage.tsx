@@ -7,6 +7,7 @@ import LoadingPage from '../components/LoadingPage';
 import { formatDateTimeLocal } from '../utils/date';
 
 const PER_PAGE = 15;
+const SEARCH_DEBOUNCE_MS = 300;
 
 export default function TierPostsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -18,6 +19,8 @@ export default function TierPostsPage() {
   const [page, setPage] = useState(1);
   const [openMenuPostId, setOpenMenuPostId] = useState<number | null>(null);
   const [likingPostId, setLikingPostId] = useState<number | null>(null);
+  const [searchInput, setSearchInput] = useState('');
+  const [searchParam, setSearchParam] = useState('');
 
   const getPostUrl = useCallback((creatorSlug: string, postSlug: string) => {
     return `${typeof window !== 'undefined' ? window.location.origin : ''}/creator/${creatorSlug}/post/${postSlug}`;
@@ -31,6 +34,15 @@ export default function TierPostsPage() {
   }, [openMenuPostId]);
 
   useEffect(() => {
+    const trimmed = searchInput.trim();
+    const t = setTimeout(() => {
+      setSearchParam(trimmed);
+      setPage(1);
+    }, SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(t);
+  }, [searchInput]);
+
+  useEffect(() => {
     if (!user && !authLoading) {
       navigate('/login', { replace: true });
       return;
@@ -39,7 +51,7 @@ export default function TierPostsPage() {
     let cancelled = false;
     setLoading(true);
     feedApi
-      .getTierFeed({ page, per_page: PER_PAGE })
+      .getTierFeed({ page, per_page: PER_PAGE, q: searchParam || undefined })
       .then((res) => {
         if (!cancelled) {
           setPosts(res.data);
@@ -55,7 +67,7 @@ export default function TierPostsPage() {
     return () => {
       cancelled = true;
     };
-  }, [user, authLoading, navigate, page]);
+  }, [user, authLoading, navigate, page, searchParam]);
 
   async function handleSharePost(post: Post) {
     const slug = post.creator_profile?.slug;
@@ -130,11 +142,29 @@ export default function TierPostsPage() {
               <p className="profile-meta">
                 Exclusive posts from subscription tiers you have access to
               </p>
-              {meta && posts.length > 0 && (
-                <p className="public-feed-count">
-                  {meta.total} post{meta.total !== 1 ? 's' : ''}
-                </p>
-              )}
+              <div className="public-feed-filter-row">
+                <div className="public-feed-search-wrap">
+                  <span className="public-feed-search-icon" aria-hidden>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="m21 21-4.3-4.3" />
+                    </svg>
+                  </span>
+                  <input
+                    type="search"
+                    className="public-feed-search-input"
+                  placeholder="Search by creator or post title"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  aria-label="Search by creator or post title"
+                  />
+                </div>
+                {meta != null && (
+                  <span className="public-feed-count-inline">
+                    {meta.total} post{meta.total !== 1 ? 's' : ''}
+                  </span>
+                )}
+              </div>
             </div>
           </header>
 
