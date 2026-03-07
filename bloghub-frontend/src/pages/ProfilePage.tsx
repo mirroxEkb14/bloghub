@@ -71,7 +71,7 @@ export default function ProfilePage() {
     }
     const maxBytes = 5 * 1024 * 1024;
     if (file.size > maxBytes) {
-      setAvatarError('Image must be under 5 MB');
+      showToast('Image must be under 5 MB', 'error');
       return;
     }
     setAvatarError(null);
@@ -80,7 +80,7 @@ export default function ProfilePage() {
     }
     setAvatarPreviewUrl(URL.createObjectURL(file));
     setPendingAvatarFile(file);
-  }, [avatarPreviewUrl]);
+  }, [avatarPreviewUrl, showToast]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
