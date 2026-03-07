@@ -13,6 +13,7 @@ import CreatorTiersPage from './pages/CreatorTiersPage';
 import CreatePostPage from './pages/CreatePostPage';
 import PostPage from './pages/PostPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
+import MembershipsPage from './pages/MembershipsPage';
 import PublicPostsPage from './pages/PublicPostsPage';
 import TierPostsPage from './pages/TierPostsPage';
 import TermsPage from './pages/TermsPage';
@@ -37,6 +38,7 @@ function App() {
             <Route path="/explore" element={<ExplorePage />} />
             <Route path="/feed/public" element={<PublicPostsPage />} />
             <Route path="/feed/tier" element={<TierPostsPage />} />
+            <Route path="/memberships" element={<MembershipsPage />} />
             <Route path="/creator/new" element={<CreatorProfileForm mode="create" />} />
             <Route path="/creator/edit" element={<CreatorProfileForm mode="edit" />} />
             <Route path="/creator/tiers" element={<CreatorTiersPage />} />
