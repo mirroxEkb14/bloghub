@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { feedApi, postsApi, type Post } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
@@ -22,6 +22,7 @@ export default function PublicPostsPage() {
   const [likingPostId, setLikingPostId] = useState<number | null>(null);
   const [searchInput, setSearchInput] = useState('');
   const [searchParam, setSearchParam] = useState('');
+  const prevPageRef = useRef(1);
 
   const getPostUrl = useCallback((creatorSlug: string, postSlug: string) => {
     return `${typeof window !== 'undefined' ? window.location.origin : ''}/creator/${creatorSlug}/post/${postSlug}`;
@@ -69,6 +70,15 @@ export default function PublicPostsPage() {
       cancelled = true;
     };
   }, [user, authLoading, navigate, page, searchParam]);
+
+  useEffect(() => {
+    if (page > prevPageRef.current) {
+      prevPageRef.current = page;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (page < prevPageRef.current) {
+      prevPageRef.current = page;
+    }
+  }, [page]);
 
   async function handleSharePost(post: Post) {
     const slug = post.creator_profile?.slug;
