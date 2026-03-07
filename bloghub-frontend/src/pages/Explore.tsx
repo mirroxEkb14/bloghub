@@ -120,11 +120,13 @@ export default function ExplorePage() {
 
   useEffect(() => {
     const y = sessionStorage.getItem(EXPLORE_SCROLL_KEY);
-    if (y !== null) {
+    if (y !== null && !tagFromUrl) {
       sessionStorage.removeItem(EXPLORE_SCROLL_KEY);
       savedScrollRef.current = parseInt(y, 10);
+    } else if (tagFromUrl && y !== null) {
+      sessionStorage.removeItem(EXPLORE_SCROLL_KEY);
     }
-  }, []);
+  }, [tagFromUrl]);
 
   useEffect(() => {
     let tick: ReturnType<typeof setTimeout> | null = null;
@@ -156,6 +158,18 @@ export default function ExplorePage() {
   useEffect(() => {
     setTagSlug(tagFromUrl);
   }, [tagFromUrl]);
+
+  const browseSectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!tagFromUrl || loading) return;
+    const el = browseSectionRef.current;
+    if (!el) return;
+    const timeoutId = setTimeout(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+    return () => clearTimeout(timeoutId);
+  }, [tagFromUrl, loading]);
 
   useEffect(() => {
     let cancelled = false;
@@ -396,21 +410,22 @@ export default function ExplorePage() {
         </div>
       </div>
 
-      {!showMainContent ? (
-        <LoadingPage message="Exploring creators..." />
-      ) : profiles.length === 0 ? (
-        <div className="explore-empty">
-          <p>No creators found. Try another search or tag</p>
-        </div>
-      ) : (
-        <>
-          <h2 className="explore-section-title">Browse creators</h2>
-          {meta && (
-            <p className="explore-meta">
-              Showing {profiles.length} of {meta.total} creator{meta.total !== 1 ? 's' : ''}
-            </p>
-          )}
-          <ul className="creator-grid">
+      <div ref={browseSectionRef} id="browse-creators">
+        {!showMainContent ? (
+          <LoadingPage message="Exploring creators..." />
+        ) : profiles.length === 0 ? (
+          <div className="explore-empty">
+            <p>No creators found. Try another search or tag</p>
+          </div>
+        ) : (
+          <>
+            <h2 className="explore-section-title">Browse creators</h2>
+            {meta && (
+              <p className="explore-meta">
+                Showing {profiles.length} of {meta.total} creator{meta.total !== 1 ? 's' : ''}
+              </p>
+            )}
+            <ul className="creator-grid">
             {profiles.map((profile) => (
               <li key={profile.id}>
                 <Link to={`/creator/${profile.slug}`} className="creator-card">
@@ -460,8 +475,9 @@ export default function ExplorePage() {
               </li>
             ))}
           </ul>
-        </>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
