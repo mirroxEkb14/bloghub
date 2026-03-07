@@ -83,6 +83,13 @@ const Icons = {
       <line x1="21" y1="12" x2="9" y2="12" />
     </svg>
   ),
+  Social: () => (
+    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="12" r="3" />
+      <line x1="6" y1="12" x2="18" y2="12" />
+    </svg>
+  ),
   Register: () => (
     <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -264,6 +271,13 @@ export default function Layout() {
                       >
                         <span className="sidebar-link-icon"><Icons.Profile /></span>
                         <span className="sidebar-link-label">Edit Creator</span>
+                      </Link>
+                      <Link
+                        to="/profile/social"
+                        className={`sidebar-link sidebar-link-sub ${location.pathname === '/profile/social' ? 'active' : ''}`}
+                      >
+                        <span className="sidebar-link-icon"><Icons.Social /></span>
+                        <span className="sidebar-link-label">Social networks</span>
                       </Link>
                       <Link
                         to="/creator/tiers"

@@ -20,6 +20,7 @@ import TierPostsPage from './pages/TierPostsPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import ProfilePage from './pages/ProfilePage';
+import SocialNetworksPage from './pages/SocialNetworksPage';
 import './index.css';
 
 function App() {
@@ -53,6 +54,7 @@ function App() {
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/social" element={<SocialNetworksPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>

@@ -191,6 +191,12 @@ export type CreatorProfile = {
   about: string | null;
   profile_avatar_url: string | null;
   profile_cover_url: string | null;
+  telegram_url?: string | null;
+  instagram_url?: string | null;
+  facebook_url?: string | null;
+  youtube_url?: string | null;
+  twitch_url?: string | null;
+  website_url?: string | null;
   user?: CreatorProfileUser;
   tags?: Tag[];
   posts_count?: number;
@@ -345,6 +351,12 @@ export const creatorProfilesApi = {
     about?: string | null;
     profile_avatar_path?: string | null;
     profile_cover_path?: string | null;
+    telegram_url?: string | null;
+    instagram_url?: string | null;
+    facebook_url?: string | null;
+    youtube_url?: string | null;
+    twitch_url?: string | null;
+    website_url?: string | null;
     tag_ids?: number[];
   }) {
     return api<CreatorProfile | { data: CreatorProfile }>(`/api/creator-profiles/${id}`, {

@@ -19,6 +19,12 @@ class CreatorProfile extends Model
         'about',
         'profile_avatar_path',
         'profile_cover_path',
+        'telegram_url',
+        'instagram_url',
+        'facebook_url',
+        'youtube_url',
+        'twitch_url',
+        'website_url',
     ];
 
     protected static function booted(): void
