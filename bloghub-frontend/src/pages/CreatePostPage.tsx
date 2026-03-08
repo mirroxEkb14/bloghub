@@ -8,6 +8,7 @@ import {
   type Tier,
 } from '../api/client';
 import LoadingPage from '../components/LoadingPage';
+import RichTextEditor from '../components/RichTextEditor';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 
@@ -83,10 +84,17 @@ export default function CreatePostPage() {
     setSubmitting(true);
     setError(null);
     try {
+      const contentTrimmed = form.content_text.trim();
+      const contentPlain = contentTrimmed.replace(/<[^>]*>/g, '').trim();
+      if (!contentPlain) {
+        showToast('Please add some content to your post', 'error');
+        setSubmitting(false);
+        return;
+      }
       const payload: PostCreatePayload = {
         slug: form.slug || slugify(form.title) || 'post',
         title: form.title.trim(),
-        content_text: form.content_text.trim(),
+        content_text: contentTrimmed,
       };
       if (form.excerpt.trim()) payload.excerpt = form.excerpt.trim();
       if (form.required_tier_id != null) payload.required_tier_id = form.required_tier_id;
@@ -295,14 +303,11 @@ export default function CreatePostPage() {
 
           <div className="form-group">
             <label htmlFor="post_content" className="form-label-required">Content</label>
-            <textarea
+            <RichTextEditor
               id="post_content"
               value={form.content_text}
-              onChange={(e) => setForm((f) => ({ ...f, content_text: e.target.value }))}
+              onChange={(html) => setForm((f) => ({ ...f, content_text: html }))}
               placeholder="Write your post..."
-              rows={10}
-              required
-              className="form-textarea"
             />
           </div>
 

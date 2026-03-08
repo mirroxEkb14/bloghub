@@ -77,7 +77,6 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((toast) => {
           const isSuccess = toast.type === 'success';
           const isError = toast.type === 'error';
-          const isWarning = toast.type === 'warning';
           const iconClass = isSuccess
             ? 'subscription-toast-icon-success'
             : isError
