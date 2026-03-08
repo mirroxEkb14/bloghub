@@ -130,6 +130,11 @@ const Icons = {
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
     </svg>
   ),
+  ChevronDown: () => (
+    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  ),
 };
 
 function NavLink({
@@ -158,6 +163,8 @@ export default function Layout() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [myPageDropdownOpen, setMyPageDropdownOpen] = useState(false);
+  const [membershipsDropdownOpen, setMembershipsDropdownOpen] = useState(false);
 
   const initial = user?.name?.charAt(0)?.toUpperCase()
     ?? user?.username?.charAt(0)?.toUpperCase()
@@ -184,6 +191,15 @@ export default function Layout() {
       return () => document.removeEventListener('click', handleClickOutside);
     }
   }, [menuOpen]);
+
+  const isOnMyPageChild = location.pathname === '/creator/edit' || location.pathname === '/profile/social' || location.pathname === '/creator/tiers' || location.pathname.startsWith('/creator/post/');
+  const isOnMembershipsChild = location.pathname === '/memberships' || location.pathname.startsWith('/memberships/');
+  useEffect(() => {
+    if (isOnMyPageChild) setMyPageDropdownOpen(true);
+  }, [isOnMyPageChild]);
+  useEffect(() => {
+    if (isOnMembershipsChild) setMembershipsDropdownOpen(true);
+  }, [isOnMembershipsChild]);
 
   const [resendVerificationLoading, setResendVerificationLoading] = useState(false);
   const verificationHandledRef = useRef(false);
@@ -261,10 +277,26 @@ export default function Layout() {
 
             {user && (
               <section className="sidebar-section" aria-label="Account">
-                <div className="sidebar-my-page-group">
-                  <NavLink to={myPageHref} icon={Icons.MyPage}>My page</NavLink>
-                  {showEditCreatorSubItems && (
-                    <>
+                <div className="sidebar-dropdown sidebar-my-page-group">
+                  <div className="sidebar-dropdown-trigger">
+                    <Link to={myPageHref} className={`sidebar-link ${isMyPageActive ? 'active' : ''}`}>
+                      <span className="sidebar-link-icon"><Icons.MyPage /></span>
+                      <span className="sidebar-link-label">My page</span>
+                    </Link>
+                    {showEditCreatorSubItems && (
+                      <button
+                        type="button"
+                        className={`sidebar-dropdown-chevron ${myPageDropdownOpen ? 'open' : ''}`}
+                        onClick={(e) => { e.preventDefault(); setMyPageDropdownOpen((o) => !o); }}
+                        aria-expanded={myPageDropdownOpen}
+                        aria-label={myPageDropdownOpen ? 'Collapse My page menu' : 'Expand My page menu'}
+                      >
+                        <Icons.ChevronDown />
+                      </button>
+                    )}
+                  </div>
+                  {showEditCreatorSubItems && myPageDropdownOpen && (
+                    <div className="sidebar-dropdown-children">
                       <Link
                         to="/creator/edit"
                         className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/edit' ? 'active' : ''}`}
@@ -293,20 +325,35 @@ export default function Layout() {
                         <span className="sidebar-link-icon"><Icons.NewPost /></span>
                         <span className="sidebar-link-label">New Post</span>
                       </Link>
-                    </>
+                    </div>
                   )}
                 </div>
                 <NavLink to="/feed/public" icon={Icons.PublicPosts}>Public posts</NavLink>
                 <NavLink to="/feed/tier" icon={Icons.TierPosts}>Tier posts</NavLink>
-                <div className="sidebar-my-page-group">
-                  <NavLink to="/memberships" icon={Icons.Memberships} exact>Memberships</NavLink>
-                  <Link
-                    to="/memberships/billings"
-                    className={`sidebar-link sidebar-link-sub ${location.pathname === '/memberships/billings' ? 'active' : ''}`}
-                  >
-                    <span className="sidebar-link-icon"><Icons.Billings /></span>
-                    <span className="sidebar-link-label">Billings</span>
-                  </Link>
+                <div className="sidebar-dropdown sidebar-my-page-group">
+                  <div className="sidebar-dropdown-trigger">
+                    <NavLink to="/memberships" icon={Icons.Memberships} exact>Memberships</NavLink>
+                    <button
+                      type="button"
+                      className={`sidebar-dropdown-chevron ${membershipsDropdownOpen ? 'open' : ''}`}
+                      onClick={(e) => { e.preventDefault(); setMembershipsDropdownOpen((o) => !o); }}
+                      aria-expanded={membershipsDropdownOpen}
+                      aria-label={membershipsDropdownOpen ? 'Collapse Memberships menu' : 'Expand Memberships menu'}
+                    >
+                      <Icons.ChevronDown />
+                    </button>
+                  </div>
+                  {membershipsDropdownOpen && (
+                    <div className="sidebar-dropdown-children">
+                      <Link
+                        to="/memberships/billings"
+                        className={`sidebar-link sidebar-link-sub ${location.pathname === '/memberships/billings' ? 'active' : ''}`}
+                      >
+                        <span className="sidebar-link-icon"><Icons.Billings /></span>
+                        <span className="sidebar-link-label">Billings</span>
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </section>
             )}
