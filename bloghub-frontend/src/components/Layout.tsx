@@ -189,14 +189,18 @@ export default function Layout() {
     }
   }, [menuOpen]);
 
-  const isOnMyPageChild = location.pathname === '/creator/edit' || location.pathname === '/profile/social' || location.pathname === '/creator/tiers' || location.pathname.startsWith('/creator/post/');
-  const isOnMembershipsChild = location.pathname === '/memberships' || location.pathname.startsWith('/memberships/');
+  const isOnMyPageSection = location.pathname === myPageHref || location.pathname === '/creator/edit' || location.pathname === '/profile/social' || location.pathname === '/creator/tiers' || location.pathname.startsWith('/creator/post/');
+  const isOnMembershipsSection = location.pathname === '/memberships' || location.pathname.startsWith('/memberships/');
   useEffect(() => {
-    if (isOnMyPageChild) setMyPageDropdownOpen(true);
-  }, [isOnMyPageChild]);
+    if (isOnMyPageSection) setMyPageDropdownOpen(true);
+  }, [isOnMyPageSection]);
   useEffect(() => {
-    if (isOnMembershipsChild) setMembershipsDropdownOpen(true);
-  }, [isOnMembershipsChild]);
+    if (isOnMembershipsSection) setMembershipsDropdownOpen(true);
+  }, [isOnMembershipsSection]);
+  useEffect(() => {
+    if (!isOnMyPageSection) setMyPageDropdownOpen(false);
+    if (!isOnMembershipsSection) setMembershipsDropdownOpen(false);
+  }, [location.pathname, isOnMyPageSection, isOnMembershipsSection]);
 
   const [resendVerificationLoading, setResendVerificationLoading] = useState(false);
   const verificationHandledRef = useRef(false);
@@ -275,71 +279,72 @@ export default function Layout() {
             {user && (
               <section className="sidebar-section" aria-label="Account">
                 <div className="sidebar-dropdown sidebar-my-page-group">
-                  <div className="sidebar-dropdown-trigger">
-                    <Link to={myPageHref} className={`sidebar-link ${isMyPageActive ? 'active' : ''}`}>
-                      <span className="sidebar-link-icon"><Icons.MyPage /></span>
-                      <span className="sidebar-link-label">My page</span>
-                    </Link>
-                    {showEditCreatorSubItems && (
-                      <button
-                        type="button"
-                        className={`sidebar-dropdown-chevron ${myPageDropdownOpen ? 'open' : ''}`}
-                        onClick={(e) => { e.preventDefault(); setMyPageDropdownOpen((o) => !o); }}
+                  {showEditCreatorSubItems ? (
+                    <>
+                      <Link
+                        to={myPageHref}
+                        className={`sidebar-link sidebar-dropdown-trigger ${isMyPageActive ? 'active' : ''} ${myPageDropdownOpen ? 'open' : ''}`}
+                        onClick={() => setMyPageDropdownOpen((o) => !o)}
                         aria-expanded={myPageDropdownOpen}
-                        aria-label={myPageDropdownOpen ? 'Collapse My page menu' : 'Expand My page menu'}
                       >
-                        <Icons.ChevronDown />
-                      </button>
-                    )}
-                  </div>
-                  {showEditCreatorSubItems && myPageDropdownOpen && (
-                    <div className="sidebar-dropdown-children">
-                      <Link
-                        to="/creator/edit"
-                        className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/edit' ? 'active' : ''}`}
-                      >
-                        <span className="sidebar-link-icon"><Icons.Profile /></span>
-                        <span className="sidebar-link-label">Edit Creator</span>
+                        <span className="sidebar-link-icon"><Icons.MyPage /></span>
+                        <span className="sidebar-link-label">My page</span>
+                        <span className="sidebar-dropdown-chevron" aria-hidden>
+                          <Icons.ChevronDown />
+                        </span>
                       </Link>
-                      <Link
-                        to="/profile/social"
-                        className={`sidebar-link sidebar-link-sub ${location.pathname === '/profile/social' ? 'active' : ''}`}
-                      >
-                        <span className="sidebar-link-icon"><Icons.Social /></span>
-                        <span className="sidebar-link-label">Social networks</span>
-                      </Link>
-                      <Link
-                        to="/creator/tiers"
-                        className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/tiers' ? 'active' : ''}`}
-                      >
-                        <span className="sidebar-link-icon"><Icons.Tiers /></span>
-                        <span className="sidebar-link-label">Edit Tiers</span>
-                      </Link>
-                      <Link
-                        to="/creator/post/new"
-                        className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/post/new' ? 'active' : ''}`}
-                      >
-                        <span className="sidebar-link-icon"><Icons.NewPost /></span>
-                        <span className="sidebar-link-label">New Post</span>
-                      </Link>
-                    </div>
+                      {myPageDropdownOpen && (
+                        <div className="sidebar-dropdown-children">
+                          <Link
+                            to="/creator/edit"
+                            className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/edit' ? 'active' : ''}`}
+                          >
+                            <span className="sidebar-link-icon"><Icons.Profile /></span>
+                            <span className="sidebar-link-label">Edit Creator</span>
+                          </Link>
+                          <Link
+                            to="/profile/social"
+                            className={`sidebar-link sidebar-link-sub ${location.pathname === '/profile/social' ? 'active' : ''}`}
+                          >
+                            <span className="sidebar-link-icon"><Icons.Social /></span>
+                            <span className="sidebar-link-label">Social networks</span>
+                          </Link>
+                          <Link
+                            to="/creator/tiers"
+                            className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/tiers' ? 'active' : ''}`}
+                          >
+                            <span className="sidebar-link-icon"><Icons.Tiers /></span>
+                            <span className="sidebar-link-label">Edit Tiers</span>
+                          </Link>
+                          <Link
+                            to="/creator/post/new"
+                            className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/post/new' ? 'active' : ''}`}
+                          >
+                            <span className="sidebar-link-icon"><Icons.NewPost /></span>
+                            <span className="sidebar-link-label">New Post</span>
+                          </Link>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <NavLink to={myPageHref} icon={Icons.MyPage}>My page</NavLink>
                   )}
                 </div>
                 <NavLink to="/feed/public" icon={Icons.PublicPosts}>Public posts</NavLink>
                 <NavLink to="/feed/tier" icon={Icons.TierPosts}>Tier posts</NavLink>
                 <div className="sidebar-dropdown sidebar-my-page-group">
-                  <div className="sidebar-dropdown-trigger">
-                    <NavLink to="/memberships" icon={Icons.Memberships} exact>Memberships</NavLink>
-                    <button
-                      type="button"
-                      className={`sidebar-dropdown-chevron ${membershipsDropdownOpen ? 'open' : ''}`}
-                      onClick={(e) => { e.preventDefault(); setMembershipsDropdownOpen((o) => !o); }}
-                      aria-expanded={membershipsDropdownOpen}
-                      aria-label={membershipsDropdownOpen ? 'Collapse Memberships menu' : 'Expand Memberships menu'}
-                    >
+                  <Link
+                    to="/memberships"
+                    className={`sidebar-link sidebar-dropdown-trigger ${location.pathname === '/memberships' ? 'active' : ''} ${membershipsDropdownOpen ? 'open' : ''}`}
+                    onClick={() => setMembershipsDropdownOpen((o) => !o)}
+                    aria-expanded={membershipsDropdownOpen}
+                  >
+                    <span className="sidebar-link-icon"><Icons.Memberships /></span>
+                    <span className="sidebar-link-label">Memberships</span>
+                    <span className="sidebar-dropdown-chevron" aria-hidden>
                       <Icons.ChevronDown />
-                    </button>
-                  </div>
+                    </span>
+                  </Link>
                   {membershipsDropdownOpen && (
                     <div className="sidebar-dropdown-children">
                       <Link
