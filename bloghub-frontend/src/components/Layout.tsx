@@ -293,12 +293,14 @@ export default function Layout() {
                           <Icons.ChevronDown />
                         </span>
                       </Link>
-                      {myPageDropdownOpen && (
-                        <div className="sidebar-dropdown-children">
-                          <Link
-                            to="/creator/edit"
-                            className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/edit' ? 'active' : ''}`}
-                          >
+                      <div
+                        className={`sidebar-dropdown-children ${myPageDropdownOpen ? 'open' : ''}`}
+                        aria-hidden={!myPageDropdownOpen}
+                      >
+                        <Link
+                          to="/creator/edit"
+                          className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/edit' ? 'active' : ''}`}
+                        >
                             <span className="sidebar-link-icon"><Icons.Profile /></span>
                             <span className="sidebar-link-label">Edit Creator</span>
                           </Link>
@@ -323,8 +325,7 @@ export default function Layout() {
                             <span className="sidebar-link-icon"><Icons.NewPost /></span>
                             <span className="sidebar-link-label">New Post</span>
                           </Link>
-                        </div>
-                      )}
+                      </div>
                     </>
                   ) : (
                     <NavLink to={myPageHref} icon={Icons.MyPage}>My page</NavLink>
@@ -345,17 +346,18 @@ export default function Layout() {
                       <Icons.ChevronDown />
                     </span>
                   </Link>
-                  {membershipsDropdownOpen && (
-                    <div className="sidebar-dropdown-children">
-                      <Link
-                        to="/memberships/billings"
-                        className={`sidebar-link sidebar-link-sub ${location.pathname === '/memberships/billings' ? 'active' : ''}`}
-                      >
-                        <span className="sidebar-link-icon"><Icons.Billings /></span>
-                        <span className="sidebar-link-label">Billings</span>
-                      </Link>
-                    </div>
-                  )}
+                  <div
+                    className={`sidebar-dropdown-children ${membershipsDropdownOpen ? 'open' : ''}`}
+                    aria-hidden={!membershipsDropdownOpen}
+                  >
+                    <Link
+                      to="/memberships/billings"
+                      className={`sidebar-link sidebar-link-sub ${location.pathname === '/memberships/billings' ? 'active' : ''}`}
+                    >
+                      <span className="sidebar-link-icon"><Icons.Billings /></span>
+                      <span className="sidebar-link-label">Billings</span>
+                    </Link>
+                  </div>
                 </div>
               </section>
             )}
