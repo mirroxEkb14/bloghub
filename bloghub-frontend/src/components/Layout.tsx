@@ -174,10 +174,7 @@ export default function Layout() {
     ? `/creator/${user.creator_profile.slug}`
     : '/creator/new';
 
-  const isMyPageActive =
-    location.pathname === '/creator/edit' ||
-    location.pathname === '/creator/tiers' ||
-    (!!user?.creator_profile?.slug && location.pathname === `/creator/${user.creator_profile.slug}`);
+  const isMyPageActive = location.pathname === myPageHref;
   const showEditCreatorSubItems = !!user?.creator_profile?.slug;
 
   useEffect(() => {
