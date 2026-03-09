@@ -369,7 +369,7 @@ export default function ExplorePage() {
                         <img src={post.media_url} alt="" />
                       )}
                       {post.media_url && post.media_type === 'Video' && (
-                        <video src={post.media_url} muted />
+                        <video src={post.media_url} muted playsInline autoPlay loop />
                       )}
                       {post.media_url && post.media_type === 'Audio' && (
                         <div style={{ padding: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>Audio</div>
