@@ -621,7 +621,7 @@ export default function CreatorProfilePage() {
                                   </div>
                                 )}
                                 <div
-                                  className={`post-card-lock-overlay${post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') ? ' post-card-lock-overlay-with-image' : ''}`}
+                                  className={`post-card-lock-overlay${post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif' || post.media_type === 'Video') ? ' post-card-lock-overlay-with-image' : ''}`}
                                 >
                                   {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
                                     <div
@@ -629,6 +629,11 @@ export default function CreatorProfilePage() {
                                       style={{ backgroundImage: `url(${post.media_url})` }}
                                       aria-hidden
                                     />
+                                  )}
+                                  {post.media_url && post.media_type === 'Video' && (
+                                    <div className="post-card-lock-overlay-bg post-card-lock-overlay-video" aria-hidden>
+                                      <video src={post.media_url} muted loop playsInline autoPlay />
+                                    </div>
                                   )}
                                   <div className="post-card-lock-icon-circle" aria-hidden>
                                     <svg className="post-card-lock-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

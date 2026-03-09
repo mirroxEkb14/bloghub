@@ -813,6 +813,19 @@
   filter: blur(4px);
 }
 
+.post-card-lock-overlay-video {
+  background: none;
+}
+
+.post-card-lock-overlay-video video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
 .post-card-lock-overlay-with-image::before {
   content: '';
   position: absolute;
