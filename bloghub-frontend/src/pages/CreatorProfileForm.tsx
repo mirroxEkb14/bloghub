@@ -270,6 +270,7 @@ export default function CreatorProfileForm({ mode }: Props) {
 
       if (mode === 'create') {
         const created = await creatorProfilesApi.create(payload);
+        await refreshUser();
         showToast('Creator Profile created!', 'success');
         navigate(`/creator/${created.slug}`, { replace: true });
       } else if (profile) {
@@ -278,6 +279,7 @@ export default function CreatorProfileForm({ mode }: Props) {
           return;
         }
         const updated = await creatorProfilesApi.update(profile.id, payload);
+        await refreshUser();
         showToast("Profile updated", 'success');
         navigate(updated.slug ? `/creator/${updated.slug}` : '/explore', { replace: true });
       }
