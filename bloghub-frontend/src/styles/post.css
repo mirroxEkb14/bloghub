@@ -218,6 +218,26 @@
   color: var(--text);
 }
 
+.comment-author-link {
+  text-decoration: none;
+  color: inherit;
+}
+.comment-author-link:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.comment-avatar-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.comment-avatar-link:hover {
+  cursor: pointer;
+}
+
 .comment-date {
   font-size: 0.85rem;
   color: var(--text-secondary);

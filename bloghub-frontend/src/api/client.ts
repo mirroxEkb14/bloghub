@@ -237,6 +237,7 @@ export type CommentUser = {
   name: string;
   username: string;
   avatar_url?: string | null;
+  creator_profile?: { slug: string } | null;
 };
 
 export type Comment = {

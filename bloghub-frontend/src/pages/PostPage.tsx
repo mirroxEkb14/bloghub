@@ -268,18 +268,36 @@ export default function PostPage() {
             const displayName = c.user?.name ?? c.user?.username ?? 'User';
             const initial = displayName.charAt(0).toUpperCase();
             const avatarUrl = c.user?.avatar_url;
+            const creatorSlug = c.user?.creator_profile?.slug;
+            const creatorHref = creatorSlug ? `/creator/${creatorSlug}` : null;
             return (
             <li key={c.id} className="comment-item">
               <div className="comment-item-header">
-                <div className="comment-avatar" aria-hidden>
-                  {avatarUrl ? (
-                    <img src={avatarUrl} alt="" width={40} height={40} />
-                  ) : (
-                    <span className="comment-avatar-initial">{initial}</span>
-                  )}
-                </div>
+                {creatorHref ? (
+                  <Link to={creatorHref} className="comment-avatar comment-avatar-link" aria-hidden>
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt="" width={40} height={40} />
+                    ) : (
+                      <span className="comment-avatar-initial">{initial}</span>
+                    )}
+                  </Link>
+                ) : (
+                  <div className="comment-avatar" aria-hidden>
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt="" width={40} height={40} />
+                    ) : (
+                      <span className="comment-avatar-initial">{initial}</span>
+                    )}
+                  </div>
+                )}
                 <div className="comment-item-meta">
-                  <span className="comment-author">{displayName}</span>
+                  {creatorHref ? (
+                    <Link to={creatorHref} className="comment-author comment-author-link" title="View creator profile">
+                      {displayName}
+                    </Link>
+                  ) : (
+                    <span className="comment-author">{displayName}</span>
+                  )}
                   <time className="comment-date" dateTime={c.created_at} title={formatDateTimeLocal(c.created_at)}>
                     {formatDateTimeLocal(c.created_at)}
                   </time>
