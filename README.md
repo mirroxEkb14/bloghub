@@ -14,6 +14,17 @@ Projekt je rozdělen na backend (**Laravel** + **Filament**) a frontend (**React
 
 ---
 
+## ⚠️ Disclaimer k seedovaným datům
+
+Veškerá **seedovaná / demoverzní data** v projektu (profilové a titulkové obrázky, videa, GIFy, ukázkové příspěvky a komentáře) byla **vygenerována pomocí nástrojů Google Gemini** a slouží pouze k demonstraci a vývoji:
+
+- **Fotografie / obrázky:** generovány pomocí **Nano Banana 2**.
+- **Videa a GIFy:** generovány pomocí **Veo**.
+
+Tato data nejsou reálným obsahem ani duševním vlastnictvím třetích stran a v produkčním nasazení by měla být nahrazena skutečným obsahem nebo odstraněna.
+
+---
+
 ## 🛠️ Nástroje a technologie
 
 ![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)
