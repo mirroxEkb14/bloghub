@@ -104,6 +104,49 @@
   gap: 0.15rem;
 }
 
+.sidebar-dropdown-trigger .sidebar-link-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-dropdown-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: 0.25rem;
+  color: inherit;
+}
+
+.sidebar-dropdown-chevron svg {
+  transition: transform 0.2s;
+}
+
+.sidebar-dropdown-trigger:not(.open) .sidebar-dropdown-chevron svg {
+  transform: rotate(-90deg);
+}
+
+.sidebar-dropdown-children {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: 0.15rem;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-4px);
+  transition:
+    max-height 0.25s ease-out,
+    opacity 0.2s ease-out,
+    transform 0.2s ease-out;
+}
+
+.sidebar-dropdown-children.open {
+  max-height: 320px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .sidebar-link-sub {
   padding-left: 2.5rem;
   font-size: 0.9rem;

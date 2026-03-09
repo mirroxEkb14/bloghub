@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { ApiError, commentsApi, postsApi, type Comment, type Post } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import LoadingPage from '../components/LoadingPage';
+import PostContent from '../components/PostContent';
 import { formatDateTimeLocal } from '../utils/date';
 
 type SubscriptionRequiredBody = {
@@ -245,9 +246,7 @@ export default function PostPage() {
       )}
       {post.content_text && (
         <div className="post-page-content">
-          {post.content_text.split('\n').map((line, i) => (
-            <p key={i}>{line || '\u00A0'}</p>
-          ))}
+          <PostContent html={post.content_text} />
         </div>
       )}
 

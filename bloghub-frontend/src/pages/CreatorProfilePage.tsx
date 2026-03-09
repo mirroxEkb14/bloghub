@@ -16,24 +16,10 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import LoadingPage from '../components/LoadingPage';
+import PostContent, { stripHtml } from '../components/PostContent';
 import { formatDateTimeLocal } from '../utils/date';
 
 const POSTS_PAGE_SIZE = 12;
-
-function relativeTime(dateStr: string): string {
-  const d = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - d.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins} min ago`;
-  if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return `${diffDays} days ago`;
-  return d.toLocaleDateString(undefined, { dateStyle: 'medium' });
-}
 
 export default function CreatorProfilePage() {
   const { slug } = useParams<{ slug: string }>();
@@ -631,7 +617,7 @@ export default function CreatorProfilePage() {
                               <>
                                 {post.content_text && (
                                   <div className="post-card-preview-blur" aria-hidden>
-                                    {post.content_text}
+                                    {stripHtml(post.content_text)}
                                   </div>
                                 )}
                                 <div
@@ -1091,13 +1077,11 @@ export default function CreatorProfilePage() {
               )}
               {(previewPost.excerpt ?? previewPost.content_text) && (
                 <div className="post-preview-content">
-                  <p style={{ whiteSpace: 'pre-line' }}>
-                    {previewPost.excerpt
-                      ? previewPost.excerpt
-                      : previewPost.content_text!.length > 300
-                        ? `${previewPost.content_text!.slice(0, 300)}...`
-                        : previewPost.content_text}
-                  </p>
+                  {previewPost.excerpt ? (
+                    <p style={{ whiteSpace: 'pre-line' }}>{previewPost.excerpt}</p>
+                  ) : (
+                    <PostContent html={previewPost.content_text!} />
+                  )}
                 </div>
               )}
             </div>
