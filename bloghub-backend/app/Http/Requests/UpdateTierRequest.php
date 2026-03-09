@@ -45,6 +45,7 @@ class UpdateTierRequest extends FormRequest
                 'image',
                 'mimes:jpeg,png,webp',
                 'max:'.TierResourceSupport::COVER_MAX_FILE_SIZE_KB,
+                'dimensions:max_width='.TierResourceSupport::COVER_MAX_WIDTH.',max_height='.TierResourceSupport::COVER_MAX_HEIGHT,
             ],
         ];
     }

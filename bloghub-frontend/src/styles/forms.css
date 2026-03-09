@@ -1,0 +1,380 @@
+/* Form elements */
+input,
+button {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text);
+  transition: border-color 0.2s;
+}
+input::placeholder {
+  color: var(--text-secondary);
+}
+input:focus {
+  outline: none;
+  border-color: var(--accent-muted);
+}
+
+/* Password field */
+.password-field {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  transition: border-color 0.2s;
+}
+.password-field:focus-within {
+  border-color: var(--accent-muted);
+}
+.password-field-icon-lock {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1rem;
+  color: var(--text-secondary);
+}
+.password-field-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0.75rem 0.5rem 0.75rem 0.5rem;
+  margin: 0;
+}
+.password-field-input::placeholder {
+  color: var(--text-secondary);
+}
+.password-field-input:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+.password-field-input:-webkit-autofill,
+.password-field-input:-webkit-autofill:hover,
+.password-field-input:-webkit-autofill:focus,
+.password-field-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-input) inset;
+  box-shadow: 0 0 0 1000px var(--bg-input) inset;
+  -webkit-text-fill-color: var(--text);
+  transition: background-color 5000s ease-in-out 0s;
+}
+.password-field-toggle {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  transition: color 0.2s, background 0.2s;
+}
+.password-field-toggle:hover {
+  color: var(--text-muted);
+  background: var(--input-hover);
+}
+.password-field-toggle:focus {
+  outline: none;
+}
+.password-field-toggle:focus-visible {
+  color: var(--text);
+  background: var(--input-focus);
+}
+
+/* Text/email input */
+.input-with-icon {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  transition: border-color 0.2s;
+}
+.input-with-icon:focus-within {
+  border-color: var(--accent-muted);
+}
+.input-with-icon-left {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1rem;
+  color: var(--text-secondary);
+}
+.input-with-icon-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0.75rem 1rem 0.75rem 0.5rem;
+  margin: 0;
+}
+.input-with-icon-input::placeholder {
+  color: var(--text-secondary);
+}
+.input-with-icon-input:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+.input-with-icon-input:-webkit-autofill,
+.input-with-icon-input:-webkit-autofill:hover,
+.input-with-icon-input:-webkit-autofill:focus,
+.input-with-icon-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-input) inset;
+  box-shadow: 0 0 0 1000px var(--bg-input) inset;
+  -webkit-text-fill-color: var(--text);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.input-with-prefix {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  transition: border-color 0.2s;
+}
+.input-with-prefix:focus-within {
+  border-color: var(--accent-muted);
+}
+.input-with-prefix-addon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.input-with-prefix-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0.75rem 1rem 0.75rem 0.5rem;
+  margin: 0;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--text);
+}
+.input-with-prefix-input::placeholder {
+  color: var(--text-secondary);
+}
+.input-with-prefix-input:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
+textarea.form-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+textarea.form-textarea-about {
+  resize: none;
+  min-height: 6.25rem;
+}
+textarea.form-textarea:focus {
+  outline: none;
+  border-color: var(--accent-muted);
+}
+
+.form-hint {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.form-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+
+.form-tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.form-tag-chips .tag-chip {
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.form-tag-chips .form-hint {
+  margin: 0;
+}
+
+.form-group-row {
+  display: grid;
+  grid-template-columns: minmax(232px, 1fr) minmax(232px, 1.4fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.card.creator-form-card {
+  max-width: 552px;
+}
+
+@media (max-width: 560px) {
+  .form-group-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-image-field label {
+  margin-bottom: 0.5rem;
+}
+
+.form-image-box {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+}
+
+.form-image-box-avatar {
+  max-width: 140px;
+  aspect-ratio: 1;
+}
+
+.form-image-box-cover {
+  aspect-ratio: auto;
+  width: 232px;
+  max-width: 100%;
+  height: 140px;
+  min-height: 140px;
+  max-height: 140px;
+}
+
+.form-image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.form-image-placeholder {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.form-image-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  align-items: flex-start;
+}
+
+.form-image-btn-wrap {
+  display: block;
+  width: 112px;
+  min-width: 112px;
+  max-width: 112px;
+  height: 38px;
+  flex: 0 0 112px;
+  flex-shrink: 0;
+}
+
+.form-image-btn-wrap .form-image-btn {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  box-sizing: border-box;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.9rem !important;
+  line-height: 1 !important;
+}
+
+.form-image-actions button.form-image-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 112px !important;
+  min-width: 112px !important;
+  max-width: 112px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  flex: 0 0 112px !important;
+  flex-grow: 0 !important;
+  flex-shrink: 0 !important;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.9rem !important;
+  line-height: 1 !important;
+}
+
+.form-image-input {
+  position: absolute;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.btn-sm {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.9rem;
+}
+
+.form-tag-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+.form-tag-option input {
+  width: auto;
+}
+.form-tag-option:hover {
+  color: var(--text);
+}
+
+label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+label.form-label-required::after {
+  content: '*';
+  color: var(--color-error, #dc2626);
+}

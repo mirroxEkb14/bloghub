@@ -1,0 +1,223 @@
+.form-title {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.form-subtitle {
+  margin: 0 0 1.5rem 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* Home welcome card */
+.home-card {
+  min-width: 0;
+}
+.home-card .form-title,
+.home-card .form-subtitle {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.form-actions .btn {
+  width: 100%;
+}
+
+.form-actions .btn + .btn {
+  margin-top: 0.5rem;
+}
+
+.form-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.auth-error {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.profile-success {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #86efac;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.profile-warning {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  background: rgba(234, 179, 8, 0.15);
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  color: #fde047;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* Toast container */
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: min(360px, calc(100vw - 2rem));
+}
+
+.toast-container .subscription-toast {
+  position: relative;
+}
+
+.profile-avatar-row {
+  margin-bottom: 1.25rem;
+}
+
+.profile-avatar-label {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.profile-avatar-label:hover {
+  color: var(--text-secondary);
+}
+
+.profile-avatar-preview-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.profile-avatar-img,
+.profile-avatar-initial {
+  display: block;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-avatar-initial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-muted);
+  color: white;
+  font-weight: 600;
+  font-size: 2rem;
+}
+
+.profile-avatar-camera-icon {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.profile-avatar-label:hover .profile-avatar-camera-icon {
+  color: var(--accent-muted);
+  border-color: var(--accent-muted);
+}
+
+.profile-avatar-hint {
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  max-width: 200px;
+}
+
+.profile-avatar-label:hover .profile-avatar-hint {
+  opacity: 1;
+}
+
+.profile-avatar-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Field-level validation error */
+.field-error {
+  margin: 0.35rem 0 0 0;
+  font-size: 0.85rem;
+  color: #fca5a5;
+}
+
+.input-with-icon.has-error,
+.password-field.has-error,
+.input-with-prefix.has-error,
+input.has-error {
+  border-color: rgba(239, 68, 68, 0.6);
+  background: rgba(239, 68, 68, 0.06);
+}
+.input-with-icon.has-error:focus-within,
+.password-field.has-error:focus-within {
+  border-color: rgba(239, 68, 68, 0.8);
+}
+input.has-error:focus,
+.input-with-prefix.has-error:focus-within {
+  border-color: rgba(239, 68, 68, 0.8);
+}
+
+/* Checkbox (terms / privacy) */
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-bottom: 0.75rem;
+}
+.checkbox-label input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0.15rem 0 0 0;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+.checkbox-label a {
+  color: var(--accent-muted);
+  text-decoration: underline;
+}
+.checkbox-label a:hover {
+  color: var(--accent);
+}

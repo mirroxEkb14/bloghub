@@ -11,6 +11,7 @@ class Payment extends Model
 {
     protected $fillable = [
         'subscription_id',
+        'stripe_checkout_session_id',
         'amount',
         'currency',
         'checkout_date',
@@ -42,7 +43,7 @@ class Payment extends Model
     {
         $subscription = $this->subscription;
         if (! $subscription) {
-            return '—';
+            return '–';
         }
         $parts = ['#'.$subscription->id];
         if ($subscription->user?->name) {

@@ -1,8 +1,14 @@
 <?php
 
 use App\Support\AdminTimezone;
+use Dedoc\Scramble\Scramble;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+Route::prefix('docs')->group(function () {
+    Scramble::registerUiRoute('swagger')->name('docs.swagger');
+    Scramble::registerJsonSpecificationRoute('swagger.json')->name('docs.openapi');
+});
 
 Route::get('/', function () {
     return view('welcome');

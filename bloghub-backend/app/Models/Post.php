@@ -15,6 +15,7 @@ class Post extends Model
         'slug',
         'title',
         'content_text',
+        'excerpt',
         'media_url',
         'media_type',
     ];
@@ -36,5 +37,15 @@ class Post extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function postViews(): HasMany
+    {
+        return $this->hasMany(PostView::class);
+    }
+
+    public function likes(): HasMany
+    {
+        return $this->hasMany(PostLike::class);
     }
 }

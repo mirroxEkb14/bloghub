@@ -13,74 +13,56 @@ use Illuminate\Support\Facades\Storage;
 class TierSeeder extends Seeder
 {
     private const FIXTURES_COVERS = 'database/seeders/fixtures/tiers/covers';
+
     private const COVER_EXTENSIONS = ['png', 'jpg', 'jpeg', 'webp'];
-    private const DEFAULT_PRICES = [99, 199, 299];
 
     private const TIERS_BY_USER = [
-        'Super Admin' => [
-            [
-                'level' => 1,
-                'tier_name' => 'Apprentice',
-                'tier_desc' => 'The Entered Apprentice represents the beginning of the journey. It focuses on self-knowledge, moral foundation, discipline, and the willingness to learn through humility and reflection.',
-                'cover_file' => 'tier-l1_Apprentice',
-            ],
-            [
-                'level' => 2,
-                'tier_name' => 'Fellowcraft',
-                'tier_desc' => 'The Fellowcraft degree symbolizes growth through knowledge and work. It emphasizes learning, reason, craftsmanship, and the development of the mind through study and applied understanding.',
-                'cover_file' => 'tier-l2_Fellowcraft',
-            ],
-            [
-                'level' => 3,
-                'tier_name' => 'Master',
-                'tier_desc' => 'The Master Mason degree reflects maturity and mastery of oneself. It explores responsibility, integrity, mortality, and the pursuit of truth, marking readiness for leadership and deeper understanding.',
-                'cover_file' => 'tier-l3_Master',
-            ],
+        'Fox Mulder' => [
+            ['level' => 1, 'tier_name' => 'The Believer', 'price' => 5, 'currency' => Currency::USD, 'tier_desc' => 'The Believer: Breakdowns of UFO sightings, Declassified reports from Nevada desert', 'cover_base' => 'The-Believer_cover'],
+            ['level' => 2, 'tier_name' => 'The Abductee', 'price' => 15, 'currency' => Currency::USD, 'tier_desc' => 'The Abductee: Diagrams of the "nasal implants" (Smallpox)', 'cover_base' => 'Behavioral-Insider_cover'],
+            ['level' => 3, 'tier_name' => 'The Conspirator', 'price' => 120, 'currency' => Currency::USD, 'tier_desc' => 'The Conspirator: Black Oil deep-dive, Profiles on "First Elders", Uncensored documents on Colonists', 'cover_base' => 'X-Archive-Elite_cover'],
         ],
-        'User' => [
-            [
-                'level' => 1,
-                'tier_name' => 'Engram',
-                'tier_desc' => 'An engram is a recorded mental impression formed during moments of pain or unconsciousness. It is believed to store trauma and emotions that later influence behavior, reactions, and decisions without conscious awareness',
-                'cover_file' => 'tier-l1_Engram',
-            ],
-            [
-                'level' => 2,
-                'tier_name' => 'Operating Thetan',
-                'tier_desc' => 'An Operating Thetan is a spiritual being who has regained awareness of their true, immortal nature and is believed to function independently of the physical body, matter, energy, space, and time',
-                'cover_file' => 'tier-l2_Operating-Thetan',
-            ],
-            [
-                'level' => 3,
-                'tier_name' => 'Xenu',
-                'tier_desc' => 'Xenu is a mythological galactic ruler described as having ruled millions of years ago, whose actions allegedly led to the implantation of traumatic memories that still affect spiritual beings today',
-                'cover_file' => 'tier-l3_Xenu',
-            ],
+        'Dana Scully' => [
+            ['level' => 1, 'tier_name' => 'Agent', 'price' => 4, 'currency' => Currency::USD, 'tier_desc' => 'Field Agent: Insights on solved X-Files cases, Mysterious UFOs explanations', 'cover_base' => 'Clinical-Observer_cover'],
+            ['level' => 2, 'tier_name' => 'Investigator', 'price' => 12, 'currency' => Currency::USD, 'tier_desc' => 'Senior Investigator: Breakdowns of "paranormal" unsolved cases', 'cover_base' => 'Forensic-Analyst_cover'],
+            ['level' => 3, 'tier_name' => 'FBI Liaison', 'price' => 170, 'currency' => Currency::USD, 'tier_desc' => 'FBI Liaison: Concepts for the "The Syndicate" and government cover-ups, Briefings on "The Great Conspiracy"', 'cover_base' => 'Evidence-Council_cover'],
         ],
-        'Admin' => [
-            [
-                'level' => 1,
-                'tier_name' => 'Neophyte',
-                'tier_desc' => 'A neophyte is a beginner on the path of Krishna consciousness. This stage focuses on learning basic philosophy, developing daily practice, and cultivating devotion through guidance and community.',
-                'cover_file' => 'tier-l1_Neophyte',
-            ],
-            [
-                'level' => 2,
-                'tier_name' => 'Prabhupada',
-                'tier_desc' => 'Srila Prabhupada was the founder of ISKCON and a key teacher of Gaudiya Vaishnavism. He brought Krishna consciousness to a global audience through teachings, translations, and disciplined practice.',
-                'cover_file' => 'tier-l2_Prabhupada',
-            ],
-            [
-                'level' => 3,
-                'tier_name' => 'Krishna',
-                'tier_desc' => 'Krishna is the central divine figure of Krishnaism, embodying wisdom, compassion, and divine play. He represents ultimate reality, guiding devotees toward devotion, ethical living, and spiritual liberation.',
-                'cover_file' => 'tier-l3_Krishna',
-            ],
+        'Gordon Freeman' => [
+            ['level' => 1, 'tier_name' => 'Research Associate (Clearance 3)', 'price' => 6, 'currency' => Currency::EUR, 'tier_desc' => 'Research Associate (Clearance 3): GG-3883 (Xen) crystal lab notes, Anti-Mass Spectrometer insights, H.E.V. mark IV diagrams', 'cover_base' => 'Lab-Access_cover'],
+            ['level' => 2, 'tier_name' => 'The Anti-Citizen', 'price' => 18, 'currency' => Currency::EUR, 'tier_desc' => 'The Anti-Citizen: Gravity Gun usage guide, Combine tech insights, Headcrab & Gonarch lab reports', 'cover_base' => 'Resonance-Member_cover'],
+            ['level' => 3, 'tier_name' => 'The One Free Man', 'price' => 200, 'currency' => Currency::EUR, 'tier_desc' => 'The One Free Man: G-Man\'s non-linear "Slow-Teleport" phenomenon observations, Contact reports with Vortigaunt', 'cover_base' => 'Black-Mesa-Patron_cover'],
+        ],
+        'Gregory House' => [
+            ['level' => 1, 'tier_name' => 'The Placebo', 'price' => 7, 'currency' => Currency::USD, 'tier_desc' => 'The Placebo: TBA', 'cover_base' => 'Differential-Thinker_cover'],
+            ['level' => 2, 'tier_name' => 'The Pathogen', 'price' => 31, 'currency' => Currency::USD, 'tier_desc' => 'The Pathogen: TBA', 'cover_base' => 'Diagnostic-Team_cover'],
+            ['level' => 3, 'tier_name' => 'The Cure', 'price' => 1101, 'currency' => Currency::USD, 'tier_desc' => 'The Cure: TBA', 'cover_base' => 'Princeton-Plainsboro _Inner-Circle_cover'],
+        ],
+        'Caroline' => [
+            ['level' => 1, 'tier_name' => 'Test Subject #1498', 'price' => 199, 'currency' => Currency::CZK, 'tier_desc' => 'Test Subject #1498: The Companion Cube, Aperture Science Handheld Portal Device, The Cake', 'cover_base' => 'Test-Subject_cover'],
+            ['level' => 2, 'tier_name' => 'Maintenance Specialist (Level 4)', 'price' => 1399, 'currency' => Currency::CZK, 'tier_desc' => 'Maintenance Specialist (Level 4): Aperture Science Long Fall Boots, The Curiosity Core', 'cover_base' => 'Advanced-Prototype_cover'],
+            ['level' => 3, 'tier_name' => 'Central AI Overseer', 'price' => 5299, 'currency' => Currency::CZK, 'tier_desc' => 'Central AI Overseer: Atlas & P-Body blueprints, Neurotoxin delivery controls, The Morality Core', 'cover_base' => 'Aperture-Core-Member_cover'],
+        ],
+        'Ellen Ripley' => [
+            ['level' => 1, 'tier_name' => 'Sole Survivor', 'price' => 99, 'currency' => Currency::CZK, 'tier_desc' => 'Sole Survivor: Insights on the Nostromo\'s flight path, LV-426 landing reports', 'cover_base' => 'Crew-Member_cover'],
+            ['level' => 2, 'tier_name' => 'The Captain', 'price' => 499, 'currency' => Currency::CZK, 'tier_desc' => 'The Captain: Breakdowns of the "Facehugger" anatomy, Reconstruction of Nostromo crew\'s fate, Reports on Weyland-Yutani ROs', 'cover_base' => 'Flight-Officer_cover'],
+            ['level' => 3, 'tier_name' => 'The Alien', 'price' => 1999, 'currency' => Currency::CZK, 'tier_desc' => 'The Alien: Breakdowns of the XX121 organism', 'cover_base' => 'Command-Authority_cover'],
+        ],
+        'Maggie Rhee' => [
+            ['level' => 1, 'tier_name' => 'Alexandria Survivor', 'price' => 3, 'currency' => Currency::USD, 'tier_desc' => 'Alexandria Survivor: Engineering blueprints for expanded perimeters', 'cover_base' => 'Community-Supporter_cover'],
+            ['level' => 2, 'tier_name' => 'Hilltop Chosen', 'price' => 11, 'currency' => Currency::USD, 'tier_desc' => 'Hilltop Chosen: Strategies for large-scale crop rotation and livestock management', 'cover_base' => 'Settlement-Builder_cover'],
+            ['level' => 3, 'tier_name' => 'The Bricks Leader', 'price' => 19, 'currency' => Currency::USD, 'tier_desc' => 'The Bricks Leader: Deep-dives into inter-community diplomacy and mutual defense pacts', 'cover_base' => 'Council-Member_cover'],
+        ],
+        'Negan' => [
+            ['level' => 1, 'tier_name' => 'The Sanctuary Savior', 'price' => 13, 'currency' => Currency::EUR, 'tier_desc' => 'The Sanctuary Savior: Breakdown on internal economy based on contribution and fear', 'cover_base' => 'Rookie_cover'],
+            ['level' => 2, 'tier_name' => 'The Alexandria Prisoner', 'price' => 47, 'currency' => Currency::EUR, 'tier_desc' => 'The Alexandria Prisoner: Lessons on maintaining a sense of self when you\'ve lost everything but a window', 'cover_base' => 'Field-Leader_cover'],
+            ['level' => 3, 'tier_name' => 'The Burazi Leader', 'price' => 120, 'currency' => Currency::EUR, 'tier_desc' => 'The Burazi Leader: Guide on when it\'s time to put the mask back', 'cover_base' => 'Field-Leader_cover'],
         ],
     ];
 
     public function run(): void
     {
+        $maxDesc = TierResourceSupport::DESC_MAX_LENGTH;
+
         foreach (self::TIERS_BY_USER as $userName => $tiers) {
             $user = User::where('name', $userName)->first();
             if (! $user) {
@@ -96,14 +78,11 @@ class TierSeeder extends Seeder
                 continue;
             }
 
-            foreach ($tiers as $index => $data) {
-                $tierDesc = $data['tier_desc'];
-                $maxDesc = TierResourceSupport::DESC_MAX_LENGTH;
+            foreach ($tiers as $data) {
+                $tierDesc = $this->formatTierDescBullets($data['tier_desc']);
                 if (mb_strlen($tierDesc) > $maxDesc) {
                     $tierDesc = mb_substr($tierDesc, 0, $maxDesc - 3).'...';
                 }
-
-                $price = self::DEFAULT_PRICES[$index] ?? 99;
 
                 $tier = $profile->tiers()->firstOrCreate(
                     [
@@ -113,13 +92,13 @@ class TierSeeder extends Seeder
                     [
                         'tier_name' => $data['tier_name'],
                         'tier_desc' => $tierDesc,
-                        'price' => $price,
-                        'tier_currency' => Currency::CZK,
+                        'price' => $data['price'],
+                        'tier_currency' => $data['currency'],
                     ]
                 );
 
-                $coverBaseName = $data['cover_file'] ?? $data['tier_name'];
-                $coverPath = $this->findCoverFixture($coverBaseName);
+                $coverBaseName = $data['cover_base'] ?? null;
+                $coverPath = $this->findCoverFixture($user, $data['tier_name'], $data['tier_desc'], $coverBaseName);
                 if ($coverPath !== null) {
                     $stored = Storage::disk('public')->putFile(
                         TierResourceSupport::COVER_DIRECTORY,
@@ -132,14 +111,69 @@ class TierSeeder extends Seeder
         }
     }
 
-    private function findCoverFixture(string $baseName): ?string
+    private function formatTierDescBullets(string $desc): string
     {
-        $directory = base_path(self::FIXTURES_COVERS);
+        if (str_contains($desc, ':')) {
+            $afterColon = trim(substr($desc, strpos($desc, ':') + 1));
+            $features = array_filter(array_map('trim', explode(',', $afterColon)));
+            $lines = [];
+            foreach ($features as $feature) {
+                if ($feature !== '') {
+                    $lines[] = '• '.$feature;
+                }
+            }
 
-        foreach (self::COVER_EXTENSIONS as $ext) {
-            $path = $directory.DIRECTORY_SEPARATOR.$baseName.'.'.$ext;
-            if (file_exists($path)) {
-                return $path;
+            return implode("\n", $lines);
+        }
+
+        $parts = array_filter(array_map('trim', explode('. ', $desc)));
+        $lines = [];
+        foreach ($parts as $part) {
+            if ($part === '') {
+                continue;
+            }
+            $lines[] = '• '.rtrim($part, '.');
+        }
+
+        return implode("\n", $lines);
+    }
+
+    private function tierNameToCoverSlug(string $name): string
+    {
+        $withParenDashes = str_replace(['(', ')'], ['(-', '-)'], $name);
+
+        return str_replace(' ', '-', trim($withParenDashes));
+    }
+
+    private function findCoverFixture(User $user, string $tierName, string $tierDesc, ?string $coverBaseName): ?string
+    {
+        $tiersDir = base_path('database/seeders/fixtures/tiers');
+        $creatorDir = $tiersDir.DIRECTORY_SEPARATOR.$user->username;
+        if (is_dir($creatorDir)) {
+            foreach ([$this->tierNameToCoverSlug($tierName), str_replace(' ', '-', $tierName)] as $tierSlug) {
+                $path = $creatorDir.DIRECTORY_SEPARATOR.$tierSlug.'.png';
+                if (file_exists($path)) {
+                    return $path;
+                }
+            }
+            if (str_contains($tierDesc, ':')) {
+                $namePart = trim(substr($tierDesc, 0, strpos($tierDesc, ':')));
+                foreach ([$this->tierNameToCoverSlug($namePart), str_replace(' ', '-', $namePart)] as $nameSlug) {
+                    $path = $creatorDir.DIRECTORY_SEPARATOR.$nameSlug.'.png';
+                    if (file_exists($path)) {
+                        return $path;
+                    }
+                }
+            }
+        }
+
+        if ($coverBaseName !== null && $coverBaseName !== '') {
+            $directory = base_path(self::FIXTURES_COVERS);
+            foreach (self::COVER_EXTENSIONS as $ext) {
+                $path = $directory.DIRECTORY_SEPARATOR.$coverBaseName.'.'.$ext;
+                if (file_exists($path)) {
+                    return $path;
+                }
             }
         }
 

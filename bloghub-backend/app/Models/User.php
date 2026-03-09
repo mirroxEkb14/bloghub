@@ -6,27 +6,34 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Laravel\Sanctum\HasApiTokens;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Spatie\Permission\Traits\HasRoles;
 use App\Rules\PhoneRule;
+use App\Support\StorageUrlSupport;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, Notifiable, HasRoles, HasApiTokens;
 
     protected $fillable = [
         'name',
         'username',
         'email',
+        'avatar_path',
         'phone',
         'password',
         'locale',
         'is_creator',
         'terms_accepted_at',
         'privacy_accepted_at',
+        'stripe_customer_id',
     ];
+
+    protected $appends = ['avatar_url'];
 
     protected $hidden = [
         'password',
@@ -42,6 +49,11 @@ class User extends Authenticatable implements FilamentUser
             'terms_accepted_at' => 'datetime',
             'privacy_accepted_at' => 'datetime',
         ];
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        return StorageUrlSupport::publicUrl($this->attributes['avatar_path'] ?? null);
     }
 
     public function creatorProfile(): HasOne

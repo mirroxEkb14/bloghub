@@ -21,6 +21,7 @@ class UserResourceTable
         return $table
             ->recordUrl(UserResourceSupport::recordViewUrl(...))
             ->defaultSort('id')
+            ->modifyQueryUsing(fn ($query) => $query->with('creatorProfile'))
             ->filters(UserTableFilters::filters())
             ->columns([
                 TextColumn::make('id')
@@ -30,15 +31,20 @@ class UserResourceTable
                     ->label(__('filament.users.table.columns.name'))
                     ->view('filament.tables.columns.user-name')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->extraCellAttributes(['style' => 'max-width: 220px;']),
                 TextColumn::make('username')
                     ->label(__('filament.users.table.columns.username'))
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->limit(30)
+                    ->extraCellAttributes(['style' => 'max-width: 180px;']),
                 TextColumn::make('email')
                     ->label(__('filament.users.table.columns.email'))
                     ->searchable()
                     ->sortable()
+                    ->limit(30)
+                    ->extraCellAttributes(['style' => 'max-width: 200px;'])
                     ->toggleable(),
                 TextColumn::make('phone')
                     ->label(__('filament.users.table.columns.phone'))

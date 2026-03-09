@@ -10,7 +10,18 @@ Projekt je rozdělen na backend (**Laravel** + **Filament**) a frontend (**React
 
 > Krátká demonstrace aplikace:
 
-[![Demo video](https://img.youtube.com/vi/QFEDAVSEigc/hqdefault.jpg)](https://youtu.be/QFEDAVSEigc)
+[![Demo video](https://img.youtube.com/vi/Gc-ZOfxGkHQ/hqdefault.jpg)](https://youtu.be/Gc-ZOfxGkHQ)
+
+---
+
+## ⚠️ Disclaimer k seedovaným datům
+
+Veškerá **seedovaná / demoverzní data** v projektu (profilové a titulkové obrázky, videa, GIFy, ukázkové příspěvky a komentáře) byla **vygenerována pomocí nástrojů Google Gemini** a slouží pouze k demonstraci a vývoji:
+
+- **Fotografie / obrázky:** generovány pomocí **Nano Banana 2**.
+- **Videa a GIFy:** generovány pomocí **Veo**.
+
+Tato data nejsou reálným obsahem ani duševním vlastnictvím třetích stran a v produkčním nasazení by měla být nahrazena skutečným obsahem nebo odstraněna.
 
 ---
 
@@ -37,6 +48,7 @@ Projekt je rozdělen na backend (**Laravel** + **Filament**) a frontend (**React
 bloghub/
 ├── bloghub-backend/
 │   ├── app/
+│   │   ├── Contracts/
 │   │   ├── Enums/
 │   │   ├── Filament/
 │   │   │   ├── Pages/
@@ -136,6 +148,51 @@ Projekt běží v následujících kontejnerech:
 
 **Poznámka №2**: lze narazit na **race condition** kvůli `entrypoint.sh` skriptu, když Filament začne obsluhovat requesty dřív, než doběhnou veškeré migrace a seedery, protože backendový `entrypoint.sh` je nastaven tak, že **PHP-FPM** je spouštěn hned, zatímco migrace a seedery běží na pozadí. Tzn. server už pžijímá requesty, ale DB ještě není připravená.
 - `Table 'app.sessions' doesn't exist` (zpřístupnění `/admin`) a `These credentials do not match our records.` (login)
+
+---
+
+## 💸 Stripe
+
+Pro simulaci procesu plateb projekt používá platební bránu  <a href='https://stripe.com/en-cz'>Stripe</a> v testovacím řežimu. Obecný návod na připojení Stripu je:
+- Zaregistrovat se na stránkách Stripu a přejít do <a href='https://dashboard.stripe.com/'>Dashboardu</a>.
+- Zkopírovat <b>Publishable key</b> a <b>Secret key</b> do `.env` souboru a uložit do příslušných proměnných prostředí (příslušně <b>STRIPE_KEY</b> a <b>STRIPE_SECRET</b>):
+    - (kdyby klíče nebyly dostupné na dashboard stránce, tak v záložce <b>Developers</b> -> <b>API keys</b>),
+    - z dashboardu přejít do <b>Develoeprs</b> -> <b>Webhooks</b> -> <b>Add destination</b>:
+        - API version: `.clover`,
+        - Events: `checkout.session.completed`,
+    - <b>Webhook endpoint</b>:
+        - Destination name: <b>BlogHub local webhook</b>,
+        - Endpoint URL:
+            - nainstalovat <a href='https://ngrok.com/download/windows'>ngrok</a> (via .zip) a zaregistrovat se e-mailem,
+            - umístit `ngrok.exe` do `C:\ngrok-v3` adresáře,
+            - volitelně, lze přidat tuto cestu do Proměnných Prostředí ve Windows,
+            - otevřit .exe a zadat <b>Authtoken</b> z <a href='https://dashboard.ngrok.com/'>ngrok dashboardu</a>:
+            ```bash
+            ngrok config add-authtoken $YOUR_AUTHTOKEN
+            ```
+            - spustit ngrok a zkopírovat public URL (`https://...ngrok-free.dev`) z řádku <b>Forwarding</b>:
+            ```bash
+            ngrok http 8080
+            ```
+            - přidat <b>POST</b> endpoint z kontrolleru (`/api/webhooks/stripe`):
+            - `https://...ngrok-free.dev/api/webhooks/stripe`
+        - Description (optional): <b>Local dev – checkout.session.completed</b>
+    - ze stránky nově vytveřeného Destination, zkopírovat <b>Signing secret</b> (`whsec_`) a uložit do <b>STRIPE_WEBHOOK_SECRET</b>.
+
+<b>Poznámka №1</b>: na stránce `checkout.stripe.com` se pak používá jedna z testovacích Stripe karet, tj. <b>4242 4242 4242 4242</b>. Seznam veškerých karet lze nalézt na stránkách <a href='https://docs.stripe.com/testing'>Stripe Docs</a>.
+
+<b>Poznámka №2</b>: platby nebudou procházet v případě, že <b>(i)</b> <b>Destination</b> je vypnut ve Stripe dashboardu, <b>(ii)</b> není vytnořen zabezpečený tunel ve příkazovém řádku ngrok.
+
+---
+
+## 📧 E-mail verifikace
+
+V současné (07.03.2026) implementaci projekt využívá e-mailové verifikace. Pro testování této logiky je potřeba:
+1. Vytvořit **App Password** pro Google účet, z něhož budou posílány e-mailové zprávy:
+    - **Google Account** -> **Security & sign-in** -> **App passwords**.
+    - **Poznámka**: Aby Google pustil do sekce Hesel aplikací, musí být zapnuto **2-Step Verification**.
+2. Zadat e-mailovou adresu a vygenerované 16mistné heslo do příslušných proměnných prostředí v `.env`:
+    - `MAIL_USERNAME`, `MAIL_PASSWORD` a `MAIL_FROM_ADDRESS`.
 
 ---
 
@@ -259,6 +316,28 @@ Pokud jsou, vyřešit konflikty otevřením příslušných souborů a editací 
 > git log --oneline -10
 > git revert <bad_commit_hash>
 > git push
+```
+
+### ❓ Rollback k minulému fungujícímu commitu (na `local`)
+
+```bash
+> git restore .
+> git clean -fd
+```
+
+Pro **staged** situace (`git add .`):
+```bash
+> git restore --staged .
+> git restore .
+```
+
+Pro kommitnuté situace (`git commit -m "..."`):
+```bash
+> git reset --hard HEAD~1
+```
+```bash
+> git log fix/default-permissions --oneline
+> git reset --hard 8dbd965
 ```
 
 ### ❓ Mázání `.env` souboru z `remote`

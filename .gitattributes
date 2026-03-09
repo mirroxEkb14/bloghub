@@ -1,0 +1,5 @@
+* text=auto eol=lf
+
+*.{cmd,[Bb]at} text eol=crlf
+
+*.{png,jpg,jpeg,gif,ico,webp,mp4,webm,mp3,ogg,wav,woff2,woff,ttf,eot} binary

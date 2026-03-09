@@ -19,7 +19,7 @@ class PostResourceTable
         return $table
             ->recordUrl(fn ($record) => PostResource::getUrl('view', ['record' => $record]))
             ->defaultSort('id')
-            ->modifyQueryUsing(fn ($query) => $query->with(['creatorProfile', 'requiredTier']))
+            ->modifyQueryUsing(fn ($query) => $query->with(['creatorProfile.user', 'requiredTier']))
             ->filters(PostTableFilters::filters())
             ->columns([
                 TextColumn::make('id')
@@ -30,22 +30,22 @@ class PostResourceTable
                     ->view('filament.tables.columns.post-creator')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('title')
+                    ->label(__('filament.posts.table.columns.title'))
+                    ->searchable()
+                    ->sortable()
+                    ->limit(30),
                 TextColumn::make('slug')
                     ->label(__('filament.posts.table.columns.slug'))
                     ->searchable()
                     ->sortable()
                     ->limit(30),
-                TextColumn::make('title')
-                    ->label(__('filament.posts.table.columns.title'))
-                    ->searchable()
-                    ->sortable()
-                    ->limit(40),
                 TextColumn::make('media_type')
                     ->label(__('filament.posts.table.columns.media_type'))
                     ->formatStateUsing(fn ($state) => $state?->value ?? $state)
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('requiredTier.tier_name')
+                TextColumn::make('requiredTier.level')
                     ->label(__('filament.posts.table.columns.required_tier'))
                     ->sortable()
                     ->toggleable(),
@@ -53,6 +53,11 @@ class PostResourceTable
                     ->label(__('filament.posts.table.columns.comments_count'))
                     ->counts('comments')
                     ->toggleable(),
+                TextColumn::make('created_at')
+                    ->label(__('filament.posts.table.columns.created_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->recordActions([
                 ViewAction::make()->label(__('filament.posts.table.actions.view')),

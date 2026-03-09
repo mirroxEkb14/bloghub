@@ -17,6 +17,11 @@ return [
     'content' => [
         'navigation_group' => 'Obsah',
     ],
+    'section_metadata' => 'Metadata',
+    'fields' => [
+        'created_at' => 'Vytvořeno',
+        'updated_at' => 'Upraveno',
+    ],
     'administration' => [
         'navigation_group' => 'Administrace',
     ],
@@ -89,7 +94,7 @@ return [
                 'title' => 'Titulek',
                 'content_text' => 'Obsah',
                 'media_type' => 'Typ média',
-                'required_tier' => 'Vyžadovaná úroveň',
+                'required_tier' => 'Úroveň',
                 'comments_count' => 'Komentáře',
                 'created_at' => 'Vytvořeno',
             ],
@@ -146,7 +151,7 @@ return [
             'about_hint' => 'max. 255 znaků',
             'tags' => 'Štítky',
             'section_profile' => 'Profil',
-            'section_display' => 'Zobrazení',
+            'section_display' => 'Údaje',
             'section_about' => 'O mně',
         ],
         'table' => [
@@ -177,6 +182,8 @@ return [
         'plural_label' => 'Štítky',
         'cannot_delete_in_use' => 'Nelze smazat štítek přiřazený profilům tvůrců',
         'form' => [
+            'section_details' => 'Údaje',
+            'creator_profiles_count_label' => 'Celkem',
             'slug' => 'Slug',
             'name' => 'Název',
             'slug_placeholder' => 'muj-stittek',
@@ -228,7 +235,7 @@ return [
                 'tier_desc' => 'Popis',
                 'price' => 'Cena',
                 'tier_currency' => 'Měna',
-                'subscriptions_count' => 'Předplatné',
+                'subscriptions_count' => 'Subs',
                 'created_at' => 'Vytvořeno',
             ],
             'actions' => [
@@ -333,6 +340,8 @@ return [
         'plural_label' => 'Uživatelé',
         'cannot_delete_yourself' => 'Nemůžete smazat sám sebe',
         'form' => [
+            'section_account' => 'Účet',
+            'section_security' => 'Zabezpečení',
             'name' => 'Jméno',
             'username' => 'Uživatelské jméno',
             'email' => 'E-mail',

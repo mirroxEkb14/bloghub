@@ -36,7 +36,7 @@ class PhoneRule implements ValidationRule
             return null;
         }
 
-        if (!preg_match('/^[\d\s\-()]+$/u', $trimmed)) {
+        if (!preg_match('/^\+?[\d\s\-()]+$/u', $trimmed)) {
             return null;
         }
 

@@ -1,0 +1,68 @@
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--accent-muted);
+}
+.btn-secondary:hover {
+  background: var(--active-overlay);
+  border-color: var(--text-muted);
+}
+
+/* Card */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 2rem;
+  border: 1px solid var(--border);
+  max-width: 420px;
+  width: 100%;
+}
+
+/* Accept legal modal */
+.accept-legal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.accept-legal-card {
+  max-width: 420px;
+  width: 100%;
+}
+.accept-legal-checkboxes {
+  margin-top: 1rem;
+}
+
+.legal-page .legal-content {
+  margin-top: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.legal-page .legal-content p {
+  margin: 0 0 0.75rem 0;
+}

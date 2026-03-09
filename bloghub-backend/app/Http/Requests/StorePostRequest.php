@@ -36,6 +36,11 @@ class StorePostRequest extends FormRequest
                 'min:'.PostResourceSupport::CONTENT_TEXT_MIN_LENGTH,
                 'max:'.PostResourceSupport::CONTENT_TEXT_MAX_LENGTH,
             ],
+            'excerpt' => [
+                'nullable',
+                'string',
+                'max:'.PostResourceSupport::EXCERPT_MAX_LENGTH,
+            ],
             'media_url' => [
                 'nullable',
                 'string',

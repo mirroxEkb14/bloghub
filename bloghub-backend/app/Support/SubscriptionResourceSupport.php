@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class SubscriptionResourceSupport
 {
-    /** SP-19: sub_status max length */
     public const SUB_STATUS_MAX_LENGTH = 20;
 
     private function __construct()
@@ -35,7 +34,7 @@ class SubscriptionResourceSupport
     public static function tableModifyQueryUsing(): Closure
     {
         return static function (Builder $query): Builder {
-            return $query->with(['user', 'tier']);
+            return $query->with(['user.creatorProfile', 'tier']);
         };
     }
 }

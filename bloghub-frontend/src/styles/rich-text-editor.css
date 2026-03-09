@@ -1,0 +1,234 @@
+/* Rich text editor (TipTap) */
+.rich-text-editor {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  overflow: hidden;
+}
+
+.rich-text-editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-sidebar, var(--bg-card));
+}
+
+.rich-text-editor-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 28px;
+  padding: 0 0.4rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.rich-text-editor-btn:hover {
+  background: var(--hover-overlay);
+  color: var(--text);
+}
+
+.rich-text-editor-btn.active {
+  background: var(--active-overlay);
+  color: var(--text);
+}
+
+.rich-text-editor-btn strong,
+.rich-text-editor-btn em {
+  font-size: 0.95rem;
+}
+
+.rich-text-editor-underline {
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.rich-text-editor-strike {
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: line-through;
+}
+
+.rich-text-editor-icon-link {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'/%3E%3Cpath d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'/%3E%3C/svg%3E") center / contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'/%3E%3Cpath d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.rich-text-editor-icon-bullet-list {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='5' cy='6' r='2' fill='black'/%3E%3Cline x1='10' y1='6' x2='20' y2='6' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3Ccircle cx='5' cy='12' r='2' fill='black'/%3E%3Cline x1='10' y1='12' x2='20' y2='12' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3Ccircle cx='5' cy='18' r='2' fill='black'/%3E%3Cline x1='10' y1='18' x2='20' y2='18' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='5' cy='6' r='2' fill='black'/%3E%3Cline x1='10' y1='6' x2='20' y2='6' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3Ccircle cx='5' cy='12' r='2' fill='black'/%3E%3Cline x1='10' y1='12' x2='20' y2='12' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3Ccircle cx='5' cy='18' r='2' fill='black'/%3E%3Cline x1='10' y1='18' x2='20' y2='18' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.rich-text-editor-icon-numbered-list {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  color: inherit;
+}
+
+.rich-text-editor-icon-numbered-list svg {
+  width: 100%;
+  height: 100%;
+}
+
+.rich-text-editor-toolbar-divider {
+  width: 1px;
+  height: 18px;
+  margin: 0 0.25rem;
+  background: var(--border);
+}
+
+.rich-text-editor-content-wrap {
+  position: relative;
+  cursor: text;
+  min-height: 220px;
+}
+
+.rich-text-editor-content-wrap:focus {
+  outline: none;
+}
+
+.rich-text-editor-hint {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 0.75rem 1rem;
+  color: var(--text-muted, #888);
+  pointer-events: none;
+  font-size: inherit;
+  line-height: 1.5;
+}
+
+.rich-text-editor .tiptap {
+  min-height: 200px;
+  padding: 0.75rem 1rem;
+  outline: none;
+}
+
+.rich-text-editor .tiptap p {
+  margin: 0 0 0.5em;
+}
+
+.rich-text-editor .tiptap p:last-child {
+  margin-bottom: 0;
+}
+
+.rich-text-editor .tiptap ul,
+.rich-text-editor .tiptap ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.rich-text-editor .tiptap li {
+  margin: 0.2em 0;
+}
+
+.rich-text-editor .tiptap li p {
+  margin: 0;
+}
+
+/* Link dialog */
+.rich-text-editor-link-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.4);
+  animation: rich-text-editor-link-fade 0.15s ease-out;
+}
+
+@keyframes rich-text-editor-link-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.rich-text-editor-link-dialog {
+  width: 100%;
+  max-width: 360px;
+  padding: 1.25rem;
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid var(--border);
+  background: var(--bg-card, var(--bg));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  animation: rich-text-editor-link-scale 0.2s ease-out;
+}
+
+@keyframes rich-text-editor-link-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.rich-text-editor-link-dialog-title {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.rich-text-editor-link-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.rich-text-editor-link-dialog-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.rich-text-editor-link-dialog-input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text);
+}
+
+.rich-text-editor-link-dialog-input:focus {
+  outline: none;
+  border-color: var(--accent-muted);
+}
+
+.rich-text-editor-link-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.rich-text-editor-link-dialog-remove {
+  margin-left: auto;
+  color: var(--text-secondary);
+}

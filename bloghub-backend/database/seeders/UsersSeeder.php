@@ -5,11 +5,30 @@ namespace Database\Seeders;
 use App\Enums\UserRoleEnum;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Http\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 
 class UsersSeeder extends Seeder
 {
+    private const FIXTURES_AVATARS = 'database/seeders/fixtures/avatars';
+
+    private const STORAGE_AVATAR_DIR = 'users/avatars';
+    private const SEED_USERS = [
+        ['name' => 'Fox Mulder', 'username' => 'trust_no1', 'email' => 'trust_no1@gmail.com', 'is_creator' => true],
+        ['name' => 'Dana Scully', 'username' => 'queequeg', 'email' => 'queequeg@gmail.com', 'is_creator' => true],
+        ['name' => 'Gordon Freeman', 'username' => 'blackmesa', 'email' => 'blackmesa@gmail.com', 'is_creator' => true],
+        ['name' => 'Gregory House', 'username' => 'ppth', 'email' => 'ppth@gmail.com', 'is_creator' => true],
+        ['name' => 'Caroline', 'username' => 'glados', 'email' => 'glados@gmail.com', 'is_creator' => true],
+        ['name' => 'Ellen Ripley', 'username' => 'nostromo', 'email' => 'nostromo@gmail.com', 'is_creator' => true],
+        ['name' => 'Maggie Rhee', 'username' => 'laurenCohan', 'email' => 'laurenCohan@gmail.com', 'is_creator' => true],
+        ['name' => 'Negan', 'username' => 'jeffreyDeanMorgan', 'email' => 'jeffreyDeanMorgan@gmail.com', 'is_creator' => true],
+        ['name' => 'Carl Johnson', 'username' => 'grove4life', 'email' => 'grove4life@gmail.com', 'is_creator' => false],
+        ['name' => 'Thomas A. Anderson', 'username' => 'neo', 'email' => 'neo@gmail.com', 'is_creator' => false],
+        ['name' => 'Tiffany Zion', 'username' => 'trinity', 'email' => 'trinity@gmail.com', 'is_creator' => false],
+    ];
+
     public function run(): void
     {
         $superAdminRole = Role::firstOrCreate([
@@ -30,10 +49,6 @@ class UsersSeeder extends Seeder
         $adminUsername = config('seed.admin.username');
         $adminPassword = config('seed.admin.password');
 
-        $userEmail = config('seed.user.email');
-        $userUsername = config('seed.user.username');
-        $userPassword = config('seed.user.password');
-
         $super = User::firstOrCreate(
             ['email' => $superEmail],
             [
@@ -42,6 +57,8 @@ class UsersSeeder extends Seeder
                 'phone' => '7123456789',
                 'is_creator' => false,
                 'email_verified_at' => now(),
+                'terms_accepted_at' => now(),
+                'privacy_accepted_at' => now(),
                 'password' => Hash::make($superPassword),
             ]
         );
@@ -54,19 +71,9 @@ class UsersSeeder extends Seeder
                 'phone' => '420987654321',
                 'is_creator' => false,
                 'email_verified_at' => now(),
+                'terms_accepted_at' => now(),
+                'privacy_accepted_at' => now(),
                 'password' => Hash::make($adminPassword),
-            ]
-        );
-
-        $user = User::firstOrCreate(
-            ['email' => $userEmail],
-            [
-                'name' => 'User',
-                'username' => $userUsername,
-                'phone' => '49456123789',
-                'is_creator' => true,
-                'email_verified_at' => now(),
-                'password' => Hash::make($userPassword),
             ]
         );
 
@@ -77,5 +84,38 @@ class UsersSeeder extends Seeder
         if (! $admin->hasRole($adminRole)) {
             $admin->assignRole($adminRole);
         }
+
+        $seedPassword = Hash::make('app');
+        foreach (self::SEED_USERS as $index => $data) {
+            $user = User::firstOrCreate(
+                ['email' => $data['email']],
+                [
+                    'name' => $data['name'],
+                    'username' => $data['username'],
+                    'phone' => '420'.str_pad((string) ($index + 1), 9, '0', STR_PAD_LEFT),
+                    'is_creator' => $data['is_creator'],
+                    'email_verified_at' => now(),
+                    'terms_accepted_at' => now(),
+                    'privacy_accepted_at' => now(),
+                    'password' => $seedPassword,
+                ]
+            );
+            $this->copyUserAvatar($user);
+        }
+    }
+
+    private function copyUserAvatar(User $user): void
+    {
+        $fixturePath = base_path(self::FIXTURES_AVATARS).DIRECTORY_SEPARATOR.$user->username.'.png';
+        if (! is_file($fixturePath)) {
+            return;
+        }
+
+        $stored = Storage::disk('public')->putFileAs(
+            self::STORAGE_AVATAR_DIR,
+            new File($fixturePath),
+            $user->username.'.png'
+        );
+        $user->update(['avatar_path' => $stored]);
     }
 }

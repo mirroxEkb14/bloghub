@@ -56,11 +56,11 @@ class PaymentResourceSupport
     {
         return static function (mixed $state, ?Model $record): string {
             if (! $record instanceof Payment) {
-                return '—';
+                return '–';
             }
             $subscription = $record->subscription;
             if (! $subscription) {
-                return '—';
+                return '–';
             }
             $parts = ['#'.$subscription->id];
             if ($subscription->user?->name) {

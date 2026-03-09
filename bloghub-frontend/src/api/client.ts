@@ -1,0 +1,677 @@
+export const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
+
+export class ValidationError extends Error {
+  readonly errors: Record<string, string[]>;
+
+  constructor(message: string, errors: Record<string, string[]>) {
+    super(message);
+    this.name = 'ValidationError';
+    this.errors = errors;
+  }
+}
+
+export class ApiError extends Error {
+  readonly status: number;
+  readonly body: unknown;
+
+  constructor(message: string, status: number, body: unknown) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.body = body;
+  }
+}
+
+function getToken(): string | null {
+  return localStorage.getItem('auth_token');
+}
+
+export async function api<T>(
+  path: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const token = getToken();
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    ...(options.headers as Record<string, string>),
+  };
+  if (token) {
+    (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    const errorsObj = res.status === 422 && data.errors && typeof data.errors === 'object'
+      ? (data.errors as Record<string, string[]>)
+      : null;
+    const msg = data.message ?? (errorsObj
+      ? Object.values(errorsObj).flat().join(' ')
+      : data.errors) ?? `Request failed: ${res.status}`;
+    if (errorsObj) {
+      throw new ValidationError(typeof msg === 'string' ? msg : 'Validation failed', errorsObj);
+    }
+    throw new ApiError(typeof msg === 'string' ? msg : JSON.stringify(msg), res.status, data);
+  }
+  return data as T;
+}
+
+export async function uploadApi<T>(
+  path: string,
+  formKey: string,
+  file: File,
+  method: 'POST' | 'PUT' = 'POST'
+): Promise<T> {
+  const token = getToken();
+  const form = new FormData();
+  form.append(formKey, file);
+  const headers: HeadersInit = {
+    Accept: 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    method,
+    headers,
+    body: form,
+  });
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    const msg = data.message ?? (typeof data.errors === 'object'
+      ? Object.values(data.errors as Record<string, string[]>).flat().join(' ')
+      : data.errors) ?? `Upload failed: ${res.status}`;
+    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+  }
+  return data as T;
+}
+
+export type User = {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  email_verified_at: string | null;
+  avatar_url?: string | null;
+  phone?: string | null;
+  terms_accepted_at: string | null;
+  privacy_accepted_at: string | null;
+  created_at: string;
+  updated_at: string;
+  creator_profile?: { id: number; user_id: number; slug: string } | null;
+};
+
+export type AuthResponse = {
+  user: User;
+  token: string;
+  token_type: string;
+};
+
+export const authApi = {
+  register(body: {
+    name: string;
+    username: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+    phone?: string;
+    terms_accepted?: boolean;
+    privacy_accepted?: boolean;
+  }) {
+    return api<AuthResponse>('/api/register', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  login(body: { email: string; password: string }) {
+    return api<AuthResponse>('/api/login', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  logout() {
+    return api<unknown>('/api/logout', { method: 'POST' });
+  },
+
+  resendVerificationEmail() {
+    return api<{ message: string }>('/api/email/resend', { method: 'POST' });
+  },
+
+  user() {
+    return api<{ user: User }>('/api/user');
+  },
+
+  updateProfile(body: { name: string; username: string; email: string; phone?: string | null }) {
+    return api<{ user: User }>('/api/user', {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
+  },
+
+  uploadUserAvatar(file: File) {
+    return uploadApi<{ path: string; url: string }>('/api/user/upload-avatar', 'avatar', file);
+  },
+
+  acceptTermsAndPrivacy(body: { terms_accepted: true; privacy_accepted: true }) {
+    return api<{ user: User }>('/api/user/accept-terms-privacy', {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
+  },
+};
+
+export type Tag = {
+  id: number;
+  slug: string;
+  name: string;
+};
+
+export const tagsApi = {
+  list() {
+    return api<{ data: Tag[] }>('/api/tags').then((r) =>
+      Array.isArray(r) ? r : (r as { data: Tag[] }).data ?? []
+    );
+  },
+};
+
+export type CreatorProfileUser = {
+  id: number;
+  name: string;
+  username: string;
+};
+
+export type CreatorProfile = {
+  id: number;
+  slug: string;
+  display_name: string;
+  about: string | null;
+  profile_avatar_url: string | null;
+  profile_cover_url: string | null;
+  telegram_url?: string | null;
+  instagram_url?: string | null;
+  facebook_url?: string | null;
+  youtube_url?: string | null;
+  twitch_url?: string | null;
+  website_url?: string | null;
+  user?: CreatorProfileUser;
+  tags?: Tag[];
+  posts_count?: number;
+  subscriptions_count?: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type PostRequiredTier = {
+  id: number;
+  level: number;
+  tier_name: string;
+};
+
+export type Post = {
+  id: number;
+  slug: string;
+  title: string;
+  content_text: string | null;
+  excerpt: string | null;
+  media_url: string | null;
+  media_type: 'Image' | 'Gif' | 'Audio' | 'Video' | null;
+  required_tier?: PostRequiredTier | null;
+  user_has_access?: boolean;
+  views_count?: number;
+  user_has_viewed?: boolean;
+  comments_count?: number;
+  likes_count?: number;
+  user_has_liked?: boolean;
+  bookmarks_count?: number;
+  created_at?: string;
+  updated_at?: string;
+  creator_profile?: { slug: string; display_name: string; profile_avatar_url?: string | null } | null;
+};
+
+export type CommentUser = {
+  id: number;
+  name: string;
+  username: string;
+  avatar_url?: string | null;
+  creator_profile?: { slug: string } | null;
+};
+
+export type Comment = {
+  id: number;
+  content_text: string;
+  created_at: string;
+  updated_at: string;
+  user: CommentUser;
+};
+
+export type Tier = {
+  id: number;
+  level: number;
+  tier_name: string;
+  tier_desc: string | null;
+  price: number;
+  tier_currency: string | null;
+  tier_cover_url: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type CreatorProfilesParams = {
+  tag?: string | number;
+  search?: string;
+  per_page?: number;
+  page?: number;
+};
+
+export type PaginatedMeta = {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  from: number | null;
+  to: number | null;
+};
+
+export type PaginatedResponse<T> = {
+  data: T[];
+  meta: PaginatedMeta;
+  links: { first: string; last: string; prev: string | null; next: string | null };
+};
+
+function unwrapData<T>(r: T | { data: T }): T {
+  return r != null && typeof r === 'object' && 'data' in r && (r as { data: T }).data != null
+    ? (r as { data: T }).data
+    : (r as T);
+}
+
+function normalizeUploadResponse(r: unknown): { path: string; url: string } {
+  const raw = unwrapData(r as { path?: string; url?: string; data?: { path?: string; url?: string } });
+  const obj = raw != null && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
+  const path = (typeof obj.path === 'string' ? obj.path : typeof obj.file_path === 'string' ? obj.file_path : '') || '';
+  if (!path.trim()) {
+    throw new Error('Upload failed: server did not return a file path. Check Network → upload response body');
+  }
+  const url = typeof obj.url === 'string' && obj.url.startsWith('http') ? obj.url : null;
+  const previewUrl = url ?? `${API_BASE.replace(/\/$/, '')}/storage/${path.replace(/^\//, '')}`;
+  return { path, url: previewUrl };
+}
+
+export const exploreApi = {
+  getPopularCreators() {
+    return api<{ data: CreatorProfile[] }>('/api/explore/popular-creators').then((r) => ((r && typeof r === 'object' && 'data' in r ? (r as { data: CreatorProfile[] }).data : undefined) ?? []) as CreatorProfile[]);
+  },
+  getTrendingPosts() {
+    return api<{ data: Post[] } | Post[]>('/api/explore/trending-posts').then((r) => (Array.isArray(r) ? r : (r && typeof r === 'object' && 'data' in r ? (r as { data: Post[] }).data : [])) ?? []);
+  },
+};
+
+export const creatorProfilesApi = {
+  list(params: CreatorProfilesParams = {}) {
+    const sp = new URLSearchParams();
+    if (params.tag != null) sp.set('tag', String(params.tag));
+    if (params.search) sp.set('search', params.search);
+    if (params.per_page != null) sp.set('per_page', String(params.per_page));
+    if (params.page != null) sp.set('page', String(params.page));
+    const q = sp.toString();
+    return api<PaginatedResponse<CreatorProfile>>(
+      `/api/creator-profiles${q ? `?${q}` : ''}`
+    );
+  },
+
+  getBySlug(slug: string) {
+    return api<CreatorProfile | { data: CreatorProfile }>(
+      `/api/creator-profiles/${encodeURIComponent(slug)}`
+    ).then(unwrapData);
+  },
+
+  me() {
+    return api<CreatorProfile | { data: CreatorProfile }>('/api/me/creator-profile').then(unwrapData);
+  },
+
+  create(body: {
+    display_name: string;
+    slug?: string;
+    about?: string | null;
+    profile_avatar_path?: string | null;
+    profile_cover_path?: string | null;
+    tag_ids?: number[];
+  }) {
+    return api<CreatorProfile | { data: CreatorProfile }>('/api/creator-profiles', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }).then(unwrapData);
+  },
+
+  update(id: number, body: {
+    slug?: string;
+    display_name?: string;
+    about?: string | null;
+    profile_avatar_path?: string | null;
+    profile_cover_path?: string | null;
+    telegram_url?: string | null;
+    instagram_url?: string | null;
+    facebook_url?: string | null;
+    youtube_url?: string | null;
+    twitch_url?: string | null;
+    website_url?: string | null;
+    tag_ids?: number[];
+  }) {
+    return api<CreatorProfile | { data: CreatorProfile }>(`/api/creator-profiles/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    }).then(unwrapData);
+  },
+
+  uploadAvatar(file: File) {
+    return uploadApi<{ path: string; url: string | null } | { data: { path: string; url: string | null } }>(
+      '/api/creator-profiles/upload-avatar',
+      'avatar',
+      file
+    ).then(normalizeUploadResponse);
+  },
+
+  uploadCover(file: File) {
+    return uploadApi<{ path: string; url: string | null } | { data: { path: string; url: string | null } }>(
+      '/api/creator-profiles/upload-cover',
+      'cover',
+      file
+    ).then(normalizeUploadResponse);
+  },
+};
+
+export type PostsByCreatorParams = {
+  per_page?: number;
+  page?: number;
+};
+
+export type HomeFeedParams = {
+  per_page?: number;
+  page?: number;
+  q?: string;
+};
+
+export type PublicFeedParams = {
+  per_page?: number;
+  page?: number;
+  q?: string;
+};
+
+export type TierFeedParams = {
+  per_page?: number;
+  page?: number;
+  q?: string;
+};
+
+export const feedApi = {
+  getHomeFeed(params: HomeFeedParams = {}) {
+    const sp = new URLSearchParams();
+    if (params.per_page != null) sp.set('per_page', String(params.per_page));
+    if (params.page != null) sp.set('page', String(params.page));
+    if (params.q != null && params.q.trim() !== '') sp.set('q', params.q.trim());
+    const queryString = sp.toString();
+    return api<PaginatedResponse<Post>>(`/api/me/feed${queryString ? `?${queryString}` : ''}`);
+  },
+
+  getPublicFeed(params: PublicFeedParams = {}) {
+    const sp = new URLSearchParams();
+    if (params.per_page != null) sp.set('per_page', String(params.per_page));
+    if (params.page != null) sp.set('page', String(params.page));
+    if (params.q != null && params.q.trim() !== '') sp.set('q', params.q.trim());
+    const queryString = sp.toString();
+    return api<PaginatedResponse<Post>>(`/api/me/feed/public${queryString ? `?${queryString}` : ''}`);
+  },
+
+  getTierFeed(params: TierFeedParams = {}) {
+    const sp = new URLSearchParams();
+    if (params.per_page != null) sp.set('per_page', String(params.per_page));
+    if (params.page != null) sp.set('page', String(params.page));
+    if (params.q != null && params.q.trim() !== '') sp.set('q', params.q.trim());
+    const queryString = sp.toString();
+    return api<PaginatedResponse<Post>>(`/api/me/feed/tier${queryString ? `?${queryString}` : ''}`);
+  },
+};
+
+export type PostCreatePayload = {
+  slug: string;
+  title: string;
+  content_text: string;
+  excerpt?: string | null;
+  media_url?: string | null;
+  media_type?: string | null;
+  required_tier_id?: number | null;
+};
+
+export type PostMediaUploadResponse = {
+  path: string;
+  url: string;
+  media_type: string;
+};
+
+export const postsApi = {
+  uploadMedia(file: File) {
+    return uploadApi<PostMediaUploadResponse | { data: PostMediaUploadResponse }>(
+      '/api/me/creator-profile/posts/upload-media',
+      'media',
+      file
+    ).then((r) => {
+      const raw = r != null && typeof r === 'object' && 'data' in r ? (r as { data: PostMediaUploadResponse }).data : r;
+      return raw as PostMediaUploadResponse;
+    });
+  },
+
+  create(payload: PostCreatePayload) {
+    return api<Post | { data: Post }>(
+      '/api/me/creator-profile/posts',
+      { method: 'POST', body: JSON.stringify(payload) }
+    ).then((r) => (r != null && typeof r === 'object' && 'data' in r ? (r as { data: Post }).data : r) as Post);
+  },
+
+  listByCreator(creatorSlug: string, params: PostsByCreatorParams = {}) {
+    const sp = new URLSearchParams();
+    if (params.per_page != null) sp.set('per_page', String(params.per_page));
+    if (params.page != null) sp.set('page', String(params.page));
+    const q = sp.toString();
+    return api<PaginatedResponse<Post>>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts${q ? `?${q}` : ''}`
+    );
+  },
+
+  getBySlug(creatorSlug: string, postSlug: string) {
+    return api<Post | { data: Post }>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts/${encodeURIComponent(postSlug)}`
+    ).then(unwrapData);
+  },
+
+  recordView(creatorSlug: string, postSlug: string) {
+    return api<unknown>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts/${encodeURIComponent(postSlug)}/view`,
+      { method: 'POST' }
+    );
+  },
+
+  like(creatorSlug: string, postSlug: string) {
+    return api<unknown>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts/${encodeURIComponent(postSlug)}/like`,
+      { method: 'POST' }
+    );
+  },
+
+  unlike(creatorSlug: string, postSlug: string) {
+    return api<unknown>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts/${encodeURIComponent(postSlug)}/like`,
+      { method: 'DELETE' }
+    );
+  },
+
+  deleteMine(postSlug: string) {
+    return api<unknown>(
+      `/api/me/creator-profile/posts/${encodeURIComponent(postSlug)}`,
+      { method: 'DELETE' }
+    );
+  },
+};
+
+export const commentsApi = {
+  list(creatorSlug: string, postSlug: string) {
+    return api<{ data: Comment[] } | Comment[]>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts/${encodeURIComponent(postSlug)}/comments`
+    ).then((r) => (Array.isArray(r) ? r : (r && typeof r === 'object' && 'data' in r ? (r as { data: Comment[] }).data : [])) ?? []);
+  },
+
+  create(creatorSlug: string, postSlug: string, body: { content_text: string }) {
+    return api<{ data: Comment } | Comment>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/posts/${encodeURIComponent(postSlug)}/comments`,
+      { method: 'POST', body: JSON.stringify(body) }
+    ).then((r) => (r && typeof r === 'object' && 'data' in r ? (r as { data: Comment }).data : r) as Comment);
+  },
+};
+
+export type TierCreatePayload = {
+  tier_name: string;
+  tier_desc: string;
+  price: number;
+  tier_currency: string;
+  tier_cover_path?: string | null;
+};
+
+export type TierUpdatePayload = Partial<TierCreatePayload>;
+
+export const tiersApi = {
+  listByCreator(creatorSlug: string) {
+    return api<{ data: Tier[] } | Tier[]>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/tiers`
+    ).then((r) => (Array.isArray(r) ? r : (r as { data: Tier[] }).data ?? []));
+  },
+
+  listMine() {
+    return api<{ data: Tier[] } | Tier[]>(
+      '/api/me/creator-profile/tiers'
+    ).then((r) => (Array.isArray(r) ? r : (r as { data: Tier[] }).data ?? []));
+  },
+
+  uploadCover(file: File) {
+    return uploadApi<{ path: string; url: string | null } | { data: { path: string; url: string | null } }>(
+      '/api/me/creator-profile/tiers/upload-cover',
+      'cover',
+      file
+    ).then(normalizeUploadResponse);
+  },
+
+  create(payload: TierCreatePayload) {
+    return api<Tier | { data: Tier }>(
+      '/api/me/creator-profile/tiers',
+      { method: 'POST', body: JSON.stringify(payload) }
+    ).then((r) => (r != null && typeof r === 'object' && 'data' in r ? (r as { data: Tier }).data : r) as Tier);
+  },
+
+  update(tierId: number, payload: TierUpdatePayload) {
+    return api<Tier | { data: Tier }>(
+      `/api/me/creator-profile/tiers/${tierId}`,
+      { method: 'PUT', body: JSON.stringify(payload) }
+    ).then((r) => (r != null && typeof r === 'object' && 'data' in r ? (r as { data: Tier }).data : r) as Tier);
+  },
+
+  delete(tierId: number) {
+    return api<void>(`/api/me/creator-profile/tiers/${tierId}`, { method: 'DELETE' });
+  },
+};
+
+export type SubscriptionCreator = {
+  id: number;
+  slug: string;
+  display_name: string;
+  profile_avatar_url: string | null;
+};
+
+export type SubscriptionWithTier = {
+  id: number;
+  user_id: number;
+  tier_id: number;
+  start_date: string | null;
+  end_date: string | null;
+  sub_status: string;
+  created_at: string | null;
+  updated_at: string | null;
+  tier: Tier;
+  creator: SubscriptionCreator;
+};
+
+export type SubscriptionStatusResponse = {
+  subscribed: boolean;
+  active_subscription: SubscriptionWithTier | null;
+};
+
+export type CheckoutSessionResponse =
+  | { type: 'free'; subscription: SubscriptionWithTier }
+  | { type: 'checkout'; checkout_url: string }
+  | { type: 'already_subscribed'; message?: string };
+
+export const subscriptionsApi = {
+  list() {
+    return api<{ data: SubscriptionWithTier[] } | SubscriptionWithTier[]>(
+      '/api/me/subscriptions'
+    ).then((r) => (Array.isArray(r) ? r : (r as { data: SubscriptionWithTier[] }).data ?? []));
+  },
+
+  subscribe(tierId: number) {
+    return api<SubscriptionWithTier | { data: SubscriptionWithTier }>(
+      '/api/subscriptions',
+      { method: 'POST', body: JSON.stringify({ tier_id: tierId }) }
+    ).then(unwrapData);
+  },
+
+  createCheckoutSession(tierId: number) {
+    return api<CheckoutSessionResponse>(
+      '/api/subscriptions/create-checkout-session',
+      { method: 'POST', body: JSON.stringify({ tier_id: tierId }) }
+    );
+  },
+
+  confirmCheckout(sessionId: string) {
+    return api<{ status: 'active'; subscription: SubscriptionWithTier } | { status: string; message: string }>(
+      '/api/subscriptions/confirm-checkout',
+      { method: 'POST', body: JSON.stringify({ session_id: sessionId }) }
+    );
+  },
+
+  getStatusByCreator(creatorSlug: string) {
+    return api<SubscriptionStatusResponse>(
+      `/api/creator-profiles/${encodeURIComponent(creatorSlug)}/subscription-status`
+    );
+  },
+
+  cancel(subscriptionId: number) {
+    return api<{ message: string; subscription: SubscriptionWithTier }>(
+      `/api/subscriptions/${subscriptionId}/cancel`,
+      { method: 'PATCH' }
+    );
+  },
+};
+
+export type PaymentSubscriptionContext = {
+  id: number;
+  tier_name: string | null;
+  creator: { slug: string; display_name: string } | null;
+};
+
+export type PaymentForUser = {
+  id: number;
+  amount: number;
+  currency: string | null;
+  checkout_date: string | null;
+  card_last4: string | null;
+  payment_status: string;
+  subscription: PaymentSubscriptionContext;
+};
+
+export const paymentsApi = {
+  list() {
+    return api<{ data: PaymentForUser[] } | PaymentForUser[]>(
+      '/api/me/payments'
+    ).then((r) => (Array.isArray(r) ? r : (r as { data: PaymentForUser[] }).data ?? []));
+  },
+};
