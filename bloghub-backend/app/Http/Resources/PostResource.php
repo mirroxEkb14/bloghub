@@ -13,6 +13,9 @@ class PostResource extends JsonResource
         $mediaUrl = $this->media_url;
         if ($mediaUrl !== null && $mediaUrl !== '' && ! str_starts_with($mediaUrl, 'http')) {
             $mediaUrl = StorageUrlSupport::publicUrl($mediaUrl);
+            if ($mediaUrl !== null && $this->updated_at !== null) {
+                $mediaUrl .= (str_contains($mediaUrl, '?') ? '&' : '?') . 'v=' . $this->updated_at->timestamp;
+            }
         }
 
         $model = $this->resource;

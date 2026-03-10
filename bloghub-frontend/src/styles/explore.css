@@ -287,7 +287,7 @@
 .trending-card-media-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   background: var(--bg-input);
 }
 
@@ -303,6 +303,25 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
+  background: var(--bg-input);
+}
+
+.trending-card-media-wrap-video {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-input);
+}
+
+.trending-card-media-wrap-video video {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  background: transparent;
 }
 
 .trending-card-lock {

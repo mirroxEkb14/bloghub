@@ -9,6 +9,7 @@ import {
   type Tag,
 } from '../api/client';
 import LoadingPage from '../components/LoadingPage';
+import PostMediaContainer from '../components/PostMediaContainer';
 
 function useHorizontalDragScroll() {
   const ref = useRef<HTMLUListElement>(null);
@@ -364,31 +365,66 @@ export default function ExplorePage() {
               return (
                 <li key={post.id}>
                   <Link to={href} className="trending-card">
-                    <div className={`trending-card-media-wrap${post.media_type === 'Audio' ? ' trending-card-media-audio' : ''}`}>
-                      {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
-                        <img src={post.media_url} alt="" />
+                    {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
+                        <PostMediaContainer
+                          mediaUrl={post.media_url}
+                          mediaType={post.media_type}
+                          figureClassName="trending-card-media-wrap"
+                          videoWrapClassName="trending-card-media-wrap-video"
+                          as="div"
+                        >
+                          {post.required_tier && (
+                            <span
+                              className={`trending-card-lock${hasAccess ? ' trending-card-lock-unlocked' : ''}`}
+                              aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
+                              title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
+                            >
+                              {hasAccess ? <UnlockIcon /> : <LockIcon />}
+                            </span>
+                          )}
+                        </PostMediaContainer>
                       )}
                       {post.media_url && post.media_type === 'Video' && (
-                        <video src={post.media_url} muted playsInline autoPlay loop />
+                        <PostMediaContainer
+                          mediaUrl={post.media_url}
+                          mediaType="Video"
+                          figureClassName="trending-card-media-wrap"
+                          videoWrapClassName="trending-card-media-wrap-video"
+                          videoAttrs={{ muted: true, playsInline: true, autoPlay: true, loop: true }}
+                          as="div"
+                        >
+                          {post.required_tier && (
+                            <span
+                              className={`trending-card-lock${hasAccess ? ' trending-card-lock-unlocked' : ''}`}
+                              aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
+                              title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
+                            >
+                              {hasAccess ? <UnlockIcon /> : <LockIcon />}
+                            </span>
+                          )}
+                        </PostMediaContainer>
                       )}
-                      {post.media_url && post.media_type === 'Audio' && (
-                        <div style={{ padding: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>Audio</div>
-                      )}
-                      {!post.media_url && (
-                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                          {mediaTypeLabel ?? 'Post'}
+                      {(post.media_type === 'Audio' || !post.media_url) && (
+                        <div className={`trending-card-media-wrap${post.media_type === 'Audio' ? ' trending-card-media-audio' : ''}`}>
+                          {post.media_url && post.media_type === 'Audio' && (
+                            <div style={{ padding: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>Audio</div>
+                          )}
+                          {!post.media_url && (
+                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                              {mediaTypeLabel ?? 'Post'}
+                            </div>
+                          )}
+                          {post.required_tier && (
+                            <span
+                              className={`trending-card-lock${hasAccess ? ' trending-card-lock-unlocked' : ''}`}
+                              aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
+                              title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
+                            >
+                              {hasAccess ? <UnlockIcon /> : <LockIcon />}
+                            </span>
+                          )}
                         </div>
                       )}
-                      {post.required_tier && (
-                        <span
-                          className={`trending-card-lock${hasAccess ? ' trending-card-lock-unlocked' : ''}`}
-                          aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
-                          title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
-                        >
-                          {hasAccess ? <UnlockIcon /> : <LockIcon />}
-                        </span>
-                      )}
-                    </div>
                     <div className="trending-card-body">
                       <h3 className="trending-card-title">{post.title}</h3>
                       {post.excerpt && (
