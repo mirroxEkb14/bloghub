@@ -372,6 +372,7 @@ export default function ExplorePage() {
                           figureClassName="trending-card-media-wrap"
                           videoWrapClassName="trending-card-media-wrap-video"
                           as="div"
+                          mediaBlurClassName={post.required_tier && !hasAccess ? 'trending-card-media-blur' : undefined}
                         >
                           {post.required_tier && (
                             <span
@@ -392,6 +393,7 @@ export default function ExplorePage() {
                           videoWrapClassName="trending-card-media-wrap-video"
                           videoAttrs={{ muted: true, playsInline: true, autoPlay: true, loop: true }}
                           as="div"
+                          mediaBlurClassName={post.required_tier && !hasAccess ? 'trending-card-media-blur' : undefined}
                         >
                           {post.required_tier && (
                             <span

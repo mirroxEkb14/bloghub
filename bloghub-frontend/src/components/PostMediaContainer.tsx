@@ -10,6 +10,7 @@ type PostMediaContainerProps = {
   videoAttrs?: React.ComponentPropsWithoutRef<'video'>;
   as?: 'figure' | 'div';
   children?: React.ReactNode;
+  mediaBlurClassName?: string;
 };
 
 export default function PostMediaContainer({
@@ -20,6 +21,7 @@ export default function PostMediaContainer({
   videoAttrs = {},
   as: Wrapper = 'figure',
   children,
+  mediaBlurClassName,
 }: PostMediaContainerProps) {
   const [aspectRatio, setAspectRatio] = useState<string>('16 / 9');
 
@@ -51,17 +53,10 @@ export default function PostMediaContainer({
     [applyRatio]
   );
 
-  if (mediaType === 'Image' || mediaType === 'Gif') {
-    return (
-      <Wrapper className={figureClassName} style={{ aspectRatio }}>
-        <img src={mediaUrl} alt="" onLoad={handleImageLoad} />
-        {children}
-      </Wrapper>
-    );
-  }
-
-  return (
-    <Wrapper className={figureClassName} style={{ aspectRatio }}>
+  const mediaContent =
+    mediaType === 'Image' || mediaType === 'Gif' ? (
+      <img src={mediaUrl} alt="" onLoad={handleImageLoad} />
+    ) : (
       <div className={videoWrapClassName}>
         <video
           src={mediaUrl}
@@ -69,6 +64,17 @@ export default function PostMediaContainer({
           onLoadedMetadata={handleVideoLoadedMetadata}
         />
       </div>
+    );
+
+  const wrappedMedia = mediaBlurClassName ? (
+    <div className={mediaBlurClassName}>{mediaContent}</div>
+  ) : (
+    mediaContent
+  );
+
+  return (
+    <Wrapper className={figureClassName} style={{ aspectRatio }}>
+      {wrappedMedia}
       {children}
     </Wrapper>
   );

@@ -291,6 +291,21 @@
   background: var(--bg-input);
 }
 
+.trending-card-media-blur {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  filter: blur(4px);
+}
+
+.trending-card-media-blur img,
+.trending-card-media-blur .trending-card-media-wrap-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
 .trending-card-media-wrap.trending-card-media-audio {
   aspect-ratio: auto;
   min-height: 48px;
