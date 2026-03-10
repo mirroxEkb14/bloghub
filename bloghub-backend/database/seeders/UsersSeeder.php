@@ -15,18 +15,19 @@ class UsersSeeder extends Seeder
     private const FIXTURES_AVATARS = 'database/seeders/fixtures/avatars';
 
     private const STORAGE_AVATAR_DIR = 'users/avatars';
+
     private const SEED_USERS = [
-        ['name' => 'Fox Mulder', 'username' => 'trust_no1', 'email' => 'trust_no1@gmail.com', 'is_creator' => true],
-        ['name' => 'Dana Scully', 'username' => 'queequeg', 'email' => 'queequeg@gmail.com', 'is_creator' => true],
-        ['name' => 'Gordon Freeman', 'username' => 'blackmesa', 'email' => 'blackmesa@gmail.com', 'is_creator' => true],
-        ['name' => 'Gregory House', 'username' => 'ppth', 'email' => 'ppth@gmail.com', 'is_creator' => true],
-        ['name' => 'Caroline', 'username' => 'glados', 'email' => 'glados@gmail.com', 'is_creator' => true],
-        ['name' => 'Ellen Ripley', 'username' => 'nostromo', 'email' => 'nostromo@gmail.com', 'is_creator' => true],
-        ['name' => 'Maggie Rhee', 'username' => 'laurenCohan', 'email' => 'laurenCohan@gmail.com', 'is_creator' => true],
-        ['name' => 'Negan', 'username' => 'jeffreyDeanMorgan', 'email' => 'jeffreyDeanMorgan@gmail.com', 'is_creator' => true],
-        ['name' => 'Carl Johnson', 'username' => 'grove4life', 'email' => 'grove4life@gmail.com', 'is_creator' => false],
-        ['name' => 'Thomas A. Anderson', 'username' => 'neo', 'email' => 'neo@gmail.com', 'is_creator' => false],
-        ['name' => 'Tiffany Zion', 'username' => 'trinity', 'email' => 'trinity@gmail.com', 'is_creator' => false],
+        ['name' => 'Fox Mulder', 'username' => 'trust_no1', 'email' => 'trust_no1@gmail.com', 'is_creator' => true, 'phone' => '12025550141'],
+        ['name' => 'Dana Scully', 'username' => 'queequeg', 'email' => 'queequeg@gmail.com', 'is_creator' => true, 'phone' => '13015550142'],
+        ['name' => 'Gordon Freeman', 'username' => 'blackmesa', 'email' => 'blackmesa@gmail.com', 'is_creator' => true, 'phone' => '15055550143'],
+        ['name' => 'Gregory House', 'username' => 'ppth', 'email' => 'ppth@gmail.com', 'is_creator' => true, 'phone' => '16095550144'],
+        ['name' => 'Caroline', 'username' => 'glados', 'email' => 'glados@gmail.com', 'is_creator' => true, 'phone' => '13135550145'],
+        ['name' => 'Ellen Ripley', 'username' => 'nostromo', 'email' => 'nostromo@gmail.com', 'is_creator' => true, 'phone' => '15125550146'],
+        ['name' => 'Maggie Rhee', 'username' => 'laurenCohan', 'email' => 'laurenCohan@gmail.com', 'is_creator' => true, 'phone' => '17035550147'],
+        ['name' => 'Negan', 'username' => 'jeffreyDeanMorgan', 'email' => 'jeffreyDeanMorgan@gmail.com', 'is_creator' => true, 'phone' => '15405550148'],
+        ['name' => 'Carl Johnson', 'username' => 'grove4life', 'email' => 'grove4life@gmail.com', 'is_creator' => false, 'phone' => '13235550149'],
+        ['name' => 'Thomas A. Anderson', 'username' => 'neo', 'email' => 'neo@gmail.com', 'is_creator' => false, 'phone' => '13125550150'],
+        ['name' => 'Tiffany Zion', 'username' => 'trinity', 'email' => 'trinity@gmail.com', 'is_creator' => false, 'phone' => '14155550151'],
     ];
 
     public function run(): void
@@ -54,7 +55,7 @@ class UsersSeeder extends Seeder
             [
                 'name' => 'Super Admin',
                 'username' => $superUsername,
-                'phone' => '7123456789',
+                'phone' => '77011234567',
                 'is_creator' => false,
                 'email_verified_at' => now(),
                 'terms_accepted_at' => now(),
@@ -68,7 +69,7 @@ class UsersSeeder extends Seeder
             [
                 'name' => 'Admin',
                 'username' => $adminUsername,
-                'phone' => '420987654321',
+                'phone' => '420732123456',
                 'is_creator' => false,
                 'email_verified_at' => now(),
                 'terms_accepted_at' => now(),
@@ -92,7 +93,7 @@ class UsersSeeder extends Seeder
                 [
                     'name' => $data['name'],
                     'username' => $data['username'],
-                    'phone' => '420'.str_pad((string) ($index + 1), 9, '0', STR_PAD_LEFT),
+                    'phone' => $data['phone'],
                     'is_creator' => $data['is_creator'],
                     'email_verified_at' => now(),
                     'terms_accepted_at' => now(),
