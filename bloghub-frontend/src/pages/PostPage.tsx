@@ -267,7 +267,7 @@ export default function PostPage() {
           {comments.map((c) => {
             const displayName = c.user?.name ?? c.user?.username ?? 'User';
             const initial = displayName.charAt(0).toUpperCase();
-            const avatarUrl = c.user?.avatar_url;
+            const avatarUrl = c.user?.creator_profile?.profile_avatar_url ?? c.user?.avatar_url;
             const creatorSlug = c.user?.creator_profile?.slug;
             const creatorHref = creatorSlug ? `/creator/${creatorSlug}` : null;
             return (
