@@ -14,7 +14,7 @@ class PostViewSeeder extends Seeder
 {
     private const PUBLIC_POST_VIEWS = [
         'Caroline' => [
-            'The Borealis: A Lesson in Spontaneous Relocation' => ['Gordon Freeman', 'Dana Scully', 'Fox Mulder', 'Thomas A. Anderson', 'Tiffany Zion'],
+            'The Borealis: A Lesson in Spontaneous Relocation' => ['Gordon Freeman', 'Dana Scully', 'Fox Mulder', 'Thomas A. Anderson', 'Trinity Zion'],
             'The Black Mesa Anomaly: A Study in Incompetence' => ['Ellen Ripley', 'Gordon Freeman', 'Maggie Rhee', 'Negan'],
         ],
         'Dana Scully' => [
@@ -29,10 +29,10 @@ class PostViewSeeder extends Seeder
             'The Blackwood Anomaly and the Texas Bio-Lobby' => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Gordon Freeman', 'Gregory House'],
         ],
         'Gordon Freeman' => [
-            "The Universal 'Combine' Union" => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder', 'Thomas A. Anderson', 'Tiffany Zion'],
+            "The Universal 'Combine' Union" => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder', 'Thomas A. Anderson', 'Trinity Zion'],
             '"Xenocrystal Bloom" - Sound Insight' => ['Caroline'],
             'Resonance Cascade Event – Video Insight' => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder'],
-            'Resonance Cascade Event' => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder', 'Gregory House', 'Maggie Rhee', 'Negan', 'Thomas A. Anderson', 'Tiffany Zion', 'Carl Johnson'],
+            'Resonance Cascade Event' => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder', 'Gregory House', 'Maggie Rhee', 'Negan', 'Thomas A. Anderson', 'Trinity Zion', 'Carl Johnson'],
         ],
         'Maggie Rhee' => [
             'From Survivor to Architect' => ['Gregory House', 'Negan'],

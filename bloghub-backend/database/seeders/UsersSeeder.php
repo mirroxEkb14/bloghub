@@ -27,7 +27,7 @@ class UsersSeeder extends Seeder
         ['name' => 'Negan', 'username' => 'jeffreyDeanMorgan', 'email' => 'jeffreyDeanMorgan@gmail.com', 'is_creator' => true, 'phone' => '15405550148'],
         ['name' => 'Carl Johnson', 'username' => 'grove4life', 'email' => 'grove4life@gmail.com', 'is_creator' => false, 'phone' => '13235550149'],
         ['name' => 'Thomas A. Anderson', 'username' => 'neo', 'email' => 'neo@gmail.com', 'is_creator' => false, 'phone' => '13125550150'],
-        ['name' => 'Tiffany Zion', 'username' => 'trinity', 'email' => 'trinity@gmail.com', 'is_creator' => false, 'phone' => '14155550151'],
+        ['name' => 'Trinity Zion', 'username' => 'trinity', 'email' => 'trinity@gmail.com', 'is_creator' => false, 'phone' => '14155550151'],
     ];
 
     public function run(): void
