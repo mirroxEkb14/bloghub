@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import useEmblaCarousel from 'embla-carousel-react';
 import {
   creatorProfilesApi,
   exploreApi,
@@ -11,77 +12,33 @@ import {
 import LoadingPage from '../components/LoadingPage';
 import PostMediaContainer from '../components/PostMediaContainer';
 
-function useHorizontalDragScroll(opts?: { infinite?: boolean }) {
-  const ref = useRef<HTMLUListElement>(null);
+const EMBLA_OPTS = { loop: true, align: 'start' as const, axis: 'x' as const, dragFree: false };
+
+function useEmblaClickGuard(emblaApi: ReturnType<typeof useEmblaCarousel>[1]) {
   const didDragRef = useRef(false);
-  const startXRef = useRef(0);
-  const startScrollRef = useRef(0);
-  const infinite = opts?.infinite === true;
+  const pointerDownRef = useRef(false);
 
-  const onMouseDown = useCallback((e: React.MouseEvent<HTMLUListElement>) => {
-    if (e.button !== 0) return;
-    const el = ref.current;
-    if (!el) return;
-    if (!el.contains(e.target as Node)) return;
-    if ((e.target as HTMLElement).closest('a')) return;
-    e.preventDefault();
-    didDragRef.current = false;
-    startXRef.current = e.clientX;
-    startScrollRef.current = el.scrollLeft;
-
-    el.classList.add('is-dragging');
-    const pid = (e.nativeEvent as MouseEvent & { pointerId?: number }).pointerId;
-    if (typeof pid === 'number' && el.setPointerCapture) {
-      try {
-        el.setPointerCapture(pid);
-      } catch {
-        // ignore
-      }
-    }
-
-    const onMove = (moveEvent: MouseEvent) => {
-      if ((moveEvent.buttons & 1) === 0) {
-        onUp();
-        return;
-      }
-      const dx = startXRef.current - moveEvent.clientX;
-      if (Math.abs(dx) > 3) didDragRef.current = true;
-      let next = startScrollRef.current + dx;
-      if (infinite) {
-        const half = el.scrollWidth / 2;
-        const maxScroll = half - el.clientWidth;
-        if (next < 0) {
-          el.scrollLeft = maxScroll;
-          startScrollRef.current = el.scrollLeft;
-          startXRef.current = moveEvent.clientX;
-          return;
-        }
-        if (next > el.scrollWidth - el.clientWidth) {
-          el.scrollLeft = Math.min(maxScroll, next - half);
-          startScrollRef.current = el.scrollLeft;
-          startXRef.current = moveEvent.clientX;
-          return;
-        }
-      } else {
-        next = Math.max(0, next);
-      }
-      el.scrollLeft = next;
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onPointerDown = () => {
+      pointerDownRef.current = true;
+      didDragRef.current = false;
     };
-    const onUp = () => {
-      el.classList.remove('is-dragging');
-      if (typeof pid === 'number' && el.releasePointerCapture) {
-        try {
-          el.releasePointerCapture(pid);
-        } catch {
-          // ignore
-        }
-      }
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp);
+    const onScroll = () => {
+      if (pointerDownRef.current) didDragRef.current = true;
     };
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
-  }, []);
+    const onPointerUp = () => {
+      pointerDownRef.current = false;
+    };
+    emblaApi.on('pointerDown', onPointerDown);
+    emblaApi.on('scroll', onScroll);
+    emblaApi.on('pointerUp', onPointerUp);
+    return () => {
+      emblaApi.off('pointerDown', onPointerDown);
+      emblaApi.off('scroll', onScroll);
+      emblaApi.off('pointerUp', onPointerUp);
+    };
+  }, [emblaApi]);
 
   const onClickCapture = useCallback((e: React.MouseEvent) => {
     if (didDragRef.current) {
@@ -91,7 +48,7 @@ function useHorizontalDragScroll(opts?: { infinite?: boolean }) {
     }
   }, []);
 
-  return { ref, onMouseDown, onClickCapture };
+  return onClickCapture;
 }
 
 const TAG_PARAM = 'tag';
@@ -143,53 +100,10 @@ export default function ExplorePage() {
   const scrollToPaginationAfterLoadRef = useRef(false);
   const browsePaginationRef = useRef<HTMLDivElement | null>(null);
 
-  const dragPopular = useHorizontalDragScroll({ infinite: true });
-  const dragTrending = useHorizontalDragScroll({ infinite: true });
-  const wrapInProgressRef = useRef(false);
-
-  useEffect(() => {
-    const popularEl = dragPopular.ref.current;
-    const trendingEl = dragTrending.ref.current;
-    const wrap = (el: HTMLUListElement | null) => {
-      if (!el || wrapInProgressRef.current) return;
-      const half = el.scrollWidth / 2;
-      if (el.scrollLeft >= half) {
-        wrapInProgressRef.current = true;
-        el.scrollLeft -= half;
-        requestAnimationFrame(() => {
-          wrapInProgressRef.current = false;
-        });
-      }
-    };
-    const onPopularScroll = () => wrap(dragPopular.ref.current);
-    const onTrendingScroll = () => wrap(dragTrending.ref.current);
-    const onPopularWheel = (e: WheelEvent) => {
-      const el = dragPopular.ref.current;
-      if (!el || el.scrollLeft > 0) return;
-      const delta = e.deltaX || e.deltaY;
-      if (delta > 0) {
-        el.scrollLeft = el.scrollWidth / 2 - el.clientWidth;
-      }
-    };
-    const onTrendingWheel = (e: WheelEvent) => {
-      const el = dragTrending.ref.current;
-      if (!el || el.scrollLeft > 0) return;
-      const delta = e.deltaX || e.deltaY;
-      if (delta > 0) {
-        el.scrollLeft = el.scrollWidth / 2 - el.clientWidth;
-      }
-    };
-    popularEl?.addEventListener('scroll', onPopularScroll);
-    trendingEl?.addEventListener('scroll', onTrendingScroll);
-    popularEl?.addEventListener('wheel', onPopularWheel, { passive: true });
-    trendingEl?.addEventListener('wheel', onTrendingWheel, { passive: true });
-    return () => {
-      popularEl?.removeEventListener('scroll', onPopularScroll);
-      trendingEl?.removeEventListener('scroll', onTrendingScroll);
-      popularEl?.removeEventListener('wheel', onPopularWheel);
-      trendingEl?.removeEventListener('wheel', onTrendingWheel);
-    };
-  }, [loadingPopular, loadingTrending]);
+  const [emblaPopularRef, emblaPopularApi] = useEmblaCarousel(EMBLA_OPTS);
+  const [emblaTrendingRef, emblaTrendingApi] = useEmblaCarousel(EMBLA_OPTS);
+  const popularClickCapture = useEmblaClickGuard(emblaPopularApi);
+  const trendingClickCapture = useEmblaClickGuard(emblaTrendingApi);
 
   useEffect(() => {
     const y = sessionStorage.getItem(EXPLORE_SCROLL_KEY);
@@ -345,15 +259,11 @@ export default function ExplorePage() {
           <h2 className="explore-section-title">
             Popular creators <span className="explore-section-title-note">(by active subscribers)</span>
           </h2>
-          <ul
-            ref={dragPopular.ref}
-            className="creator-grid creator-grid-row"
-            onMouseDown={dragPopular.onMouseDown}
-            onClickCapture={dragPopular.onClickCapture}
-          >
-            {[...popularCreators, ...popularCreators].map((profile, index) => (
-              <li key={`popular-${profile.id}-${index}`}>
-                <div className="creator-card">
+          <div className="embla explore-embla-creators" ref={emblaPopularRef} onClickCapture={popularClickCapture}>
+            <div className="embla__container creator-grid-row">
+              {popularCreators.map((profile) => (
+                <div key={profile.id} className="embla__slide creator-grid-slide">
+                  <div className="creator-card">
                   <div
                     className="creator-card-cover"
                     style={
@@ -403,9 +313,10 @@ export default function ExplorePage() {
                     </span>
                   </div>
                 </div>
-              </li>
-            ))}
-          </ul>
+              </div>
+              ))}
+            </div>
+          </div>
         </section>
       ) : null}
 
@@ -419,13 +330,9 @@ export default function ExplorePage() {
           <h2 className="explore-section-title">
             Trending posts <span className="explore-section-title-note">(last 30 days)</span>
           </h2>
-          <ul
-            ref={dragTrending.ref}
-            className="trending-grid"
-            onMouseDown={dragTrending.onMouseDown}
-            onClickCapture={dragTrending.onClickCapture}
-          >
-            {[...trendingPosts, ...trendingPosts].map((post, index) => {
+          <div className="embla explore-embla-trending" ref={emblaTrendingRef} onClickCapture={trendingClickCapture}>
+            <div className="embla__container trending-grid">
+              {trendingPosts.map((post) => {
               const creatorSlug = post.creator_profile?.slug ?? '';
               const hasAccess = post.user_has_access !== false;
               const href = hasAccess && creatorSlug
@@ -436,7 +343,7 @@ export default function ExplorePage() {
               const mediaTypeLabel = post.media_type ? MEDIA_TYPE_LABELS[post.media_type] ?? post.media_type : null;
               const profileHref = creatorSlug ? `/creator/${creatorSlug}` : '#';
               return (
-                <li key={`trending-${post.id}-${index}`}>
+                <div key={post.id} className="embla__slide trending-grid-slide">
                   <div
                     className="trending-card"
                     onClick={(e) => {
@@ -532,10 +439,11 @@ export default function ExplorePage() {
                       </div>
                     )}
                   </div>
-                </li>
+                </div>
               );
             })}
-          </ul>
+            </div>
+          </div>
         </section>
       ) : null}
 
