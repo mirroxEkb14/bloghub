@@ -176,6 +176,14 @@
   white-space: nowrap;
 }
 
+.creator-card-name-link {
+  color: inherit;
+  text-decoration: none;
+}
+.creator-card-name-link:hover {
+  text-decoration: underline;
+}
+
 .creator-card-username {
   display: block;
   font-size: 0.85rem;
@@ -263,6 +271,7 @@
   flex: 0 0 260px;
   min-width: 260px;
   scroll-snap-align: start;
+  pointer-events: auto;
 }
 .trending-grid.is-dragging > li {
   scroll-snap-align: none;
@@ -383,6 +392,14 @@
   overflow: hidden;
 }
 
+.trending-card-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+.trending-card-title-link:hover {
+  text-decoration: underline;
+}
+
 .trending-card-excerpt {
   margin: 0;
   font-size: 0.8rem;
@@ -394,8 +411,17 @@
   overflow: hidden;
 }
 
+.trending-card-creator-wrap {
+  padding: 0 1rem 0.75rem;
+}
+
 .trending-card-creator {
-  margin-top: 0.5rem;
+  margin: 0;
   font-size: 0.8rem;
   color: var(--text-muted);
+  text-decoration: none;
+}
+.trending-card-creator:hover {
+  text-decoration: underline;
+  color: var(--text-secondary);
 }

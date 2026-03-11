@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   creatorProfilesApi,
   exploreApi,
@@ -11,17 +11,20 @@ import {
 import LoadingPage from '../components/LoadingPage';
 import PostMediaContainer from '../components/PostMediaContainer';
 
-function useHorizontalDragScroll() {
+function useHorizontalDragScroll(opts?: { infinite?: boolean }) {
   const ref = useRef<HTMLUListElement>(null);
   const didDragRef = useRef(false);
   const startXRef = useRef(0);
   const startScrollRef = useRef(0);
+  const infinite = opts?.infinite === true;
 
   const onMouseDown = useCallback((e: React.MouseEvent<HTMLUListElement>) => {
     if (e.button !== 0) return;
     const el = ref.current;
     if (!el) return;
     if (!el.contains(e.target as Node)) return;
+    if ((e.target as HTMLElement).closest('a')) return;
+    e.preventDefault();
     didDragRef.current = false;
     startXRef.current = e.clientX;
     startScrollRef.current = el.scrollLeft;
@@ -43,7 +46,26 @@ function useHorizontalDragScroll() {
       }
       const dx = startXRef.current - moveEvent.clientX;
       if (Math.abs(dx) > 3) didDragRef.current = true;
-      el.scrollLeft = Math.max(0, startScrollRef.current + dx);
+      let next = startScrollRef.current + dx;
+      if (infinite) {
+        const half = el.scrollWidth / 2;
+        const maxScroll = half - el.clientWidth;
+        if (next < 0) {
+          el.scrollLeft = maxScroll;
+          startScrollRef.current = el.scrollLeft;
+          startXRef.current = moveEvent.clientX;
+          return;
+        }
+        if (next > el.scrollWidth - el.clientWidth) {
+          el.scrollLeft = Math.min(maxScroll, next - half);
+          startScrollRef.current = el.scrollLeft;
+          startXRef.current = moveEvent.clientX;
+          return;
+        }
+      } else {
+        next = Math.max(0, next);
+      }
+      el.scrollLeft = next;
     };
     const onUp = () => {
       el.classList.remove('is-dragging');
@@ -100,6 +122,7 @@ function UnlockIcon() {
 }
 
 export default function ExplorePage() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const tagFromUrl = searchParams.get(TAG_PARAM);
 
@@ -120,8 +143,53 @@ export default function ExplorePage() {
   const scrollToPaginationAfterLoadRef = useRef(false);
   const browsePaginationRef = useRef<HTMLDivElement | null>(null);
 
-  const dragPopular = useHorizontalDragScroll();
-  const dragTrending = useHorizontalDragScroll();
+  const dragPopular = useHorizontalDragScroll({ infinite: true });
+  const dragTrending = useHorizontalDragScroll({ infinite: true });
+  const wrapInProgressRef = useRef(false);
+
+  useEffect(() => {
+    const popularEl = dragPopular.ref.current;
+    const trendingEl = dragTrending.ref.current;
+    const wrap = (el: HTMLUListElement | null) => {
+      if (!el || wrapInProgressRef.current) return;
+      const half = el.scrollWidth / 2;
+      if (el.scrollLeft >= half) {
+        wrapInProgressRef.current = true;
+        el.scrollLeft -= half;
+        requestAnimationFrame(() => {
+          wrapInProgressRef.current = false;
+        });
+      }
+    };
+    const onPopularScroll = () => wrap(dragPopular.ref.current);
+    const onTrendingScroll = () => wrap(dragTrending.ref.current);
+    const onPopularWheel = (e: WheelEvent) => {
+      const el = dragPopular.ref.current;
+      if (!el || el.scrollLeft > 0) return;
+      const delta = e.deltaX || e.deltaY;
+      if (delta > 0) {
+        el.scrollLeft = el.scrollWidth / 2 - el.clientWidth;
+      }
+    };
+    const onTrendingWheel = (e: WheelEvent) => {
+      const el = dragTrending.ref.current;
+      if (!el || el.scrollLeft > 0) return;
+      const delta = e.deltaX || e.deltaY;
+      if (delta > 0) {
+        el.scrollLeft = el.scrollWidth / 2 - el.clientWidth;
+      }
+    };
+    popularEl?.addEventListener('scroll', onPopularScroll);
+    trendingEl?.addEventListener('scroll', onTrendingScroll);
+    popularEl?.addEventListener('wheel', onPopularWheel, { passive: true });
+    trendingEl?.addEventListener('wheel', onTrendingWheel, { passive: true });
+    return () => {
+      popularEl?.removeEventListener('scroll', onPopularScroll);
+      trendingEl?.removeEventListener('scroll', onTrendingScroll);
+      popularEl?.removeEventListener('wheel', onPopularWheel);
+      trendingEl?.removeEventListener('wheel', onTrendingWheel);
+    };
+  }, [loadingPopular, loadingTrending]);
 
   useEffect(() => {
     const y = sessionStorage.getItem(EXPLORE_SCROLL_KEY);
@@ -283,9 +351,9 @@ export default function ExplorePage() {
             onMouseDown={dragPopular.onMouseDown}
             onClickCapture={dragPopular.onClickCapture}
           >
-            {popularCreators.map((profile) => (
-              <li key={profile.id}>
-                <Link to={`/creator/${profile.slug}`} className="creator-card">
+            {[...popularCreators, ...popularCreators].map((profile, index) => (
+              <li key={`popular-${profile.id}-${index}`}>
+                <div className="creator-card">
                   <div
                     className="creator-card-cover"
                     style={
@@ -306,7 +374,11 @@ export default function ExplorePage() {
                         {profile.display_name?.charAt(0)?.toUpperCase() ?? '?'}
                       </div>
                     )}
-                    <h3 className="creator-card-name">{profile.display_name}</h3>
+                    <h3 className="creator-card-name">
+                      <Link to={`/creator/${profile.slug}`} className="creator-card-name-link">
+                        {profile.display_name}
+                      </Link>
+                    </h3>
                     {profile.user?.username && (
                       <span className="creator-card-username">@{profile.user.username}</span>
                     )}
@@ -330,7 +402,7 @@ export default function ExplorePage() {
                           : null}
                     </span>
                   </div>
-                </Link>
+                </div>
               </li>
             ))}
           </ul>
@@ -353,7 +425,7 @@ export default function ExplorePage() {
             onMouseDown={dragTrending.onMouseDown}
             onClickCapture={dragTrending.onClickCapture}
           >
-            {trendingPosts.map((post) => {
+            {[...trendingPosts, ...trendingPosts].map((post, index) => {
               const creatorSlug = post.creator_profile?.slug ?? '';
               const hasAccess = post.user_has_access !== false;
               const href = hasAccess && creatorSlug
@@ -362,81 +434,104 @@ export default function ExplorePage() {
                   ? `/creator/${creatorSlug}#profile-tiers`
                   : '#';
               const mediaTypeLabel = post.media_type ? MEDIA_TYPE_LABELS[post.media_type] ?? post.media_type : null;
+              const profileHref = creatorSlug ? `/creator/${creatorSlug}` : '#';
               return (
-                <li key={post.id}>
-                  <Link to={href} className="trending-card">
+                <li key={`trending-${post.id}-${index}`}>
+                  <div
+                    className="trending-card"
+                    onClick={(e) => {
+                      if ((e.target as HTMLElement).closest('a')) return;
+                      if (href !== '#') navigate(href);
+                    }}
+                  >
                     {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
-                        <PostMediaContainer
-                          mediaUrl={post.media_url}
-                          mediaType={post.media_type}
-                          figureClassName="trending-card-media-wrap"
-                          videoWrapClassName="trending-card-media-wrap-video"
-                          as="div"
-                          mediaBlurClassName={post.required_tier && !hasAccess ? 'trending-card-media-blur' : undefined}
-                        >
-                          {post.required_tier && (
-                            <span
-                              className={`trending-card-lock${hasAccess ? ' trending-card-lock-unlocked' : ''}`}
-                              aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
-                              title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
-                            >
-                              {hasAccess ? <UnlockIcon /> : <LockIcon />}
-                            </span>
-                          )}
-                        </PostMediaContainer>
-                      )}
-                      {post.media_url && post.media_type === 'Video' && (
-                        <PostMediaContainer
-                          mediaUrl={post.media_url}
-                          mediaType="Video"
-                          figureClassName="trending-card-media-wrap"
-                          videoWrapClassName="trending-card-media-wrap-video"
-                          videoAttrs={{ muted: true, playsInline: true, autoPlay: true, loop: true }}
-                          as="div"
-                          mediaBlurClassName={post.required_tier && !hasAccess ? 'trending-card-media-blur' : undefined}
-                        >
-                          {post.required_tier && (
-                            <span
-                              className={`trending-card-lock${hasAccess ? ' trending-card-lock-unlocked' : ''}`}
-                              aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
-                              title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
-                            >
-                              {hasAccess ? <UnlockIcon /> : <LockIcon />}
-                            </span>
-                          )}
-                        </PostMediaContainer>
-                      )}
-                      {(post.media_type === 'Audio' || !post.media_url) && (
-                        <div className={`trending-card-media-wrap${post.media_type === 'Audio' ? ' trending-card-media-audio' : ''}`}>
-                          {post.media_url && post.media_type === 'Audio' && (
-                            <div style={{ padding: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>Audio</div>
-                          )}
-                          {!post.media_url && (
-                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                              {mediaTypeLabel ?? 'Post'}
-                            </div>
-                          )}
-                          {post.required_tier && (
-                            <span
-                              className={`trending-card-lock${hasAccess ? ' trending-card-lock-unlocked' : ''}`}
-                              aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
-                              title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
-                            >
-                              {hasAccess ? <UnlockIcon /> : <LockIcon />}
-                            </span>
-                          )}
-                        </div>
-                      )}
+                      <PostMediaContainer
+                        mediaUrl={post.media_url}
+                        mediaType={post.media_type}
+                        figureClassName="trending-card-media-wrap"
+                        videoWrapClassName="trending-card-media-wrap-video"
+                        as="div"
+                        mediaBlurClassName={post.required_tier && !hasAccess ? 'trending-card-media-blur' : undefined}
+                      >
+                        {post.required_tier && (
+                          <span
+                            className={`trending-card-lock${hasAccess ? ' trending-card-lock-unlocked' : ''}`}
+                            aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
+                            title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
+                          >
+                            {hasAccess ? <UnlockIcon /> : <LockIcon />}
+                          </span>
+                        )}
+                      </PostMediaContainer>
+                    )}
+                    {post.media_url && post.media_type === 'Video' && (
+                      <PostMediaContainer
+                        mediaUrl={post.media_url}
+                        mediaType="Video"
+                        figureClassName="trending-card-media-wrap"
+                        videoWrapClassName="trending-card-media-wrap-video"
+                        videoAttrs={{ muted: true, playsInline: true, autoPlay: true, loop: true }}
+                        as="div"
+                        mediaBlurClassName={post.required_tier && !hasAccess ? 'trending-card-media-blur' : undefined}
+                      >
+                        {post.required_tier && (
+                          <span
+                            className={`trending-card-lock${hasAccess ? ' trending-card-lock-unlocked' : ''}`}
+                            aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
+                            title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
+                          >
+                            {hasAccess ? <UnlockIcon /> : <LockIcon />}
+                          </span>
+                        )}
+                      </PostMediaContainer>
+                    )}
+                    {(post.media_type === 'Audio' || !post.media_url) && (
+                      <div className={`trending-card-media-wrap${post.media_type === 'Audio' ? ' trending-card-media-audio' : ''}`}>
+                        {post.media_url && post.media_type === 'Audio' && (
+                          <div style={{ padding: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>Audio</div>
+                        )}
+                        {!post.media_url && (
+                          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                            {mediaTypeLabel ?? 'Post'}
+                          </div>
+                        )}
+                        {post.required_tier && (
+                          <span
+                            className={`trending-card-lock${hasAccess ? ' trending-card-lock-unlocked' : ''}`}
+                            aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
+                            title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
+                          >
+                            {hasAccess ? <UnlockIcon /> : <LockIcon />}
+                          </span>
+                        )}
+                      </div>
+                    )}
                     <div className="trending-card-body">
-                      <h3 className="trending-card-title">{post.title}</h3>
+                      <h3 className="trending-card-title">
+                        {href !== '#' ? (
+                          <Link to={href} className="trending-card-title-link">
+                            {post.title}
+                          </Link>
+                        ) : (
+                          post.title
+                        )}
+                      </h3>
                       {post.excerpt && (
                         <p className="trending-card-excerpt">{post.excerpt}</p>
                       )}
-                      {post.creator_profile && (
-                        <span className="trending-card-creator">{post.creator_profile.display_name}</span>
-                      )}
                     </div>
-                  </Link>
+                    {post.creator_profile && (
+                      <div className="trending-card-creator-wrap">
+                        {creatorSlug ? (
+                          <Link to={profileHref} className="trending-card-creator">
+                            {post.creator_profile.display_name}
+                          </Link>
+                        ) : (
+                          <span className="trending-card-creator">{post.creator_profile.display_name}</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </li>
               );
             })}
