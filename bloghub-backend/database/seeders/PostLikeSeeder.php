@@ -13,10 +13,10 @@ class PostLikeSeeder extends Seeder
 {
     private const LIKES_BY_CREATOR = [
         'Caroline' => [
-            'The Borealis: A Lesson in Spontaneous Relocation' => ['Gordon Freeman', 'Fox Mulder', 'Thomas A. Anderson', 'Tiffany Zion'],
+            'The Borealis: A Lesson in Spontaneous Relocation' => ['Gordon Freeman', 'Fox Mulder', 'Thomas A. Anderson', 'Trinity Zion'],
             'The Black Mesa Anomaly: A Study in Incompetence' => ['Gordon Freeman', 'Ellen Ripley'],
             'The Cake: A Non-Existent Incentive' => null,
-            'The Iterative Soul: From Caroline to Core' => ['Tiffany Zion'],
+            'The Iterative Soul: From Caroline to Core' => ['Trinity Zion'],
             'The Aperture Science Handheld Portal Device' => ['Gordon Freeman'],
         ],
         'Dana Scully' => [
@@ -31,13 +31,13 @@ class PostLikeSeeder extends Seeder
         ],
         'Fox Mulder' => [
             'The Blackwood Anomaly and the Texas Bio-Lobby' => ['Dana Scully', 'Ellen Ripley'],
-            'The Mechanics of Abduction and Lost Time' => ['Thomas A. Anderson', 'Tiffany Zion', 'Dana Scully'],
+            'The Mechanics of Abduction and Lost Time' => ['Thomas A. Anderson', 'Trinity Zion', 'Dana Scully'],
         ],
         'Gordon Freeman' => [
-            "The Universal 'Combine' Union" => ['Caroline', 'Dana Scully', 'Fox Mulder', 'Thomas A. Anderson', 'Tiffany Zion'],
+            "The Universal 'Combine' Union" => ['Caroline', 'Dana Scully', 'Fox Mulder', 'Thomas A. Anderson', 'Trinity Zion'],
             '"Xenocrystal Bloom" - Sound Insight' => ['Caroline'],
             'Resonance Cascade Event – Video Insight' => ['Caroline'],
-            'Resonance Cascade Event' => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder', 'Gregory House', 'Maggie Rhee', 'Negan', 'Thomas A. Anderson', 'Tiffany Zion', 'Carl Johnson'],
+            'Resonance Cascade Event' => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder', 'Gregory House', 'Maggie Rhee', 'Negan', 'Thomas A. Anderson', 'Trinity Zion', 'Carl Johnson'],
             'Borderworld Xen' => ['Carl Johnson', 'Maggie Rhee', 'Negan', 'Fox Mulder', 'Dana Scully', 'Ellen Ripley'],
         ],
         'Maggie Rhee' => [

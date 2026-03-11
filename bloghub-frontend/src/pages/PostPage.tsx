@@ -4,6 +4,7 @@ import { ApiError, commentsApi, postsApi, type Comment, type Post } from '../api
 import { useAuth } from '../contexts/AuthContext';
 import LoadingPage from '../components/LoadingPage';
 import PostContent from '../components/PostContent';
+import PostMediaContainer from '../components/PostMediaContainer';
 import { formatDateTimeLocal } from '../utils/date';
 
 type SubscriptionRequiredBody = {
@@ -231,17 +232,25 @@ export default function PostPage() {
         </div>
       )}
       {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
-        <figure className="post-media post-media-image">
-          <img src={post.media_url} alt="" />
-        </figure>
+        <PostMediaContainer
+          mediaUrl={post.media_url}
+          mediaType={post.media_type}
+          figureClassName="post-media post-media-image"
+          videoWrapClassName="post-media-video-wrap"
+        />
       )}
-      {post.media_url && (post.media_type === 'Audio' || post.media_type === 'Video') && (
+      {post.media_url && post.media_type === 'Video' && (
+        <PostMediaContainer
+          mediaUrl={post.media_url}
+          mediaType="Video"
+          figureClassName="post-media"
+          videoWrapClassName="post-media-video-wrap"
+          videoAttrs={{ controls: true }}
+        />
+      )}
+      {post.media_url && post.media_type === 'Audio' && (
         <figure className="post-media">
-          {post.media_type === 'Video' ? (
-            <video src={post.media_url} controls />
-          ) : (
-            <audio src={post.media_url} controls />
-          )}
+          <audio src={post.media_url} controls />
         </figure>
       )}
       {post.content_text && (
@@ -267,7 +276,7 @@ export default function PostPage() {
           {comments.map((c) => {
             const displayName = c.user?.name ?? c.user?.username ?? 'User';
             const initial = displayName.charAt(0).toUpperCase();
-            const avatarUrl = c.user?.avatar_url;
+            const avatarUrl = c.user?.creator_profile?.profile_avatar_url ?? c.user?.avatar_url;
             const creatorSlug = c.user?.creator_profile?.slug;
             const creatorHref = creatorSlug ? `/creator/${creatorSlug}` : null;
             return (

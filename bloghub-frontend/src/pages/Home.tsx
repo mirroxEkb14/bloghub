@@ -4,6 +4,7 @@ import { feedApi, postsApi, type Post } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import LoadingPage from '../components/LoadingPage';
+import PostMediaContainer from '../components/PostMediaContainer';
 import { formatDateTimeLocal } from '../utils/date';
 import '../styles/public-feed.css';
 
@@ -374,18 +375,26 @@ export default function Home() {
                           </Link>
                           {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
                             <Link to={postUrl} onClick={() => saveHomeScroll(page)}>
-                              <figure className="post-card-media">
-                                <img src={post.media_url} alt="" />
-                              </figure>
+                              <PostMediaContainer
+                                mediaUrl={post.media_url}
+                                mediaType={post.media_type}
+                                figureClassName="post-card-media"
+                                videoWrapClassName="post-card-media-video-wrap"
+                              />
                             </Link>
                           )}
-                          {post.media_url && (post.media_type === 'Video' || post.media_type === 'Audio') && (
-                            <figure className={`post-card-media${post.media_type === 'Audio' ? ' post-card-media-audio' : ''}`}>
-                              {post.media_type === 'Video' ? (
-                                <video src={post.media_url} controls />
-                              ) : (
-                                <audio src={post.media_url} controls />
-                              )}
+                          {post.media_url && post.media_type === 'Video' && (
+                            <PostMediaContainer
+                              mediaUrl={post.media_url}
+                              mediaType="Video"
+                              figureClassName="post-card-media"
+                              videoWrapClassName="post-card-media-video-wrap"
+                              videoAttrs={{ controls: true }}
+                            />
+                          )}
+                          {post.media_url && post.media_type === 'Audio' && (
+                            <figure className="post-card-media post-card-media-audio">
+                              <audio src={post.media_url} controls />
                             </figure>
                           )}
                           {post.excerpt && (

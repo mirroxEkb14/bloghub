@@ -87,7 +87,7 @@ class PostCommentController extends Controller
         }
 
         $comments = $post->comments()
-            ->with(['user:id,name,username', 'user.creatorProfile:id,user_id,slug,profile_avatar_path'])
+            ->with(['user:id,name,username,avatar_path', 'user.creatorProfile:id,user_id,slug,profile_avatar_path'])
             ->orderBy('created_at')
             ->get();
 
@@ -137,7 +137,7 @@ class PostCommentController extends Controller
             'content_text' => $contentText,
         ]);
 
-        $comment->load(['user:id,name,username', 'user.creatorProfile:id,user_id,slug,profile_avatar_path']);
+        $comment->load(['user:id,name,username,avatar_path', 'user.creatorProfile:id,user_id,slug,profile_avatar_path']);
 
         return response()->json(['data' => $this->commentToArray($comment)]);
     }
@@ -155,11 +155,12 @@ class PostCommentController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'username' => $user->username,
-                'avatar_url' => $user->relationLoaded('creatorProfile') && $user->creatorProfile?->profile_avatar_path
-                    ? $user->creatorProfile->profile_avatar_url
-                    : null,
+                'avatar_url' => $user->getAvatarUrlAttribute(),
                 'creator_profile' => $user->relationLoaded('creatorProfile') && $user->creatorProfile
-                    ? ['slug' => $user->creatorProfile->slug]
+                    ? [
+                        'slug' => $user->creatorProfile->slug,
+                        'profile_avatar_url' => $user->creatorProfile->profile_avatar_url,
+                    ]
                     : null,
             ] : null,
         ];

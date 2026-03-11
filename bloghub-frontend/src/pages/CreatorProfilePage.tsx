@@ -16,6 +16,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import LoadingPage from '../components/LoadingPage';
+import PostMediaContainer from '../components/PostMediaContainer';
 import PostContent, { stripHtml } from '../components/PostContent';
 import { formatDateTimeLocal } from '../utils/date';
 
@@ -669,17 +670,25 @@ export default function CreatorProfilePage() {
                                   </button>
                                 </div>
                                 {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
-                                  <figure className="post-card-media">
-                                    <img src={post.media_url} alt="" />
-                                  </figure>
+                                  <PostMediaContainer
+                                    mediaUrl={post.media_url}
+                                    mediaType={post.media_type}
+                                    figureClassName="post-card-media"
+                                    videoWrapClassName="post-card-media-video-wrap"
+                                  />
                                 )}
-                                {post.media_url && (post.media_type === 'Video' || post.media_type === 'Audio') && (
-                                  <figure className={`post-card-media${post.media_type === 'Audio' ? ' post-card-media-audio' : ''}`}>
-                                    {post.media_type === 'Video' ? (
-                                      <video src={post.media_url} controls />
-                                    ) : (
-                                      <audio src={post.media_url} controls />
-                                    )}
+                                {post.media_url && post.media_type === 'Video' && (
+                                  <PostMediaContainer
+                                    mediaUrl={post.media_url}
+                                    mediaType="Video"
+                                    figureClassName="post-card-media"
+                                    videoWrapClassName="post-card-media-video-wrap"
+                                    videoAttrs={{ controls: true }}
+                                  />
+                                )}
+                                {post.media_url && post.media_type === 'Audio' && (
+                                  <figure className="post-card-media post-card-media-audio">
+                                    <audio src={post.media_url} controls />
                                   </figure>
                                 )}
                                 <footer className="post-card-footer">
@@ -1067,17 +1076,25 @@ export default function CreatorProfilePage() {
             </div>
             <div className="post-preview-body">
               {previewPost.media_url && (previewPost.media_type === 'Image' || previewPost.media_type === 'Gif') && (
-                <figure className="post-preview-media">
-                  <img src={previewPost.media_url} alt="" />
-                </figure>
+                <PostMediaContainer
+                  mediaUrl={previewPost.media_url}
+                  mediaType={previewPost.media_type}
+                  figureClassName="post-preview-media"
+                  videoWrapClassName="post-preview-media-video-wrap"
+                />
               )}
-              {previewPost.media_url && (previewPost.media_type === 'Audio' || previewPost.media_type === 'Video') && (
+              {previewPost.media_url && previewPost.media_type === 'Video' && (
+                <PostMediaContainer
+                  mediaUrl={previewPost.media_url}
+                  mediaType="Video"
+                  figureClassName="post-preview-media"
+                  videoWrapClassName="post-preview-media-video-wrap"
+                  videoAttrs={{ controls: true }}
+                />
+              )}
+              {previewPost.media_url && previewPost.media_type === 'Audio' && (
                 <figure className="post-preview-media">
-                  {previewPost.media_type === 'Video' ? (
-                    <video src={previewPost.media_url} controls />
-                  ) : (
-                    <audio src={previewPost.media_url} controls />
-                  )}
+                  <audio src={previewPost.media_url} controls />
                 </figure>
               )}
               {(previewPost.excerpt ?? previewPost.content_text) && (

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import useEmblaCarousel from 'embla-carousel-react';
 import {
   creatorProfilesApi,
   exploreApi,
@@ -9,56 +10,35 @@ import {
   type Tag,
 } from '../api/client';
 import LoadingPage from '../components/LoadingPage';
+import PostMediaContainer from '../components/PostMediaContainer';
 
-function useHorizontalDragScroll() {
-  const ref = useRef<HTMLUListElement>(null);
+const EMBLA_OPTS = { loop: true, align: 'start' as const, axis: 'x' as const, dragFree: false };
+
+function useEmblaClickGuard(emblaApi: ReturnType<typeof useEmblaCarousel>[1]) {
   const didDragRef = useRef(false);
-  const startXRef = useRef(0);
-  const startScrollRef = useRef(0);
+  const pointerDownRef = useRef(false);
 
-  const onMouseDown = useCallback((e: React.MouseEvent<HTMLUListElement>) => {
-    if (e.button !== 0) return;
-    const el = ref.current;
-    if (!el) return;
-    if (!el.contains(e.target as Node)) return;
-    didDragRef.current = false;
-    startXRef.current = e.clientX;
-    startScrollRef.current = el.scrollLeft;
-
-    el.classList.add('is-dragging');
-    const pid = (e.nativeEvent as MouseEvent & { pointerId?: number }).pointerId;
-    if (typeof pid === 'number' && el.setPointerCapture) {
-      try {
-        el.setPointerCapture(pid);
-      } catch {
-        // ignore
-      }
-    }
-
-    const onMove = (moveEvent: MouseEvent) => {
-      if ((moveEvent.buttons & 1) === 0) {
-        onUp();
-        return;
-      }
-      const dx = startXRef.current - moveEvent.clientX;
-      if (Math.abs(dx) > 3) didDragRef.current = true;
-      el.scrollLeft = Math.max(0, startScrollRef.current + dx);
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onPointerDown = () => {
+      pointerDownRef.current = true;
+      didDragRef.current = false;
     };
-    const onUp = () => {
-      el.classList.remove('is-dragging');
-      if (typeof pid === 'number' && el.releasePointerCapture) {
-        try {
-          el.releasePointerCapture(pid);
-        } catch {
-          // ignore
-        }
-      }
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp);
+    const onScroll = () => {
+      if (pointerDownRef.current) didDragRef.current = true;
     };
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
-  }, []);
+    const onPointerUp = () => {
+      pointerDownRef.current = false;
+    };
+    emblaApi.on('pointerDown', onPointerDown);
+    emblaApi.on('scroll', onScroll);
+    emblaApi.on('pointerUp', onPointerUp);
+    return () => {
+      emblaApi.off('pointerDown', onPointerDown);
+      emblaApi.off('scroll', onScroll);
+      emblaApi.off('pointerUp', onPointerUp);
+    };
+  }, [emblaApi]);
 
   const onClickCapture = useCallback((e: React.MouseEvent) => {
     if (didDragRef.current) {
@@ -68,7 +48,7 @@ function useHorizontalDragScroll() {
     }
   }, []);
 
-  return { ref, onMouseDown, onClickCapture };
+  return onClickCapture;
 }
 
 const TAG_PARAM = 'tag';
@@ -99,6 +79,7 @@ function UnlockIcon() {
 }
 
 export default function ExplorePage() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const tagFromUrl = searchParams.get(TAG_PARAM);
 
@@ -119,8 +100,10 @@ export default function ExplorePage() {
   const scrollToPaginationAfterLoadRef = useRef(false);
   const browsePaginationRef = useRef<HTMLDivElement | null>(null);
 
-  const dragPopular = useHorizontalDragScroll();
-  const dragTrending = useHorizontalDragScroll();
+  const [emblaPopularRef, emblaPopularApi] = useEmblaCarousel(EMBLA_OPTS);
+  const [emblaTrendingRef, emblaTrendingApi] = useEmblaCarousel(EMBLA_OPTS);
+  const popularClickCapture = useEmblaClickGuard(emblaPopularApi);
+  const trendingClickCapture = useEmblaClickGuard(emblaTrendingApi);
 
   useEffect(() => {
     const y = sessionStorage.getItem(EXPLORE_SCROLL_KEY);
@@ -276,15 +259,11 @@ export default function ExplorePage() {
           <h2 className="explore-section-title">
             Popular creators <span className="explore-section-title-note">(by active subscribers)</span>
           </h2>
-          <ul
-            ref={dragPopular.ref}
-            className="creator-grid creator-grid-row"
-            onMouseDown={dragPopular.onMouseDown}
-            onClickCapture={dragPopular.onClickCapture}
-          >
-            {popularCreators.map((profile) => (
-              <li key={profile.id}>
-                <Link to={`/creator/${profile.slug}`} className="creator-card">
+          <div className="embla explore-embla-creators" ref={emblaPopularRef} onClickCapture={popularClickCapture}>
+            <div className="embla__container creator-grid-row">
+              {popularCreators.map((profile) => (
+                <div key={profile.id} className="embla__slide creator-grid-slide">
+                  <div className="creator-card">
                   <div
                     className="creator-card-cover"
                     style={
@@ -305,7 +284,11 @@ export default function ExplorePage() {
                         {profile.display_name?.charAt(0)?.toUpperCase() ?? '?'}
                       </div>
                     )}
-                    <h3 className="creator-card-name">{profile.display_name}</h3>
+                    <h3 className="creator-card-name">
+                      <Link to={`/creator/${profile.slug}`} className="creator-card-name-link">
+                        {profile.display_name}
+                      </Link>
+                    </h3>
                     {profile.user?.username && (
                       <span className="creator-card-username">@{profile.user.username}</span>
                     )}
@@ -329,10 +312,11 @@ export default function ExplorePage() {
                           : null}
                     </span>
                   </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
+                </div>
+              </div>
+              ))}
+            </div>
+          </div>
         </section>
       ) : null}
 
@@ -346,13 +330,9 @@ export default function ExplorePage() {
           <h2 className="explore-section-title">
             Trending posts <span className="explore-section-title-note">(last 30 days)</span>
           </h2>
-          <ul
-            ref={dragTrending.ref}
-            className="trending-grid"
-            onMouseDown={dragTrending.onMouseDown}
-            onClickCapture={dragTrending.onClickCapture}
-          >
-            {trendingPosts.map((post) => {
+          <div className="embla explore-embla-trending" ref={emblaTrendingRef} onClickCapture={trendingClickCapture}>
+            <div className="embla__container trending-grid">
+              {trendingPosts.map((post) => {
               const creatorSlug = post.creator_profile?.slug ?? '';
               const hasAccess = post.user_has_access !== false;
               const href = hasAccess && creatorSlug
@@ -361,48 +341,109 @@ export default function ExplorePage() {
                   ? `/creator/${creatorSlug}#profile-tiers`
                   : '#';
               const mediaTypeLabel = post.media_type ? MEDIA_TYPE_LABELS[post.media_type] ?? post.media_type : null;
+              const profileHref = creatorSlug ? `/creator/${creatorSlug}` : '#';
               return (
-                <li key={post.id}>
-                  <Link to={href} className="trending-card">
-                    <div className={`trending-card-media-wrap${post.media_type === 'Audio' ? ' trending-card-media-audio' : ''}`}>
-                      {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
-                        <img src={post.media_url} alt="" />
-                      )}
-                      {post.media_url && post.media_type === 'Video' && (
-                        <video src={post.media_url} muted playsInline autoPlay loop />
-                      )}
-                      {post.media_url && post.media_type === 'Audio' && (
-                        <div style={{ padding: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>Audio</div>
-                      )}
-                      {!post.media_url && (
-                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                          {mediaTypeLabel ?? 'Post'}
-                        </div>
-                      )}
-                      {post.required_tier && (
-                        <span
-                          className={`trending-card-lock${hasAccess ? ' trending-card-lock-unlocked' : ''}`}
-                          aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
-                          title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
-                        >
-                          {hasAccess ? <UnlockIcon /> : <LockIcon />}
-                        </span>
-                      )}
-                    </div>
+                <div key={post.id} className="embla__slide trending-grid-slide">
+                  <div
+                    className="trending-card"
+                    onClick={(e) => {
+                      if ((e.target as HTMLElement).closest('a')) return;
+                      if (href !== '#') navigate(href);
+                    }}
+                  >
+                    {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
+                      <PostMediaContainer
+                        mediaUrl={post.media_url}
+                        mediaType={post.media_type}
+                        figureClassName="trending-card-media-wrap"
+                        videoWrapClassName="trending-card-media-wrap-video"
+                        as="div"
+                        mediaBlurClassName={post.required_tier && !hasAccess ? 'trending-card-media-blur' : undefined}
+                      >
+                        {post.required_tier && (
+                          <span
+                            className={`trending-card-lock${hasAccess ? ' trending-card-lock-unlocked' : ''}`}
+                            aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
+                            title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
+                          >
+                            {hasAccess ? <UnlockIcon /> : <LockIcon />}
+                          </span>
+                        )}
+                      </PostMediaContainer>
+                    )}
+                    {post.media_url && post.media_type === 'Video' && (
+                      <PostMediaContainer
+                        mediaUrl={post.media_url}
+                        mediaType="Video"
+                        figureClassName="trending-card-media-wrap"
+                        videoWrapClassName="trending-card-media-wrap-video"
+                        videoAttrs={{ muted: true, playsInline: true, autoPlay: true, loop: true }}
+                        as="div"
+                        mediaBlurClassName={post.required_tier && !hasAccess ? 'trending-card-media-blur' : undefined}
+                      >
+                        {post.required_tier && (
+                          <span
+                            className={`trending-card-lock${hasAccess ? ' trending-card-lock-unlocked' : ''}`}
+                            aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
+                            title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
+                          >
+                            {hasAccess ? <UnlockIcon /> : <LockIcon />}
+                          </span>
+                        )}
+                      </PostMediaContainer>
+                    )}
+                    {(post.media_type === 'Audio' || !post.media_url) && (
+                      <div className={`trending-card-media-wrap${post.media_type === 'Audio' ? ' trending-card-media-audio' : ''}`}>
+                        {post.media_url && post.media_type === 'Audio' && (
+                          <div style={{ padding: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>Audio</div>
+                        )}
+                        {!post.media_url && (
+                          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                            {mediaTypeLabel ?? 'Post'}
+                          </div>
+                        )}
+                        {post.required_tier && (
+                          <span
+                            className={`trending-card-lock${hasAccess ? ' trending-card-lock-unlocked' : ''}`}
+                            aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
+                            title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
+                          >
+                            {hasAccess ? <UnlockIcon /> : <LockIcon />}
+                          </span>
+                        )}
+                      </div>
+                    )}
                     <div className="trending-card-body">
-                      <h3 className="trending-card-title">{post.title}</h3>
+                      <h3 className="trending-card-title">
+                        {href !== '#' ? (
+                          <Link to={href} className="trending-card-title-link">
+                            {post.title}
+                          </Link>
+                        ) : (
+                          post.title
+                        )}
+                      </h3>
                       {post.excerpt && (
                         <p className="trending-card-excerpt">{post.excerpt}</p>
                       )}
-                      {post.creator_profile && (
-                        <span className="trending-card-creator">{post.creator_profile.display_name}</span>
-                      )}
                     </div>
-                  </Link>
-                </li>
+                    {post.creator_profile && (
+                      <div className="trending-card-creator-wrap">
+                        {creatorSlug ? (
+                          <Link to={profileHref} className="trending-card-creator">
+                            {post.creator_profile.display_name}
+                          </Link>
+                        ) : (
+                          <span className="trending-card-creator">{post.creator_profile.display_name}</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
               );
             })}
-          </ul>
+            </div>
+          </div>
         </section>
       ) : null}
 

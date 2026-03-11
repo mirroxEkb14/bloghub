@@ -53,7 +53,7 @@ class SubscriptionSeeder extends Seeder
     {
         $names = [
             'Fox Mulder', 'Dana Scully', 'Gordon Freeman', 'Gregory House', 'Caroline',
-            'Ellen Ripley', 'Maggie Rhee', 'Negan', 'Carl Johnson', 'Thomas A. Anderson', 'Tiffany Zion',
+            'Ellen Ripley', 'Maggie Rhee', 'Negan', 'Carl Johnson', 'Thomas A. Anderson', 'Trinity Zion',
         ];
         foreach ($names as $name) {
             $user = User::where('name', $name)->first();
@@ -82,7 +82,7 @@ class SubscriptionSeeder extends Seeder
     {
         $list = [];
 
-        foreach (['Carl Johnson', 'Maggie Rhee', 'Negan', 'Tiffany Zion'] as $name) {
+        foreach (['Carl Johnson', 'Maggie Rhee', 'Negan', 'Trinity Zion'] as $name) {
             $list[] = [$name, 'Gordon Freeman', 'Research Associate (Clearance 3)'];
         }
         foreach (['Fox Mulder', 'Dana Scully', 'Ellen Ripley'] as $name) {
@@ -95,7 +95,7 @@ class SubscriptionSeeder extends Seeder
         foreach (['Dana Scully', 'Gordon Freeman', 'Ellen Ripley'] as $name) {
             $list[] = [$name, 'Fox Mulder', 'The Conspirator'];
         }
-        foreach (['Thomas A. Anderson', 'Tiffany Zion'] as $name) {
+        foreach (['Thomas A. Anderson', 'Trinity Zion'] as $name) {
             $list[] = [$name, 'Fox Mulder', 'The Abductee'];
         }
         $list[] = ['Negan', 'Fox Mulder', 'The Believer'];
@@ -119,7 +119,7 @@ class SubscriptionSeeder extends Seeder
         foreach (['Gregory House', 'Gordon Freeman', 'Negan'] as $name) {
             $list[] = [$name, 'Caroline', 'Central AI Overseer'];
         }
-        foreach (['Thomas A. Anderson', 'Tiffany Zion'] as $name) {
+        foreach (['Thomas A. Anderson', 'Trinity Zion'] as $name) {
             $list[] = [$name, 'Caroline', 'Maintenance Specialist (Level 4)'];
         }
         foreach (['Fox Mulder', 'Dana Scully', 'Ellen Ripley', 'Maggie Rhee', 'Carl Johnson'] as $name) {
