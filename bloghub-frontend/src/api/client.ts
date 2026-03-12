@@ -332,12 +332,38 @@ export const creatorProfilesApi = {
     return api<CreatorProfile | { data: CreatorProfile }>('/api/me/creator-profile').then(unwrapData);
   },
 
+  updateMe(body: {
+    slug?: string;
+    display_name?: string;
+    about?: string | null;
+    profile_avatar_path?: string | null;
+    profile_cover_path?: string | null;
+    telegram_url?: string | null;
+    instagram_url?: string | null;
+    facebook_url?: string | null;
+    youtube_url?: string | null;
+    twitch_url?: string | null;
+    website_url?: string | null;
+    tag_ids?: number[];
+  }) {
+    return api<CreatorProfile | { data: CreatorProfile }>('/api/me/creator-profile', {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    }).then(unwrapData);
+  },
+
   create(body: {
     display_name: string;
     slug?: string;
     about?: string | null;
     profile_avatar_path?: string | null;
     profile_cover_path?: string | null;
+    telegram_url?: string | null;
+    instagram_url?: string | null;
+    facebook_url?: string | null;
+    youtube_url?: string | null;
+    twitch_url?: string | null;
+    website_url?: string | null;
     tag_ids?: number[];
   }) {
     return api<CreatorProfile | { data: CreatorProfile }>('/api/creator-profiles', {
@@ -445,6 +471,16 @@ export type PostCreatePayload = {
   required_tier_id?: number | null;
 };
 
+export type PostUpdatePayload = Partial<{
+  slug: string;
+  title: string;
+  content_text: string;
+  excerpt: string | null;
+  media_url: string | null;
+  media_type: string | null;
+  required_tier_id: number | null;
+}>;
+
 export type PostMediaUploadResponse = {
   path: string;
   url: string;
@@ -467,6 +503,13 @@ export const postsApi = {
     return api<Post | { data: Post }>(
       '/api/me/creator-profile/posts',
       { method: 'POST', body: JSON.stringify(payload) }
+    ).then((r) => (r != null && typeof r === 'object' && 'data' in r ? (r as { data: Post }).data : r) as Post);
+  },
+
+  update(postSlug: string, payload: PostUpdatePayload) {
+    return api<Post | { data: Post }>(
+      `/api/me/creator-profile/posts/${encodeURIComponent(postSlug)}`,
+      { method: 'PUT', body: JSON.stringify(payload) }
     ).then((r) => (r != null && typeof r === 'object' && 'data' in r ? (r as { data: Post }).data : r) as Post);
   },
 

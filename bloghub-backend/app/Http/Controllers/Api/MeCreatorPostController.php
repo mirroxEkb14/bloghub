@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\UpdatePostBySlugRequest;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
@@ -23,6 +24,15 @@ class MeCreatorPostController extends Controller
         $request->attributes->set('creator_profile_user_tier_level', PHP_INT_MAX);
 
         return response()->json(new PostResource($post), 201);
+    }
+
+    public function update(UpdatePostBySlugRequest $request, string $postSlug): JsonResponse
+    {
+        $post = $request->getPost();
+        $post->update($request->validated());
+        $post->load('requiredTier');
+
+        return response()->json(new PostResource($post));
     }
 
     public function destroy(string $postSlug): JsonResponse

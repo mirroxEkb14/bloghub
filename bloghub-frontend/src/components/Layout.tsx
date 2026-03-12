@@ -174,8 +174,6 @@ export default function Layout() {
     ? `/creator/${user.creator_profile.slug}`
     : '/creator/new';
 
-  const isMyPageActive = location.pathname === myPageHref;
-  const showEditCreatorSubItems = !!user?.creator_profile?.slug;
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -189,18 +187,18 @@ export default function Layout() {
     }
   }, [menuOpen]);
 
-  const isOnMyPageSection = location.pathname === myPageHref || location.pathname === '/creator/edit' || location.pathname === '/profile/social' || location.pathname === '/creator/tiers' || location.pathname.startsWith('/creator/post/');
+  const isMyPageSection = location.pathname === myPageHref || location.pathname === '/creator/edit';
   const isOnMembershipsSection = location.pathname === '/memberships' || location.pathname.startsWith('/memberships/');
   useEffect(() => {
-    if (isOnMyPageSection) setMyPageDropdownOpen(true);
-  }, [isOnMyPageSection]);
+    if (isMyPageSection) setMyPageDropdownOpen(true);
+  }, [isMyPageSection]);
   useEffect(() => {
     if (isOnMembershipsSection) setMembershipsDropdownOpen(true);
   }, [isOnMembershipsSection]);
   useEffect(() => {
-    if (!isOnMyPageSection) setMyPageDropdownOpen(false);
+    if (!isMyPageSection) setMyPageDropdownOpen(false);
     if (!isOnMembershipsSection) setMembershipsDropdownOpen(false);
-  }, [location.pathname, isOnMyPageSection, isOnMembershipsSection]);
+  }, [location.pathname, isMyPageSection, isOnMembershipsSection]);
 
   const [resendVerificationLoading, setResendVerificationLoading] = useState(false);
   const verificationHandledRef = useRef(false);
@@ -278,59 +276,38 @@ export default function Layout() {
 
             {user && (
               <section className="sidebar-section" aria-label="Account">
-                <div className="sidebar-dropdown sidebar-my-page-group">
-                  {showEditCreatorSubItems ? (
-                    <>
+                {user?.creator_profile?.slug ? (
+                  <div className="sidebar-dropdown sidebar-my-page-group">
+                    <Link
+                      to={myPageHref}
+                      className={`sidebar-link sidebar-dropdown-trigger ${location.pathname === myPageHref ? 'active' : ''} ${myPageDropdownOpen ? 'open' : ''}`}
+                      onClick={() => setMyPageDropdownOpen((o) => !o)}
+                      aria-expanded={myPageDropdownOpen}
+                    >
+                      <span className="sidebar-link-icon"><Icons.MyPage /></span>
+                      <span className="sidebar-link-label">My page</span>
+                      <span className="sidebar-dropdown-chevron" aria-hidden>
+                        <Icons.ChevronDown />
+                      </span>
+                    </Link>
+                    <div
+                      className={`sidebar-dropdown-children ${myPageDropdownOpen ? 'open' : ''}`}
+                      aria-hidden={!myPageDropdownOpen}
+                    >
                       <Link
-                        to={myPageHref}
-                        className={`sidebar-link sidebar-dropdown-trigger ${isMyPageActive ? 'active' : ''} ${myPageDropdownOpen ? 'open' : ''}`}
-                        onClick={() => setMyPageDropdownOpen((o) => !o)}
-                        aria-expanded={myPageDropdownOpen}
+                        to="/creator/edit"
+                        className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/edit' ? 'active' : ''}`}
                       >
-                        <span className="sidebar-link-icon"><Icons.MyPage /></span>
-                        <span className="sidebar-link-label">My page</span>
-                        <span className="sidebar-dropdown-chevron" aria-hidden>
-                          <Icons.ChevronDown />
-                        </span>
+                        <span className="sidebar-link-icon"><Icons.Profile /></span>
+                        <span className="sidebar-link-label">Edit Creator</span>
                       </Link>
-                      <div
-                        className={`sidebar-dropdown-children ${myPageDropdownOpen ? 'open' : ''}`}
-                        aria-hidden={!myPageDropdownOpen}
-                      >
-                        <Link
-                          to="/creator/edit"
-                          className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/edit' ? 'active' : ''}`}
-                        >
-                            <span className="sidebar-link-icon"><Icons.Profile /></span>
-                            <span className="sidebar-link-label">Edit Creator</span>
-                          </Link>
-                          <Link
-                            to="/profile/social"
-                            className={`sidebar-link sidebar-link-sub ${location.pathname === '/profile/social' ? 'active' : ''}`}
-                          >
-                            <span className="sidebar-link-icon"><Icons.Social /></span>
-                            <span className="sidebar-link-label">Social networks</span>
-                          </Link>
-                          <Link
-                            to="/creator/tiers"
-                            className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/tiers' ? 'active' : ''}`}
-                          >
-                            <span className="sidebar-link-icon"><Icons.Tiers /></span>
-                            <span className="sidebar-link-label">Edit Tiers</span>
-                          </Link>
-                          <Link
-                            to="/creator/post/new"
-                            className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/post/new' ? 'active' : ''}`}
-                          >
-                            <span className="sidebar-link-icon"><Icons.NewPost /></span>
-                            <span className="sidebar-link-label">New Post</span>
-                          </Link>
-                      </div>
-                    </>
-                  ) : (
+                    </div>
+                  </div>
+                ) : (
+                  <div className="sidebar-my-page-group">
                     <NavLink to={myPageHref} icon={Icons.MyPage}>My page</NavLink>
-                  )}
-                </div>
+                  </div>
+                )}
                 <NavLink to="/feed/public" icon={Icons.PublicPosts}>Public posts</NavLink>
                 <NavLink to="/feed/tier" icon={Icons.TierPosts}>Tier posts</NavLink>
                 <div className="sidebar-dropdown sidebar-my-page-group">

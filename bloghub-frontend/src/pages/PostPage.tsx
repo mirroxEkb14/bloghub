@@ -198,7 +198,7 @@ export default function PostPage() {
             {post.created_at && formatDateTimeLocal(post.created_at)}
           </span>
           <div className="post-page-metrics" aria-label="Post metrics">
-            <span className="post-page-metric" title="Unique views (full page)">
+            <span className="post-page-metric" title="Unique views">
               <span className="post-page-metric-icon" aria-hidden>👁</span> {post.views_count ?? 0}
             </span>
             <span className="post-page-metric" title="Likes">

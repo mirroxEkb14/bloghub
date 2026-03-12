@@ -53,6 +53,7 @@ Route::middleware('throttle:api')->group(function () {
         Route::post('/user/upload-avatar', [UserUploadController::class, 'avatar']);
 
         Route::get('/me/creator-profile', [CreatorProfileController::class, 'me']);
+        Route::put('/me/creator-profile', [CreatorProfileController::class, 'updateMe']);
         Route::post('/creator-profiles', [CreatorProfileController::class, 'store']);
         Route::post('/creator-profiles/upload-avatar', [CreatorProfileUploadController::class, 'avatar']);
         Route::post('/creator-profiles/upload-cover', [CreatorProfileUploadController::class, 'cover']);
@@ -66,6 +67,7 @@ Route::middleware('throttle:api')->group(function () {
 
         Route::post('/me/creator-profile/posts/upload-media', [PostMediaUploadController::class, 'upload']);
         Route::post('/me/creator-profile/posts', [MeCreatorPostController::class, 'store']);
+        Route::put('/me/creator-profile/posts/{postSlug}', [MeCreatorPostController::class, 'update']);
         Route::delete('/me/creator-profile/posts/{postSlug}', [MeCreatorPostController::class, 'destroy']);
 
         Route::get('/me/feed', [FeedController::class, 'homeFeed']);
