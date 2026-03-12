@@ -38,7 +38,7 @@ class FeedController extends Controller
         } else {
             $subscribedProfileIds = Subscription::query()
                 ->where('user_id', $user->id)
-                ->where('sub_status', SubStatus::Active)
+                ->whereIn('sub_status', [SubStatus::Active, SubStatus::Canceled])
                 ->where(function ($q) {
                     $q->whereNull('end_date')->orWhere('end_date', '>', now());
                 })
@@ -95,7 +95,7 @@ class FeedController extends Controller
         } else {
             $subscriptions = Subscription::query()
                 ->where('user_id', $user->id)
-                ->where('sub_status', SubStatus::Active)
+                ->whereIn('sub_status', [SubStatus::Active, SubStatus::Canceled])
                 ->where(function ($q) {
                     $q->whereNull('end_date')->orWhere('end_date', '>', now());
                 })
@@ -191,7 +191,7 @@ class FeedController extends Controller
         } else {
             $subscribedProfileIds = Subscription::query()
                 ->where('user_id', $user->id)
-                ->where('sub_status', SubStatus::Active)
+                ->whereIn('sub_status', [SubStatus::Active, SubStatus::Canceled])
                 ->where(function ($q) {
                     $q->whereNull('end_date')->orWhere('end_date', '>', now());
                 })
@@ -206,7 +206,7 @@ class FeedController extends Controller
 
             $subscriptions = Subscription::query()
                 ->where('user_id', $user->id)
-                ->where('sub_status', SubStatus::Active)
+                ->whereIn('sub_status', [SubStatus::Active, SubStatus::Canceled])
                 ->where(function ($q) {
                     $q->whereNull('end_date')->orWhere('end_date', '>', now());
                 })

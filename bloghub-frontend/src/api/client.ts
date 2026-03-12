@@ -673,7 +673,13 @@ export type SubscriptionStatusResponse = {
 export type CheckoutSessionResponse =
   | { type: 'free'; subscription: SubscriptionWithTier }
   | { type: 'checkout'; checkout_url: string }
-  | { type: 'already_subscribed'; message?: string };
+  | { type: 'already_subscribed'; message?: string }
+  | {
+      type: 'upgrade_confirm';
+      message?: string;
+      current_subscription: { tier_name: string | null; end_date: string | null };
+      new_tier_name: string;
+    };
 
 export const subscriptionsApi = {
   list() {
@@ -689,10 +695,12 @@ export const subscriptionsApi = {
     ).then(unwrapData);
   },
 
-  createCheckoutSession(tierId: number) {
+  createCheckoutSession(tierId: number, options?: { confirmUpgrade?: boolean }) {
+    const body: { tier_id: number; confirm_upgrade?: boolean } = { tier_id: tierId };
+    if (options?.confirmUpgrade === true) body.confirm_upgrade = true;
     return api<CheckoutSessionResponse>(
       '/api/subscriptions/create-checkout-session',
-      { method: 'POST', body: JSON.stringify({ tier_id: tierId }) }
+      { method: 'POST', body: JSON.stringify(body) }
     );
   },
 
@@ -709,10 +717,11 @@ export const subscriptionsApi = {
     );
   },
 
-  cancel(subscriptionId: number) {
+  cancel(subscriptionId: number, options?: { endNow?: boolean }) {
+    const body = options?.endNow !== undefined ? { end_now: options.endNow } : {};
     return api<{ message: string; subscription: SubscriptionWithTier }>(
       `/api/subscriptions/${subscriptionId}/cancel`,
-      { method: 'PATCH' }
+      { method: 'PATCH', body: Object.keys(body).length ? JSON.stringify(body) : undefined }
     );
   },
 };

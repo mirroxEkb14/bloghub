@@ -44,7 +44,7 @@ export default function SubscriptionsPage() {
   const [cancelingId, setCancelingId] = useState<number | null>(null);
   const [cancelToastMessage, setCancelToastMessage] = useState<string | null>(null);
   const [confirmCancelSub, setConfirmCancelSub] = useState<SubscriptionWithTier | null>(null);
-  const [cursorLabel, setCursorLabel] = useState<{ x: number; y: number } | null>(null);
+  const [cursorLabel, setCursorLabel] = useState<{ x: number; y: number; text: string } | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -84,12 +84,12 @@ export default function SubscriptionsPage() {
     setConfirmCancelSub(sub);
   }
 
-  async function handleCancel(sub: SubscriptionWithTier) {
+  async function handleCancel(sub: SubscriptionWithTier, endNow: boolean) {
     setConfirmCancelSub(null);
     setError(null);
     setCancelingId(sub.id);
     try {
-      const res = await subscriptionsApi.cancel(sub.id);
+      const res = await subscriptionsApi.cancel(sub.id, { endNow });
       setSubscriptions((prev) =>
         prev.map((s) => (s.id === sub.id ? res.subscription : s))
       );
@@ -133,7 +133,7 @@ export default function SubscriptionsPage() {
           style={{ left: cursorLabel.x, top: cursorLabel.y }}
           aria-hidden
         >
-          End subscription
+          {cursorLabel.text}
         </div>
       )}
       {cancelToastMessage && (
@@ -228,8 +228,8 @@ export default function SubscriptionsPage() {
                       onClick={() => requestCancel(sub)}
                       disabled={cancelingId === sub.id}
                       aria-label="Cancel subscription"
-                      onMouseEnter={(e) => setCursorLabel({ x: e.clientX + 12, y: e.clientY + 12 })}
-                      onMouseMove={(e) => setCursorLabel({ x: e.clientX + 12, y: e.clientY + 12 })}
+                      onMouseEnter={(e) => setCursorLabel({ x: e.clientX + 12, y: e.clientY + 12, text: 'End subscription' })}
+                      onMouseMove={(e) => setCursorLabel((l) => l ? { ...l, x: e.clientX + 12, y: e.clientY + 12 } : null)}
                       onMouseLeave={() => setCursorLabel(null)}
                     >
                       <XCircleIcon size={18} />
@@ -271,6 +271,11 @@ export default function SubscriptionsPage() {
                       <div className="membership-card-dates">
                         {formatDate(sub.start_date)} – {formatDate(sub.end_date)}
                       </div>
+                      {statusLabel === 'Canceled' && sub.end_date && new Date(sub.end_date) > new Date() && (
+                        <p className="membership-card-access-until" aria-label="Access until end date">
+                          Access until {formatDate(sub.end_date)}
+                        </p>
+                      )}
                       <div className="membership-card-meta">
                         {sub.card_last4 && (
                           <span className="membership-card-last4">•••• {sub.card_last4}</span>
@@ -295,31 +300,45 @@ export default function SubscriptionsPage() {
 
       {confirmCancelSub && (
         <div className="membership-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="membership-confirm-title">
-          <div className="membership-confirm-dialog">
+          <div className="membership-confirm-wrap">
+            <button
+              type="button"
+              className="membership-confirm-close"
+              aria-label="Keep subscription"
+              onClick={() => { setConfirmCancelSub(null); setCursorLabel(null); }}
+              onMouseEnter={(e) => setCursorLabel({ x: e.clientX + 12, y: e.clientY + 12, text: 'Keep subscription' })}
+              onMouseMove={(e) => setCursorLabel((l) => l ? { ...l, x: e.clientX + 12, y: e.clientY + 12 } : null)}
+              onMouseLeave={() => setCursorLabel(null)}
+            >
+              <XCircleIcon size={18} />
+            </button>
+            <div className="membership-confirm-dialog">
             <h2 id="membership-confirm-title" className="membership-confirm-title">End subscription?</h2>
             <p className="membership-confirm-text">
-              This will end your subscription to{' '}
+              End your subscription to{' '}
               <strong>{confirmCancelSub.creator?.display_name ?? confirmCancelSub.creator?.slug ?? 'Creator'}</strong>
               {' – '}
               <strong>{confirmCancelSub.tier?.tier_name ?? 'Tier'}</strong>.
-              Money won't be refunded
+              You can end access right away or keep it until the current period ends ({formatDate(confirmCancelSub.end_date)}). No refunds.
             </p>
             <div className="membership-confirm-actions">
               <button
                 type="button"
-                className="btn btn-secondary"
-                onClick={() => setConfirmCancelSub(null)}
+                className="btn membership-confirm-cancel-btn"
+                disabled={cancelingId === confirmCancelSub.id}
+                onClick={() => handleCancel(confirmCancelSub, true)}
               >
-                Keep subscription
+                {cancelingId === confirmCancelSub.id ? 'Canceling…' : 'End now (lose access)'}
               </button>
               <button
                 type="button"
-                className="btn btn-primary membership-confirm-cancel-btn"
+                className="btn membership-confirm-cancel-btn membership-confirm-end-period"
                 disabled={cancelingId === confirmCancelSub.id}
-                onClick={() => handleCancel(confirmCancelSub)}
+                onClick={() => handleCancel(confirmCancelSub, false)}
               >
-                {cancelingId === confirmCancelSub.id ? 'Canceling…' : 'End now'}
+                End at period end
               </button>
+            </div>
             </div>
           </div>
         </div>
