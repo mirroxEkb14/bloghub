@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ValidationError } from '../api/client';
 import { authApi } from '../api/client';
 import InputWithIcon from '../components/InputWithIcon';
+import { CameraIcon } from '../components/icons';
 import LoadingPage from '../components/LoadingPage';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -171,10 +172,7 @@ export default function ProfilePage() {
                 <span className="profile-avatar-initial">{initial}</span>
               )}
               <span className="profile-avatar-camera-icon" aria-hidden>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                  <circle cx="12" cy="13" r="4" />
-                </svg>
+                <CameraIcon size={16} />
               </span>
             </span>
             <span className="profile-avatar-hint">Recommended: 256×256 px. Max 5 MB.</span>

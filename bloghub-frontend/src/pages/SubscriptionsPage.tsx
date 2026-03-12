@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { subscriptionsApi, type SubscriptionWithTier } from '../api/client';
 import LoadingPage from '../components/LoadingPage';
+import { CircleCheckIcon } from '../components/icons';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function SubscriptionsPage() {
@@ -81,10 +82,7 @@ export default function SubscriptionsPage() {
           style={{ ['--toast-duration' as string]: `${TOAST_BAR_S}s` }}
         >
           <span className="subscription-toast-icon subscription-toast-icon-success" aria-hidden>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="2" />
-              <path d="M6 10l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <CircleCheckIcon size={20} />
           </span>
           <p className="subscription-toast-msg">
             {cancelToastMessage}

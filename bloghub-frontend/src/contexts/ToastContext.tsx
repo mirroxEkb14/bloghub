@@ -25,26 +25,7 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 const TOAST_BAR_S = 4;
 const TOAST_VISIBLE_MS = 4100;
 
-const SuccessIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-    <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="2" />
-    <path d="M6 10l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const WarningIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-    <path d="M10 3.5L2 16.5h16L10 3.5z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" />
-    <path d="M10 8v3M10 13v1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-  </svg>
-);
-
-const ErrorIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-    <path d="M10 3.5L2 16.5h16L10 3.5z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" />
-    <path d="M10 8v3M10 13v1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-  </svg>
-);
+import { SuccessToastIcon, WarningToastIcon, ErrorToastIcon } from '../components/icons';
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -82,7 +63,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             : isError
               ? 'subscription-toast-icon-error'
               : 'subscription-toast-icon-warning';
-          const Icon = isSuccess ? SuccessIcon : isError ? ErrorIcon : WarningIcon;
+          const Icon = isSuccess ? SuccessToastIcon : isError ? ErrorToastIcon : WarningToastIcon;
           return (
             <div
               key={toast.id}

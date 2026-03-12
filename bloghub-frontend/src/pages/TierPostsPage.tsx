@@ -7,6 +7,7 @@ import { useToast } from '../contexts/ToastContext';
 import LoadingPage from '../components/LoadingPage';
 import PostMediaContainer from '../components/PostMediaContainer';
 import { stripHtml } from '../components/PostContent';
+import { LockCircleIcon, ShareIcon, SearchIcon } from '../components/icons';
 import { formatDateTimeLocal } from '../utils/date';
 import '../styles/profile-page.css';
 
@@ -173,10 +174,7 @@ export default function TierPostsPage() {
               <div className="public-feed-filter-row">
                 <div className="public-feed-search-wrap">
                   <span className="public-feed-search-icon" aria-hidden>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="11" cy="11" r="8" />
-                      <path d="m21 21-4.3-4.3" />
-                    </svg>
+                    <SearchIcon size={18} />
                   </span>
                   <input
                     type="search"
@@ -239,11 +237,7 @@ export default function TierPostsPage() {
                             <span className="post-card-visibility">
                               {locked ? (
                                 <>
-                                  <svg className="post-card-lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                                    <rect x="4" y="11" width="16" height="10" rx="2.5" ry="2.5" />
-                                    <path d="M8 11V7.5a4 4 0 1 1 8 0V11" />
-                                    <circle cx="12" cy="15.5" r="1.25" fill="currentColor" />
-                                  </svg>
+                                  <LockCircleIcon size={24} className="post-card-lock-icon" />
                                   {post.required_tier?.tier_name}
                                 </>
                               ) : (
@@ -280,13 +274,7 @@ export default function TierPostsPage() {
                                   onClick={() => handleSharePost(post)}
                                 >
                                   <span className="post-card-dropdown-item-icon" aria-hidden>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                      <circle cx="6" cy="12" r="3" />
-                                      <circle cx="18" cy="5" r="3" />
-                                      <circle cx="18" cy="19" r="3" />
-                                      <line x1="6" y1="12" x2="18" y2="5" />
-                                      <line x1="6" y1="12" x2="18" y2="19" />
-                                    </svg>
+                                    <ShareIcon size={18} />
                                   </span>
                                   Share
                                 </button>
@@ -318,11 +306,7 @@ export default function TierPostsPage() {
                                   </div>
                                 )}
                                 <div className="post-card-lock-icon-circle" aria-hidden>
-                                  <svg className="post-card-lock-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                                    <rect x="4" y="11" width="16" height="10" rx="2.5" ry="2.5" />
-                                    <path d="M8 11V7.5a4 4 0 1 1 8 0V11" />
-                                    <circle cx="12" cy="15.5" r="1.25" fill="currentColor" />
-                                  </svg>
+                                  <LockCircleIcon className="post-card-lock-svg" />
                                 </div>
                                 <h3 className="post-card-unlock-title">Subscriber-only post</h3>
                                 <p className="post-card-unlock-desc">
