@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreCreatorProfileRequest;
 use App\Http\Requests\Api\UpdateCreatorProfileRequest;
+use App\Http\Requests\Api\UpdateMyCreatorProfileRequest;
 use App\Http\Resources\CreatorProfileResource;
 use App\Models\CreatorProfile;
 use Illuminate\Http\JsonResponse;
@@ -66,7 +67,7 @@ class CreatorProfileController extends Controller
             return response()->json(['message' => __('You do not have a creator profile')], 404);
         }
 
-        $profile->load(['user:id,name,username', 'tags'])->loadCount('posts');
+        $profile->load(['user:id,name,username', 'tags'])->loadCount(['posts', 'subscriptions']);
 
         return new CreatorProfileResource($profile);
     }
@@ -85,7 +86,7 @@ class CreatorProfileController extends Controller
         $profile = CreatorProfile::create($data);
         $profile->tags()->sync($tagIds);
 
-        $profile->load(['user:id,name,username', 'tags'])->loadCount('posts');
+        $profile->load(['user:id,name,username', 'tags'])->loadCount(['posts', 'subscriptions']);
 
         return response()->json(new CreatorProfileResource($profile), 201);
     }
@@ -101,8 +102,25 @@ class CreatorProfileController extends Controller
             $creatorProfile->tags()->sync($tagIds);
         }
 
-        $creatorProfile->load(['user:id,name,username', 'tags'])->loadCount('posts');
+        $creatorProfile->load(['user:id,name,username', 'tags'])->loadCount(['posts', 'subscriptions']);
 
         return new CreatorProfileResource($creatorProfile);
+    }
+
+    public function updateMe(UpdateMyCreatorProfileRequest $request): CreatorProfileResource
+    {
+        $profile = $request->user()->creatorProfile;
+        $data = $request->validated();
+        $tagIds = $data['tag_ids'] ?? null;
+        unset($data['tag_ids']);
+
+        $profile->update($data);
+        if ($tagIds !== null) {
+            $profile->tags()->sync($tagIds);
+        }
+
+        $profile->load(['user:id,name,username', 'tags'])->loadCount(['posts', 'subscriptions']);
+
+        return new CreatorProfileResource($profile);
     }
 }

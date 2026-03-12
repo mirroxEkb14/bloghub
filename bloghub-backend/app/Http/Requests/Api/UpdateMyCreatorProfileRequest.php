@@ -6,28 +6,32 @@ use App\Models\CreatorProfile;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreCreatorProfileRequest extends FormRequest
+class UpdateMyCreatorProfileRequest extends FormRequest
 {
     private const SLUG_REGEX = '/^[a-z0-9]+(?:-[a-z0-9]+)*$/';
 
     public function authorize(): bool
     {
-        return $this->user() !== null && $this->user()->creatorProfile === null;
+        return $this->user()?->creatorProfile !== null;
     }
 
     public function rules(): array
     {
-        $slugRules = [
-            'nullable',
-            'string',
-            'max:255',
-            'regex:' . self::SLUG_REGEX,
-            Rule::unique('creator_profiles', 'slug'),
-        ];
+        $profile = $this->user()?->creatorProfile;
+        $slugUnique = Rule::unique('creator_profiles', 'slug');
+        if ($profile instanceof CreatorProfile) {
+            $slugUnique->ignore($profile->id);
+        }
 
         return [
-            'display_name' => ['required', 'string', 'max:50'],
-            'slug' => $slugRules,
+            'slug' => [
+                'sometimes',
+                'string',
+                'max:255',
+                $slugUnique,
+                'regex:' . self::SLUG_REGEX,
+            ],
+            'display_name' => ['sometimes', 'required', 'string', 'max:50'],
             'about' => ['nullable', 'string', 'max:255'],
             'profile_avatar_path' => ['nullable', 'string', 'max:255'],
             'profile_cover_path' => ['nullable', 'string', 'max:255'],
@@ -53,17 +57,5 @@ class StoreCreatorProfileRequest extends FormRequest
             'twitch_url.regex' => __('Social link must start with https://twitch.tv/ or https://www.twitch.tv/'),
             'website_url.regex' => __('Website link must start with https://'),
         ];
-    }
-
-    public function validatedWithSlug(): array
-    {
-        $data = $this->validated();
-        if (empty($data['slug']) && ! empty($data['display_name'])) {
-            $data['slug'] = CreatorProfile::uniqueSlugForDisplayName($data['display_name'], null);
-        }
-        if (empty($data['slug'])) {
-            $data['slug'] = CreatorProfile::uniqueSlugForDisplayName('creator', null);
-        }
-        return $data;
     }
 }
