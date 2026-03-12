@@ -347,6 +347,12 @@ export const creatorProfilesApi = {
     return api<CreatorProfile | { data: CreatorProfile }>('/api/me/creator-profile').then(unwrapData);
   },
 
+  getFollowing() {
+    return api<{ data: { creator_profile: CreatorProfile; followed_at: string | null }[] }>(
+      '/api/me/following'
+    ).then((r) => (r && typeof r === 'object' && 'data' in r ? (r as { data: { creator_profile: CreatorProfile; followed_at: string | null }[] }).data : []) ?? []);
+  },
+
   updateMe(body: {
     slug?: string;
     display_name?: string;
@@ -656,6 +662,7 @@ export type SubscriptionWithTier = {
   updated_at: string | null;
   tier: Tier;
   creator: SubscriptionCreator;
+  card_last4?: string | null;
 };
 
 export type SubscriptionStatusResponse = {

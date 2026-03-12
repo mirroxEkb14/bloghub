@@ -11,8 +11,8 @@ import CreatorProfilePage from './pages/CreatorProfilePage';
 import CreatorStudioPage from './pages/CreatorStudioPage';
 import PostPage from './pages/PostPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
-import MembershipsPage from './pages/MembershipsPage';
-import BillingsPage from './pages/BillingsPage';
+import FollowingPage from './pages/FollowingPage';
+import SupportingPage from './pages/SupportingPage';
 import PublicPostsPage from './pages/PublicPostsPage';
 import TierPostsPage from './pages/TierPostsPage';
 import TermsPage from './pages/TermsPage';
@@ -37,8 +37,8 @@ function App() {
             <Route path="/explore" element={<ExplorePage />} />
             <Route path="/feed/public" element={<PublicPostsPage />} />
             <Route path="/feed/tier" element={<TierPostsPage />} />
-            <Route path="/memberships" element={<MembershipsPage />} />
-            <Route path="/memberships/billings" element={<BillingsPage />} />
+            <Route path="/memberships" element={<Navigate to="/subscriptions" replace />} />
+            <Route path="/memberships/billings" element={<Navigate to="/subscriptions" replace />} />
             <Route path="/creator/new" element={<CreatorStudioPage />} />
             <Route path="/creator/edit" element={<CreatorStudioPage />} />
             <Route path="/creator/tiers" element={<Navigate to="/creator/edit" replace />} />
@@ -46,6 +46,8 @@ function App() {
             <Route path="/creator/:slug" element={<CreatorProfilePage />} />
             <Route path="/creator/:slug/post/:postSlug" element={<PostPage />} />
             <Route path="/subscriptions" element={<SubscriptionsPage />} />
+            <Route path="/subscriptions/following" element={<FollowingPage />} />
+            <Route path="/subscriptions/supporting" element={<SupportingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/terms" element={<TermsPage />} />

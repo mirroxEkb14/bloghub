@@ -19,6 +19,7 @@ import {
   LogOutIcon,
   Share2Icon,
   UserPlusIcon,
+  UserCheckIcon,
   EditIcon,
   FilePlusIcon,
   SunIcon,
@@ -35,6 +36,8 @@ const Icons = {
   PublicPosts: () => <GlobeIcon size={navIconSize} />,
   TierPosts: () => <LockIcon size={navIconSize} />,
   Memberships: () => <CreditCardIcon size={navIconSize} />,
+  Following: () => <UserCheckIcon size={navIconSize} />,
+  Supporting: () => <DocumentDollarIcon size={navIconSize} />,
   Billings: () => <DocumentDollarIcon size={navIconSize} />,
   Tiers: () => <LayersIcon size={navIconSize} />,
   Privacy: () => <ShieldIcon size={navIconSize} />,
@@ -76,7 +79,7 @@ export default function Layout() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [myPageDropdownOpen, setMyPageDropdownOpen] = useState(false);
-  const [membershipsDropdownOpen, setMembershipsDropdownOpen] = useState(false);
+  const [subscriptionsDropdownOpen, setSubscriptionsDropdownOpen] = useState(false);
 
   const initial = user?.name?.charAt(0)?.toUpperCase()
     ?? user?.username?.charAt(0)?.toUpperCase()
@@ -100,17 +103,17 @@ export default function Layout() {
   }, [menuOpen]);
 
   const isMyPageSection = location.pathname === myPageHref || location.pathname === '/creator/edit';
-  const isOnMembershipsSection = location.pathname === '/memberships' || location.pathname.startsWith('/memberships/');
+  const isSubscriptionsSection = location.pathname === '/subscriptions' || location.pathname.startsWith('/subscriptions/');
   useEffect(() => {
     if (isMyPageSection) setMyPageDropdownOpen(true);
   }, [isMyPageSection]);
   useEffect(() => {
-    if (isOnMembershipsSection) setMembershipsDropdownOpen(true);
-  }, [isOnMembershipsSection]);
+    if (isSubscriptionsSection) setSubscriptionsDropdownOpen(true);
+  }, [isSubscriptionsSection]);
   useEffect(() => {
     if (!isMyPageSection) setMyPageDropdownOpen(false);
-    if (!isOnMembershipsSection) setMembershipsDropdownOpen(false);
-  }, [location.pathname, isMyPageSection, isOnMembershipsSection]);
+    if (!isSubscriptionsSection) setSubscriptionsDropdownOpen(false);
+  }, [location.pathname, isMyPageSection, isSubscriptionsSection]);
 
   const [resendVerificationLoading, setResendVerificationLoading] = useState(false);
   const verificationHandledRef = useRef(false);
@@ -224,27 +227,34 @@ export default function Layout() {
                 <NavLink to="/feed/tier" icon={Icons.TierPosts}>Tier posts</NavLink>
                 <div className="sidebar-dropdown sidebar-my-page-group">
                   <Link
-                    to="/memberships"
-                    className={`sidebar-link sidebar-dropdown-trigger ${location.pathname === '/memberships' ? 'active' : ''} ${membershipsDropdownOpen ? 'open' : ''}`}
-                    onClick={() => setMembershipsDropdownOpen((o) => !o)}
-                    aria-expanded={membershipsDropdownOpen}
+                    to="/subscriptions"
+                    className={`sidebar-link sidebar-dropdown-trigger ${location.pathname === '/subscriptions' ? 'active' : ''} ${subscriptionsDropdownOpen ? 'open' : ''}`}
+                    onClick={() => setSubscriptionsDropdownOpen((o) => !o)}
+                    aria-expanded={subscriptionsDropdownOpen}
                   >
                     <span className="sidebar-link-icon"><Icons.Memberships /></span>
-                    <span className="sidebar-link-label">Memberships</span>
+                    <span className="sidebar-link-label">Subscriptions</span>
                     <span className="sidebar-dropdown-chevron" aria-hidden>
                       <Icons.ChevronDown />
                     </span>
                   </Link>
                   <div
-                    className={`sidebar-dropdown-children ${membershipsDropdownOpen ? 'open' : ''}`}
-                    aria-hidden={!membershipsDropdownOpen}
+                    className={`sidebar-dropdown-children ${subscriptionsDropdownOpen ? 'open' : ''}`}
+                    aria-hidden={!subscriptionsDropdownOpen}
                   >
                     <Link
-                      to="/memberships/billings"
-                      className={`sidebar-link sidebar-link-sub ${location.pathname === '/memberships/billings' ? 'active' : ''}`}
+                      to="/subscriptions/following"
+                      className={`sidebar-link sidebar-link-sub ${location.pathname === '/subscriptions/following' ? 'active' : ''}`}
                     >
-                      <span className="sidebar-link-icon"><Icons.Billings /></span>
-                      <span className="sidebar-link-label">Billings</span>
+                      <span className="sidebar-link-icon"><Icons.Following /></span>
+                      <span className="sidebar-link-label">Following</span>
+                    </Link>
+                    <Link
+                      to="/subscriptions/supporting"
+                      className={`sidebar-link sidebar-link-sub ${location.pathname === '/subscriptions/supporting' ? 'active' : ''}`}
+                    >
+                      <span className="sidebar-link-icon"><Icons.Supporting /></span>
+                      <span className="sidebar-link-label">Supporting</span>
                     </Link>
                   </div>
                 </div>

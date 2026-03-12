@@ -45,3 +45,5 @@ export { default as PlusIcon } from './PlusIcon';
 export { default as CameraIcon } from './CameraIcon';
 export { default as CircleCheckIcon } from './CircleCheckIcon';
 export { default as NumberedListIcon } from './NumberedListIcon';
+export { default as XCircleIcon } from './XCircleIcon';
+export { default as ClockIcon } from './ClockIcon';
