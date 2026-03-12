@@ -200,7 +200,10 @@ export type CreatorProfile = {
   user?: CreatorProfileUser;
   tags?: Tag[];
   posts_count?: number;
+  followers_count?: number;
+  subscribers_count?: number;
   subscriptions_count?: number;
+  is_following?: boolean;
   created_at?: string;
   updated_at?: string;
 };
@@ -326,6 +329,18 @@ export const creatorProfilesApi = {
     return api<CreatorProfile | { data: CreatorProfile }>(
       `/api/creator-profiles/${encodeURIComponent(slug)}`
     ).then(unwrapData);
+  },
+
+  follow(slug: string) {
+    return api<{ message: string }>(`/api/creator-profiles/${encodeURIComponent(slug)}/follow`, {
+      method: 'POST',
+    });
+  },
+
+  unfollow(slug: string) {
+    return api<{ message: string }>(`/api/creator-profiles/${encodeURIComponent(slug)}/follow`, {
+      method: 'DELETE',
+    });
   },
 
   me() {

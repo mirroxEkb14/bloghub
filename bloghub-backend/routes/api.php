@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CreatorProfileController;
+use App\Http\Controllers\Api\CreatorProfileFollowController;
 use App\Http\Controllers\Api\UserUploadController;
 use App\Http\Controllers\Api\CreatorProfilePostController;
 use App\Http\Controllers\Api\CreatorProfileTierController;
@@ -38,7 +39,8 @@ Route::middleware('throttle:api')->group(function () {
     Route::get('/creator-profiles/{slug}/posts/{postSlug}/comments', [PostCommentController::class, 'index'])
         ->middleware('auth.sanctum.optional');
     Route::get('/creator-profiles/{slug}/tiers', [CreatorProfileTierController::class, 'index']);
-    Route::get('/creator-profiles/{slug}', [CreatorProfileController::class, 'show']);
+    Route::get('/creator-profiles/{slug}', [CreatorProfileController::class, 'show'])
+        ->middleware('auth.sanctum.optional');
 
     Route::get('/explore/popular-creators', [ExploreController::class, 'popularCreators']);
     Route::get('/explore/trending-posts', [ExploreController::class, 'trendingPosts'])
@@ -80,6 +82,8 @@ Route::middleware('throttle:api')->group(function () {
         Route::post('/subscriptions/confirm-checkout', [SubscriptionCheckoutController::class, 'confirmCheckout']);
         Route::get('/creator-profiles/{slug}/subscription-status', [SubscriptionController::class, 'statusByCreator']);
         Route::patch('/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel']);
+        Route::post('/creator-profiles/{slug}/follow', [CreatorProfileFollowController::class, 'follow']);
+        Route::delete('/creator-profiles/{slug}/follow', [CreatorProfileFollowController::class, 'unfollow']);
 
         Route::post('/creator-profiles/{slug}/posts/{postSlug}/comments', [PostCommentController::class, 'store']);
         Route::post('/creator-profiles/{slug}/posts/{postSlug}/view', [CreatorProfilePostController::class, 'recordView']);

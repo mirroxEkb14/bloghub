@@ -35,7 +35,6 @@ class FeedController extends Controller
 
         if ($user->hasRole('super_admin')) {
             $query = Post::query()->whereNull('required_tier_id');
-            $subscribedProfileIds = null;
         } else {
             $subscribedProfileIds = Subscription::query()
                 ->where('user_id', $user->id)
@@ -52,11 +51,14 @@ class FeedController extends Controller
                 ->values()
                 ->all();
 
-            if (count($subscribedProfileIds) === 0) {
+            $followedProfileIds = $user->followingCreatorProfiles()->get()->pluck('id')->all();
+            $profileIds = array_values(array_unique(array_merge($subscribedProfileIds, $followedProfileIds)));
+
+            if (count($profileIds) === 0) {
                 $query = Post::query()->whereRaw('1 = 0');
             } else {
                 $query = Post::query()
-                    ->whereIn('creator_profile_id', $subscribedProfileIds)
+                    ->whereIn('creator_profile_id', $profileIds)
                     ->whereNull('required_tier_id');
             }
         }
@@ -88,6 +90,8 @@ class FeedController extends Controller
 
         if ($user->hasRole('super_admin')) {
             $query = Post::query()->whereNotNull('required_tier_id');
+            $creatorLevels = [];
+            $followedProfileIds = [];
         } else {
             $subscriptions = Subscription::query()
                 ->where('user_id', $user->id)
@@ -106,20 +110,32 @@ class FeedController extends Controller
                 ->map(fn ($tiers) => $tiers->max('level'))
                 ->all();
 
-            if (count($creatorLevels) === 0) {
+            $followedProfileIds = $user->followingCreatorProfiles()->get()->pluck('id')->all();
+            $subscribedProfileIds = array_keys($creatorLevels);
+
+            if (count($subscribedProfileIds) === 0 && count($followedProfileIds) === 0) {
                 $query = Post::query()->whereRaw('1 = 0');
-                $profileIds = [];
             } else {
-                $profileIds = array_keys($creatorLevels);
                 $query = Post::query()
                     ->whereNotNull('required_tier_id')
-                    ->whereIn('creator_profile_id', $profileIds)
-                    ->whereHas('requiredTier', function ($q) use ($creatorLevels) {
-                        $q->where(function ($q2) use ($creatorLevels) {
-                            foreach ($creatorLevels as $profileId => $level) {
-                                $q2->orWhere(fn ($q3) => $q3->where('creator_profile_id', $profileId)->where('level', '<=', $level));
-                            }
-                        });
+                    ->where(function ($q) use ($subscribedProfileIds, $creatorLevels, $followedProfileIds) {
+                        if (count($subscribedProfileIds) > 0) {
+                            $q->where(function ($q2) use ($subscribedProfileIds, $creatorLevels) {
+                                $q2->whereIn('creator_profile_id', $subscribedProfileIds)
+                                    ->whereHas('requiredTier', function ($q3) use ($creatorLevels) {
+                                        $q3->where(function ($q4) use ($creatorLevels) {
+                                            foreach ($creatorLevels as $profileId => $level) {
+                                                $q4->orWhere(fn ($q5) => $q5->where('creator_profile_id', $profileId)->where('level', '<=', $level));
+                                            }
+                                        });
+                                    });
+                            });
+                        }
+                        if (count($followedProfileIds) > 0) {
+                            $q->orWhere(function ($q2) use ($followedProfileIds) {
+                                $q2->whereIn('creator_profile_id', $followedProfileIds);
+                            });
+                        }
                     });
             }
         }
@@ -139,8 +155,25 @@ class FeedController extends Controller
         $perPage = min((int) $request->input('per_page', 15), 50);
         $posts = $query->paginate($perPage);
 
+        $isSuperAdmin = $user->hasRole('super_admin');
+        $userCreatorProfileId = $user->creatorProfile?->id;
+
+        $posts->getCollection()->each(function (Post $post) use ($user, $isSuperAdmin, $userCreatorProfileId, $creatorLevels) {
+            if ($isSuperAdmin) {
+                $post->user_has_access = true;
+                return;
+            }
+            if ($userCreatorProfileId !== null && $post->creator_profile_id === $userCreatorProfileId) {
+                $post->user_has_access = true;
+                return;
+            }
+            $userLevel = $creatorLevels[$post->creator_profile_id] ?? null;
+            $requiredLevel = $post->requiredTier?->level ?? 0;
+            $post->user_has_access = $userLevel !== null && $userLevel >= $requiredLevel;
+        });
+
         $request->attributes->set('creator_profile_is_owner', false);
-        $request->attributes->set('creator_profile_is_super_admin', $user->hasRole('super_admin'));
+        $request->attributes->set('creator_profile_is_super_admin', $isSuperAdmin);
         $request->attributes->set('creator_profile_user_tier_level', PHP_INT_MAX);
 
         return PostResource::collection($posts);
@@ -152,6 +185,9 @@ class FeedController extends Controller
 
         if ($user->hasRole('super_admin')) {
             $query = Post::query();
+            $subscribedProfileIds = [];
+            $creatorLevels = [];
+            $followedProfileIds = [];
         } else {
             $subscribedProfileIds = Subscription::query()
                 ->where('user_id', $user->id)
@@ -184,15 +220,17 @@ class FeedController extends Controller
                 ->map(fn ($tiers) => $tiers->max('level'))
                 ->all();
 
+            $followedProfileIds = $user->followingCreatorProfiles()->get()->pluck('id')->all();
+            $subscribedOrFollowedIds = array_values(array_unique(array_merge($subscribedProfileIds, $followedProfileIds)));
             $profileIds = array_keys($creatorLevels);
 
-            if (count($subscribedProfileIds) === 0 && count($profileIds) === 0) {
+            if (count($subscribedOrFollowedIds) === 0 && count($profileIds) === 0) {
                 $query = Post::query()->whereRaw('1 = 0');
             } else {
-                $query = Post::query()->where(function ($q) use ($subscribedProfileIds, $profileIds, $creatorLevels) {
-                    if (count($subscribedProfileIds) > 0) {
-                        $q->where(function ($q2) use ($subscribedProfileIds) {
-                            $q2->whereIn('creator_profile_id', $subscribedProfileIds)
+                $query = Post::query()->where(function ($q) use ($subscribedOrFollowedIds, $profileIds, $creatorLevels, $followedProfileIds) {
+                    if (count($subscribedOrFollowedIds) > 0) {
+                        $q->where(function ($q2) use ($subscribedOrFollowedIds) {
+                            $q2->whereIn('creator_profile_id', $subscribedOrFollowedIds)
                                 ->whereNull('required_tier_id');
                         });
                     }
@@ -202,11 +240,17 @@ class FeedController extends Controller
                                 ->whereIn('creator_profile_id', $profileIds)
                                 ->whereHas('requiredTier', function ($q3) use ($creatorLevels) {
                                     $q3->where(function ($q4) use ($creatorLevels) {
-                                        foreach ($creatorLevels as $profileId => $level) {
-                                            $q4->orWhere(fn ($q5) => $q5->where('creator_profile_id', $profileId)->where('level', '<=', $level));
+                                        foreach ($creatorLevels as $creatorProfileId => $level) {
+                                            $q4->orWhere(fn ($q5) => $q5->where('creator_profile_id', $creatorProfileId)->where('level', '<=', $level));
                                         }
                                     });
                                 });
+                        });
+                    }
+                    if (count($followedProfileIds) > 0) {
+                        $q->orWhere(function ($q2) use ($followedProfileIds) {
+                            $q2->whereNotNull('required_tier_id')
+                                ->whereIn('creator_profile_id', $followedProfileIds);
                         });
                     }
                 });
@@ -228,8 +272,29 @@ class FeedController extends Controller
         $perPage = min((int) $request->input('per_page', 15), 50);
         $posts = $query->paginate($perPage);
 
+        $isSuperAdmin = $user->hasRole('super_admin');
+        $userCreatorProfileId = $user->creatorProfile?->id;
+
+        $posts->getCollection()->each(function (Post $post) use ($user, $isSuperAdmin, $userCreatorProfileId, $creatorLevels, $followedProfileIds) {
+            if ($post->required_tier_id === null) {
+                $post->user_has_access = true;
+                return;
+            }
+            if ($isSuperAdmin) {
+                $post->user_has_access = true;
+                return;
+            }
+            if ($userCreatorProfileId !== null && $post->creator_profile_id === $userCreatorProfileId) {
+                $post->user_has_access = true;
+                return;
+            }
+            $userLevel = $creatorLevels[$post->creator_profile_id] ?? null;
+            $requiredLevel = $post->requiredTier?->level ?? 0;
+            $post->user_has_access = $userLevel !== null && $userLevel >= $requiredLevel;
+        });
+
         $request->attributes->set('creator_profile_is_owner', false);
-        $request->attributes->set('creator_profile_is_super_admin', $user->hasRole('super_admin'));
+        $request->attributes->set('creator_profile_is_super_admin', $isSuperAdmin);
         $request->attributes->set('creator_profile_user_tier_level', PHP_INT_MAX);
 
         return PostResource::collection($posts);

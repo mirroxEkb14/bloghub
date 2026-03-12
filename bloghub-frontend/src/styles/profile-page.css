@@ -197,6 +197,30 @@
   color: var(--text-muted);
 }
 
+.profile-stat-follow {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.profile-stat-follow:hover .profile-stat-label,
+.profile-stat-follow:focus-visible .profile-stat-label {
+  text-decoration: underline;
+  color: var(--accent, var(--text));
+}
+
+.profile-stat-follow:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.profile-stat-icon-check {
+  stroke: var(--follow-check-color, #22c55e);
+}
+
 .profile-social-links {
   display: flex;
   flex-wrap: wrap;

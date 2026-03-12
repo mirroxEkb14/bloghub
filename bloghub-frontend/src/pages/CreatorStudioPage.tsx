@@ -61,7 +61,8 @@ export default function CreatorStudioPage() {
   const [editingAbout, setEditingAbout] = useState(false);
   const [tierModal, setTierModal] = useState<{ tier: DraftTier | null; isNew: boolean } | null>(null);
   const [socialModalKey, setSocialModalKey] = useState<SocialKey | null>(null);
-  const [serverSubscriptionsCount, setServerSubscriptionsCount] = useState<number | null>(null);
+  const [serverFollowersCount, setServerFollowersCount] = useState<number | null>(null);
+  const [serverSubscribersCount, setServerSubscribersCount] = useState<number | null>(null);
   const [showTagsModal, setShowTagsModal] = useState(false);
   const [uploadingTierCoverId, setUploadingTierCoverId] = useState<number | null>(null);
   const [tierIdForCoverUpload, setTierIdForCoverUpload] = useState<number | null>(null);
@@ -143,7 +144,8 @@ export default function CreatorStudioPage() {
           setMode('edit');
           setProfileId(me.id);
           setProfileSlug(me.slug ?? null);
-          setServerSubscriptionsCount(me.subscriptions_count ?? null);
+          setServerFollowersCount(me.followers_count ?? null);
+          setServerSubscribersCount(me.subscribers_count ?? null);
           setProfileDraft({
             display_name: me.display_name ?? '',
             slug: me.slug ?? '',
@@ -177,7 +179,8 @@ export default function CreatorStudioPage() {
           setMode('create');
           setProfileId(null);
           setProfileSlug(null);
-          setServerSubscriptionsCount(null);
+          setServerFollowersCount(null);
+          setServerSubscribersCount(null);
           setProfileDraft(emptyProfileDraft());
           setTiersDraft([]);
           setPostsDraft([]);
@@ -416,7 +419,8 @@ export default function CreatorStudioPage() {
           profile_cover_path: profileDraft.profile_cover_path,
         };
         const updatedProfile = await creatorProfilesApi.updateMe(profilePayload);
-        setServerSubscriptionsCount(updatedProfile?.subscriptions_count ?? serverSubscriptionsCount);
+        setServerFollowersCount(updatedProfile?.followers_count ?? serverFollowersCount);
+        setServerSubscribersCount(updatedProfile?.subscribers_count ?? serverSubscribersCount);
         for (const id of tierIdsToDelete) {
           await tiersApi.delete(id);
         }
@@ -896,8 +900,12 @@ export default function CreatorStudioPage() {
               <div className="profile-stats-row">
                 <div className="profile-stats">
                   <span className="profile-stat">
-                    <span className="profile-stat-value">{serverSubscriptionsCount ?? 0}</span>
+                    <span className="profile-stat-value">{serverFollowersCount ?? 0}</span>
                     <span className="profile-stat-label">Followers</span>
+                  </span>
+                  <span className="profile-stat">
+                    <span className="profile-stat-value">{serverSubscribersCount ?? 0}</span>
+                    <span className="profile-stat-label">Subscribers</span>
                   </span>
                   <span className="profile-stat">
                     <span className="profile-stat-value">{visiblePosts.length}</span>

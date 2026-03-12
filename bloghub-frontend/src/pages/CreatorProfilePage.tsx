@@ -45,6 +45,7 @@ export default function CreatorProfilePage() {
   const [shareToast, setShareToast] = useState(false);
   const [postsRefetchTrigger, setPostsRefetchTrigger] = useState(0);
   const [likingPostId, setLikingPostId] = useState<number | null>(null);
+  const [followLoading, setFollowLoading] = useState(false);
   const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevPostsPageRef = useRef(1);
   const scrollToPaginationAfterLoadRef = useRef(false);
@@ -343,6 +344,25 @@ export default function CreatorProfilePage() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [previewPost, closePreview]);
 
+  const canFollow = Boolean(user && profile && user.creator_profile?.slug !== profile.slug);
+  const handleFollow = useCallback(async () => {
+    if (!slug || !canFollow || !profile) return;
+    setFollowLoading(true);
+    try {
+      if (profile.is_following) {
+        await creatorProfilesApi.unfollow(slug);
+        setProfile((p) => (p ? { ...p, is_following: false, followers_count: Math.max(0, (p.followers_count ?? 0) - 1) } : p));
+      } else {
+        await creatorProfilesApi.follow(slug);
+        setProfile((p) => (p ? { ...p, is_following: true, followers_count: (p.followers_count ?? 0) + 1 } : p));
+      }
+    } catch {
+      // state unchanged
+    } finally {
+      setFollowLoading(false);
+    }
+  }, [slug, canFollow, profile?.is_following]);
+
   if (loading) {
     return <LoadingPage message="Loading creator..." />;
   }
@@ -362,6 +382,7 @@ export default function CreatorProfilePage() {
   }
 
   const displayName = profile.display_name || profile.user?.name || profile.slug || 'Creator';
+  const isOwnProfile = user?.creator_profile?.slug === profile.slug;
 
   return (
     <div className="profile-page">
@@ -394,16 +415,59 @@ export default function CreatorProfilePage() {
               )}
               <div className="profile-stats-row">
                 <div className="profile-stats">
-                  <span className="profile-stat" title="Followers">
+                  {canFollow ? (
+                    <button
+                      type="button"
+                      className="profile-stat profile-stat-follow"
+                      onClick={handleFollow}
+                      disabled={followLoading}
+                      aria-busy={followLoading}
+                      title={profile.is_following ? 'Unfollow' : 'Follow'}
+                      aria-label={profile.is_following ? 'Unfollow this creator' : 'Follow this creator'}
+                    >
+                      <span className="profile-stat-icon" aria-hidden>
+                        {profile.is_following ? (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="7" r="4" />
+                            <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
+                            <path d="M16 19l2 2 4-5" className="profile-stat-icon-check" />
+                          </svg>
+                        ) : (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                          </svg>
+                        )}
+                      </span>
+                      <span className="profile-stat-value">{profile.followers_count ?? 0}</span>
+                      <span className="profile-stat-label">Followers</span>
+                    </button>
+                  ) : (
+                    <span className="profile-stat" title="Followers">
+                      <span className="profile-stat-icon" aria-hidden>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                          <circle cx="9" cy="7" r="4" />
+                          <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                      </span>
+                      <span className="profile-stat-value">{profile.followers_count ?? 0}</span>
+                      <span className="profile-stat-label">Followers</span>
+                    </span>
+                  )}
+                  <span className="profile-stat" title="Subscribers">
                     <span className="profile-stat-icon" aria-hidden>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                        <circle cx="9" cy="7" r="4" />
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                        <path d="M12 3v4" />
+                        <path d="M12 15v4" />
+                        <path d="M8 11h8" />
                       </svg>
                     </span>
-                    <span className="profile-stat-value">{profile.subscriptions_count ?? 0}</span>
-                    <span className="profile-stat-label">Followers</span>
+                    <span className="profile-stat-value">{profile.subscribers_count ?? 0}</span>
+                    <span className="profile-stat-label">Subscribers</span>
                   </span>
                   <span className="profile-stat" title="Posts">
                     <span className="profile-stat-icon" aria-hidden>

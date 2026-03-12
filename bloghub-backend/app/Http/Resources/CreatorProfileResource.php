@@ -29,7 +29,10 @@ class CreatorProfileResource extends JsonResource
             ]),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
             'posts_count' => $this->when(isset($this->posts_count), fn () => $this->posts_count),
+            'followers_count' => $this->when(isset($this->followers_count), fn () => (int) $this->followers_count),
+            'subscribers_count' => $this->when(isset($this->subscribers_count), fn () => (int) $this->subscribers_count),
             'subscriptions_count' => $this->when(isset($this->subscriptions_count), fn () => (int) $this->subscriptions_count),
+            'is_following' => $this->when(isset($this->is_following), fn () => (bool) $this->is_following),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

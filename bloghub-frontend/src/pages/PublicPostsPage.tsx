@@ -151,7 +151,7 @@ export default function PublicPostsPage() {
           <div className="public-feed-header-inner">
             <h1 className="profile-name">Public posts</h1>
             <p className="profile-meta">
-              Public posts from creators you&apos;re subscribed to
+              Public posts from creators you follow or subscribe to
             </p>
             <div className="public-feed-filter-row">
               <div className="public-feed-search-wrap">
