@@ -87,7 +87,7 @@
 
 .membership-tab-active {
   color: var(--text);
-  background: transparent;
+  background: var(--hover-overlay);
 }
 
 .membership-tab-active:hover {
