@@ -12,7 +12,7 @@ import {
 import LoadingPage from '../components/LoadingPage';
 import PostMediaContainer from '../components/PostMediaContainer';
 
-const EMBLA_OPTS = { loop: true, align: 'start' as const, axis: 'x' as const, dragFree: false };
+const EMBLA_OPTS = { loop: false, align: 'start' as const, axis: 'x' as const, dragFree: false };
 
 function useEmblaClickGuard(emblaApi: ReturnType<typeof useEmblaCarousel>[1]) {
   const didDragRef = useRef(false);

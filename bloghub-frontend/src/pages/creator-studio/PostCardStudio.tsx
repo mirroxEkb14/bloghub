@@ -55,11 +55,11 @@ export function PostCardStudio({
         </div>
         <div
           className="post-card-media-wrap-studio"
-          onClick={onMediaClick}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && onMediaClick()}
-          aria-label="Change media"
+          onClick={post.media_type === 'Audio' ? undefined : onMediaClick}
+          role={post.media_type === 'Audio' ? undefined : 'button'}
+          tabIndex={post.media_type === 'Audio' ? undefined : 0}
+          onKeyDown={post.media_type === 'Audio' ? undefined : (e) => e.key === 'Enter' && onMediaClick()}
+          aria-label={post.media_type === 'Audio' ? undefined : 'Change media'}
         >
           <span className="post-card-media-hint">{postMediaHint}</span>
           {mediaDisplayUrl &&
@@ -81,9 +81,19 @@ export function PostCardStudio({
             />
           )}
           {mediaDisplayUrl && post.media_type === 'Audio' && (
-            <figure className="post-card-media post-card-media-audio">
-              <audio src={mediaDisplayUrl} controls />
-            </figure>
+            <>
+              <figure className="post-card-media post-card-media-audio">
+                <audio src={mediaDisplayUrl} controls />
+              </figure>
+              <button
+                type="button"
+                className="post-card-media-audio-bar"
+                onClick={onMediaClick}
+                aria-label="Change media"
+              >
+                <span className="post-card-media-audio-bar-hint">{postMediaHint}</span>
+              </button>
+            </>
           )}
           {!mediaDisplayUrl && (
             <div className="post-card-media post-card-media-placeholder" />
@@ -113,12 +123,12 @@ export function PostCardStudio({
         <div className="post-card-studio-excerpt-row">
           <label className="post-card-studio-label">Excerpt (optional)</label>
           <textarea
-            className="post-card-studio-excerpt-input"
+            className="post-card-studio-excerpt-input post-card-studio-excerpt-input-scroll"
             value={post.excerpt ?? ''}
             onChange={(e) => onUpdate({ excerpt: e.target.value || null })}
             placeholder="Short summary for previews"
             maxLength={255}
-            rows={2}
+            rows={3}
             aria-label="Excerpt"
           />
         </div>
