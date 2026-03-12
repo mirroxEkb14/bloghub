@@ -6,7 +6,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import LoadingPage from '../components/LoadingPage';
 import PostMediaContainer from '../components/PostMediaContainer';
+import { stripHtml } from '../components/PostContent';
+import { LockCircleIcon, ShareIcon, SearchIcon } from '../components/icons';
 import { formatDateTimeLocal } from '../utils/date';
+import '../styles/profile-page.css';
 
 const PER_PAGE = 15;
 const SEARCH_DEBOUNCE_MS = 300;
@@ -156,6 +159,7 @@ export default function TierPostsPage() {
 
   const displayName = (post: Post) => post.creator_profile?.display_name ?? 'Creator';
   const tierLabel = (post: Post) => post.required_tier?.tier_name ?? 'Tier';
+  const isLocked = (post: Post) => !!post.required_tier && post.user_has_access === false;
 
   return (
     <div className="profile-page public-feed-page tier-feed-page">
@@ -165,15 +169,12 @@ export default function TierPostsPage() {
             <div className="public-feed-header-inner">
               <h1 className="profile-name">Tier posts</h1>
               <p className="profile-meta">
-                Exclusive posts from subscription tiers you have access to
+                Tier posts from creators you follow or subscribe to
               </p>
               <div className="public-feed-filter-row">
                 <div className="public-feed-search-wrap">
                   <span className="public-feed-search-icon" aria-hidden>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="11" cy="11" r="8" />
-                      <path d="m21 21-4.3-4.3" />
-                    </svg>
+                    <SearchIcon size={18} />
                   </span>
                   <input
                     type="search"
@@ -197,7 +198,7 @@ export default function TierPostsPage() {
             <div className="profile-posts-empty">
               <p>No tier posts yet</p>
               <p className="profile-meta" style={{ marginTop: '0.5rem' }}>
-                Subscribe to creators&apos; tiers to see their exclusive posts here
+                Follow or subscribe to creators to see their tier posts here
               </p>
               <Link to="/explore" className="btn btn-primary" style={{ marginTop: '1rem' }}>
                 Explore creators
@@ -209,9 +210,10 @@ export default function TierPostsPage() {
                 {posts.map((post) => {
                   const creatorSlug = post.creator_profile?.slug ?? '';
                   const postUrl = creatorSlug ? `/creator/${creatorSlug}/post/${post.slug}` : '#';
+                  const locked = isLocked(post);
                   return (
                     <li key={post.id} className="post-card-wrapper">
-                      <article className="post-card">
+                      <article className={`post-card ${locked ? 'post-card-locked' : ''}`}>
                         <header className="post-card-header">
                           {post.creator_profile?.profile_avatar_url ? (
                             <img
@@ -233,7 +235,14 @@ export default function TierPostsPage() {
                               {displayName(post)}
                             </Link>
                             <span className="post-card-visibility">
-                              {tierLabel(post)}
+                              {locked ? (
+                                <>
+                                  <LockCircleIcon size={24} className="post-card-lock-icon" />
+                                  {post.required_tier?.tier_name}
+                                </>
+                              ) : (
+                                tierLabel(post)
+                              )}
                               {post.created_at && (
                                 <>
                                   <span className="post-card-sep"> • </span>
@@ -265,13 +274,7 @@ export default function TierPostsPage() {
                                   onClick={() => handleSharePost(post)}
                                 >
                                   <span className="post-card-dropdown-item-icon" aria-hidden>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                      <circle cx="6" cy="12" r="3" />
-                                      <circle cx="18" cy="5" r="3" />
-                                      <circle cx="18" cy="19" r="3" />
-                                      <line x1="6" y1="12" x2="18" y2="5" />
-                                      <line x1="6" y1="12" x2="18" y2="19" />
-                                    </svg>
+                                    <ShareIcon size={18} />
                                   </span>
                                   Share
                                 </button>
@@ -280,37 +283,76 @@ export default function TierPostsPage() {
                           </div>
                         </header>
                         <div className="post-card-body">
-                          <Link to={postUrl} className="post-card-title-row" style={{ textDecoration: 'none', color: 'inherit' }}>
-                            <h3 className="post-card-title">{post.title}</h3>
-                          </Link>
-                          {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
-                            <Link to={postUrl}>
-                              <PostMediaContainer
-                                mediaUrl={post.media_url}
-                                mediaType={post.media_type}
-                                figureClassName="post-card-media"
-                                videoWrapClassName="post-card-media-video-wrap"
-                              />
-                            </Link>
-                          )}
-                          {post.media_url && post.media_type === 'Video' && (
-                            <PostMediaContainer
-                              mediaUrl={post.media_url}
-                              mediaType="Video"
-                              figureClassName="post-card-media"
-                              videoWrapClassName="post-card-media-video-wrap"
-                              videoAttrs={{ controls: true }}
-                            />
-                          )}
-                          {post.media_url && post.media_type === 'Audio' && (
-                            <figure className="post-card-media post-card-media-audio">
-                              <audio src={post.media_url} controls />
-                            </figure>
-                          )}
-                          {post.excerpt && (
-                            <p className="post-card-excerpt">{post.excerpt}</p>
-                          )}
-                          <footer className="post-card-footer">
+                          {locked ? (
+                            <>
+                              {post.content_text && (
+                                <div className="post-card-preview-blur" aria-hidden>
+                                  {stripHtml(post.content_text)}
+                                </div>
+                              )}
+                              <div
+                                className={`post-card-lock-overlay${post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif' || post.media_type === 'Video') ? ' post-card-lock-overlay-with-image' : ''}`}
+                              >
+                                {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
+                                  <div
+                                    className="post-card-lock-overlay-bg"
+                                    style={{ backgroundImage: `url(${post.media_url})` }}
+                                    aria-hidden
+                                  />
+                                )}
+                                {post.media_url && post.media_type === 'Video' && (
+                                  <div className="post-card-lock-overlay-bg post-card-lock-overlay-video" aria-hidden>
+                                    <video src={post.media_url} muted loop playsInline autoPlay />
+                                  </div>
+                                )}
+                                <div className="post-card-lock-icon-circle" aria-hidden>
+                                  <LockCircleIcon className="post-card-lock-svg" />
+                                </div>
+                                <h3 className="post-card-unlock-title">Subscriber-only post</h3>
+                                <p className="post-card-unlock-desc">
+                                  Subscribe to {post.required_tier?.tier_name} to unlock this post
+                                </p>
+                                <Link
+                                  to={creatorSlug ? `/creator/${creatorSlug}#profile-tiers` : '/explore'}
+                                  className="btn btn-primary post-card-join-btn"
+                                >
+                                  View tiers
+                                </Link>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <Link to={postUrl} className="post-card-title-row" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                <h3 className="post-card-title">{post.title}</h3>
+                              </Link>
+                              {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
+                                <Link to={postUrl}>
+                                  <PostMediaContainer
+                                    mediaUrl={post.media_url}
+                                    mediaType={post.media_type}
+                                    figureClassName="post-card-media"
+                                    videoWrapClassName="post-card-media-video-wrap"
+                                  />
+                                </Link>
+                              )}
+                              {post.media_url && post.media_type === 'Video' && (
+                                <PostMediaContainer
+                                  mediaUrl={post.media_url}
+                                  mediaType="Video"
+                                  figureClassName="post-card-media"
+                                  videoWrapClassName="post-card-media-video-wrap"
+                                  videoAttrs={{ controls: true }}
+                                />
+                              )}
+                              {post.media_url && post.media_type === 'Audio' && (
+                                <figure className="post-card-media post-card-media-audio">
+                                  <audio src={post.media_url} controls />
+                                </figure>
+                              )}
+                              {post.excerpt && (
+                                <p className="post-card-excerpt">{post.excerpt}</p>
+                              )}
+                              <footer className="post-card-footer">
                             <span className="post-card-stat" title="Views">
                               <span className="post-card-stat-icon" aria-hidden>👁</span> {post.views_count ?? 0}
                             </span>
@@ -363,6 +405,8 @@ export default function TierPostsPage() {
                               </span>
                             )}
                           </footer>
+                            </>
+                          )}
                         </div>
                       </article>
                     </li>

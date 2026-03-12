@@ -8,6 +8,7 @@ use App\Http\Requests\Api\SubscribeRequest;
 use App\Http\Resources\SubscriptionResource;
 use App\Http\Resources\TierResource;
 use App\Models\CreatorProfile;
+use App\Models\Payment;
 use App\Models\Subscription;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
@@ -45,6 +46,20 @@ class SubscriptionController extends Controller
             ->with(['tier', 'tier.creatorProfile'])
             ->orderByDesc('created_at')
             ->get();
+
+        $subscriptionIds = $subscriptions->pluck('id')->all();
+        if (count($subscriptionIds) > 0) {
+            $latestPaymentBySub = Payment::query()
+                ->whereIn('subscription_id', $subscriptionIds)
+                ->orderByDesc('checkout_date')
+                ->get()
+                ->unique('subscription_id')
+                ->keyBy('subscription_id');
+            $subscriptions->each(function (Subscription $sub) use ($latestPaymentBySub) {
+                $payment = $latestPaymentBySub->get($sub->id);
+                $sub->setAttribute('card_last4', $payment?->card_last4);
+            });
+        }
 
         return SubscriptionResource::collection($subscriptions);
     }

@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import LoadingPage from '../components/LoadingPage';
 import PostMediaContainer from '../components/PostMediaContainer';
+import { SearchIcon, ShareIcon } from '../components/icons';
 import { formatDateTimeLocal } from '../utils/date';
 
 const PER_PAGE = 15;
@@ -151,15 +152,12 @@ export default function PublicPostsPage() {
           <div className="public-feed-header-inner">
             <h1 className="profile-name">Public posts</h1>
             <p className="profile-meta">
-              Public posts from creators you&apos;re subscribed to
+              Public posts from creators you follow or subscribe to
             </p>
             <div className="public-feed-filter-row">
               <div className="public-feed-search-wrap">
                 <span className="public-feed-search-icon" aria-hidden>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="m21 21-4.3-4.3" />
-                  </svg>
+                  <SearchIcon size={18} />
                 </span>
                 <input
                   type="search"
@@ -251,13 +249,7 @@ export default function PublicPostsPage() {
                                 onClick={() => handleSharePost(post)}
                               >
                                 <span className="post-card-dropdown-item-icon" aria-hidden>
-                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="6" cy="12" r="3" />
-                                    <circle cx="18" cy="5" r="3" />
-                                    <circle cx="18" cy="19" r="3" />
-                                    <line x1="6" y1="12" x2="18" y2="5" />
-                                    <line x1="6" y1="12" x2="18" y2="19" />
-                                  </svg>
+                                  <ShareIcon size={18} />
                                 </span>
                                 Share
                               </button>

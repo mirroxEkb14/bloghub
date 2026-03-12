@@ -1,3 +1,7 @@
+.page-center.memberships-page {
+  justify-content: flex-start;
+}
+
 .memberships-page {
   padding: 1.5rem 1rem 2rem;
 }
@@ -47,29 +51,162 @@
   color: var(--text-muted);
 }
 
+.membership-tabs {
+  display: flex;
+  width: 100%;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.membership-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.75rem 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 0;
+  background: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.membership-tab-icon {
+  flex-shrink: 0;
+}
+
+.membership-tab:hover {
+  background: var(--hover-overlay);
+  color: var(--text);
+}
+
+.membership-tab-active {
+  color: var(--text);
+  background: var(--hover-overlay);
+}
+
+.membership-tab-active:hover {
+  background: var(--hover-overlay);
+}
+
+.membership-tabs-empty {
+  margin: 1rem 0 0;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
 .memberships-list {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 1rem 0 0;
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
+.membership-list-item {
+  position: relative;
+  list-style: none;
+}
+
+.membership-list-item.membership-card-cancelable:has(.membership-card-cancel-icon:hover) .membership-card {
+  border-color: rgba(248, 113, 113, 0.6);
+  box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.4), 0 0 12px rgba(248, 113, 113, 0.15);
+}
+
+.membership-list-item .membership-card-cancel-icon {
+  position: absolute;
+  top: 0;
+  right: -0.25rem;
+  z-index: 2;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  transform: translateY(-50%);
+}
+
+.membership-list-item .membership-card-cancel-icon:hover {
+  background: var(--color-error, #dc2626);
+}
+
+.membership-list-item .membership-card-cancel-icon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.membership-cursor-label {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  font-size: 0.75rem;
+  color: var(--text);
+  background: var(--bg-input);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-drop);
+  white-space: nowrap;
+}
+
 .membership-card {
   padding: 1.25rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-md, var(--radius));
   border: 1px solid var(--border);
-  background: var(--card-bg);
+  background: var(--card-bg, var(--bg-card));
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .membership-card-inactive {
   opacity: 0.85;
+}
+
+.creator-link-list {
+  margin-top: 0;
+}
+
+.creator-link-card {
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md, var(--radius));
+  border: 1px solid var(--border);
+  background: var(--card-bg, var(--bg-card));
+  list-style: none;
+}
+
+.creator-link-card .membership-card-main {
+  flex: 1 1 auto;
+}
+
+.creator-link-date {
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.creator-link-date-prefix {
+  color: var(--text-muted);
+}
+
+.creator-link-date-value {
+  color: var(--text-secondary);
 }
 
 .membership-card-main {
@@ -139,13 +276,25 @@
   margin-top: 0.25rem;
 }
 
+.membership-card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  margin-top: 0.35rem;
+}
+
+.membership-card-last4 {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
 .membership-card-status {
   display: inline-block;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-top: 0.35rem;
   padding: 0.2rem 0.5rem;
   border-radius: var(--radius-sm);
   width: fit-content;
@@ -162,24 +311,56 @@
   color: var(--text-muted);
 }
 
-.membership-card-actions {
+.membership-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay);
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.5rem;
-  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
 }
 
-.membership-card-cancel {
+.membership-confirm-dialog {
+  background: var(--card-bg, var(--bg-card));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, var(--radius));
+  padding: 1.5rem;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: var(--shadow-drop);
+}
+
+.membership-confirm-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+}
+
+.membership-confirm-text {
+  margin: 0 0 1.25rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.membership-confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.membership-confirm-cancel-btn {
   border-color: var(--color-error, #f87171);
+  background: rgba(248, 113, 113, 0.15);
   color: var(--color-error, #f87171);
 }
 
-.membership-card-cancel:hover:not(:disabled) {
-  background: rgba(248, 113, 113, 0.1);
+.membership-confirm-cancel-btn:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.25);
 }
 
-/* Billings list */
 .billings-list {
   list-style: none;
   padding: 0;

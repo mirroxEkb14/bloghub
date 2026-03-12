@@ -200,7 +200,10 @@ export type CreatorProfile = {
   user?: CreatorProfileUser;
   tags?: Tag[];
   posts_count?: number;
+  followers_count?: number;
+  subscribers_count?: number;
   subscriptions_count?: number;
+  is_following?: boolean;
   created_at?: string;
   updated_at?: string;
 };
@@ -328,8 +331,26 @@ export const creatorProfilesApi = {
     ).then(unwrapData);
   },
 
+  follow(slug: string) {
+    return api<{ message: string }>(`/api/creator-profiles/${encodeURIComponent(slug)}/follow`, {
+      method: 'POST',
+    });
+  },
+
+  unfollow(slug: string) {
+    return api<{ message: string }>(`/api/creator-profiles/${encodeURIComponent(slug)}/follow`, {
+      method: 'DELETE',
+    });
+  },
+
   me() {
     return api<CreatorProfile | { data: CreatorProfile }>('/api/me/creator-profile').then(unwrapData);
+  },
+
+  getFollowing() {
+    return api<{ data: { creator_profile: CreatorProfile; followed_at: string | null }[] }>(
+      '/api/me/following'
+    ).then((r) => (r && typeof r === 'object' && 'data' in r ? (r as { data: { creator_profile: CreatorProfile; followed_at: string | null }[] }).data : []) ?? []);
   },
 
   updateMe(body: {
@@ -641,6 +662,7 @@ export type SubscriptionWithTier = {
   updated_at: string | null;
   tier: Tier;
   creator: SubscriptionCreator;
+  card_last4?: string | null;
 };
 
 export type SubscriptionStatusResponse = {

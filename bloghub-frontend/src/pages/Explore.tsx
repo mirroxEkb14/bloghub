@@ -11,6 +11,7 @@ import {
 } from '../api/client';
 import LoadingPage from '../components/LoadingPage';
 import PostMediaContainer from '../components/PostMediaContainer';
+import { LockIcon, UnlockIcon } from '../components/icons';
 
 const EMBLA_OPTS = { loop: false, align: 'start' as const, axis: 'x' as const, dragFree: false };
 
@@ -60,23 +61,6 @@ const MEDIA_TYPE_LABELS: Record<string, string> = {
   Video: 'Video',
   Audio: 'Audio',
 };
-
-function LockIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>
-  );
-}
-
-function UnlockIcon() {
-  return (
-    <svg viewBox="0 0 36 36" fill="currentColor" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" className="unlock-icon" aria-hidden>
-      <path d="M26,2a8.2,8.2,0,0,0-8,8.36V15H2V32a2,2,0,0,0,2,2H22a2,2,0,0,0,2-2V15H20V10.36A6.2,6.2,0,0,1,26,4a6.2,6.2,0,0,1,6,6.36v6.83a1,1,0,0,0,2,0V10.36A8.2,8.2,0,0,0,26,2ZM7,17L20,17Q22,17,22,20L22,29Q22,32,19,32L7,32Q4,32,4,29L4,20Q4,17,7,17Z" />
-    </svg>
-  );
-}
 
 export default function ExplorePage() {
   const navigate = useNavigate();
@@ -366,7 +350,7 @@ export default function ExplorePage() {
                             aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
                             title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
                           >
-                            {hasAccess ? <UnlockIcon /> : <LockIcon />}
+                            {hasAccess ? <UnlockIcon className="unlock-icon" /> : <LockIcon />}
                           </span>
                         )}
                       </PostMediaContainer>
@@ -387,7 +371,7 @@ export default function ExplorePage() {
                             aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
                             title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
                           >
-                            {hasAccess ? <UnlockIcon /> : <LockIcon />}
+                            {hasAccess ? <UnlockIcon className="unlock-icon" /> : <LockIcon />}
                           </span>
                         )}
                       </PostMediaContainer>
@@ -408,7 +392,7 @@ export default function ExplorePage() {
                             aria-label={hasAccess ? 'Tier post (you have access)' : 'Tier required'}
                             title={hasAccess ? 'Tier post' : 'Subscribe to a tier to access'}
                           >
-                            {hasAccess ? <UnlockIcon /> : <LockIcon />}
+                            {hasAccess ? <UnlockIcon className="unlock-icon" /> : <LockIcon />}
                           </span>
                         )}
                       </div>

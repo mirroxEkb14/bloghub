@@ -5,8 +5,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import LoadingPage from '../components/LoadingPage';
 import PostMediaContainer from '../components/PostMediaContainer';
+import { stripHtml } from '../components/PostContent';
+import { LockCircleIcon, ShareIcon } from '../components/icons';
 import { formatDateTimeLocal } from '../utils/date';
 import '../styles/public-feed.css';
+import '../styles/profile-page.css';
 
 const PER_PAGE = 15;
 const HOME_SCROLL_KEY = 'homeFeedScroll';
@@ -259,6 +262,7 @@ export default function Home() {
 
   const displayName = (post: Post) => post.creator_profile?.display_name ?? 'Creator';
   const visibilityLabel = (post: Post) => (post.required_tier?.tier_name ? post.required_tier.tier_name : 'Public');
+  const isLocked = (post: Post) => !!post.required_tier && post.user_has_access === false;
 
   return (
     <div className="profile-page public-feed-page home-feed-page">
@@ -294,9 +298,10 @@ export default function Home() {
                 {posts.map((post) => {
                   const creatorSlug = post.creator_profile?.slug ?? '';
                   const postUrl = creatorSlug ? `/creator/${creatorSlug}/post/${post.slug}` : '#';
+                  const locked = isLocked(post);
                   return (
                     <li key={post.id} className="post-card-wrapper">
-                      <article className="post-card">
+                      <article className={`post-card ${locked ? 'post-card-locked' : ''}`}>
                         <header className="post-card-header">
                           {post.creator_profile?.profile_avatar_url ? (
                             <img
@@ -318,7 +323,14 @@ export default function Home() {
                               {displayName(post)}
                             </Link>
                             <span className="post-card-visibility">
-                              {visibilityLabel(post)}
+                              {locked ? (
+                                <>
+                                  <LockCircleIcon size={24} className="post-card-lock-icon" />
+                                  {post.required_tier?.tier_name}
+                                </>
+                              ) : (
+                                visibilityLabel(post)
+                              )}
                               {post.created_at && (
                                 <>
                                   <span className="post-card-sep"> • </span>
@@ -350,13 +362,7 @@ export default function Home() {
                                   onClick={() => handleSharePost(post)}
                                 >
                                   <span className="post-card-dropdown-item-icon" aria-hidden>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                      <circle cx="6" cy="12" r="3" />
-                                      <circle cx="18" cy="5" r="3" />
-                                      <circle cx="18" cy="19" r="3" />
-                                      <line x1="6" y1="12" x2="18" y2="5" />
-                                      <line x1="6" y1="12" x2="18" y2="19" />
-                                    </svg>
+                                    <ShareIcon size={18} />
                                   </span>
                                   Share
                                 </button>
@@ -365,42 +371,82 @@ export default function Home() {
                           </div>
                         </header>
                         <div className="post-card-body">
-                          <Link
-                              to={postUrl}
-                              className="post-card-title-row"
-                              style={{ textDecoration: 'none', color: 'inherit' }}
-                              onClick={() => saveHomeScroll(page)}
-                            >
-                            <h3 className="post-card-title">{post.title}</h3>
-                          </Link>
-                          {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
-                            <Link to={postUrl} onClick={() => saveHomeScroll(page)}>
-                              <PostMediaContainer
-                                mediaUrl={post.media_url}
-                                mediaType={post.media_type}
-                                figureClassName="post-card-media"
-                                videoWrapClassName="post-card-media-video-wrap"
-                              />
-                            </Link>
-                          )}
-                          {post.media_url && post.media_type === 'Video' && (
-                            <PostMediaContainer
-                              mediaUrl={post.media_url}
-                              mediaType="Video"
-                              figureClassName="post-card-media"
-                              videoWrapClassName="post-card-media-video-wrap"
-                              videoAttrs={{ controls: true }}
-                            />
-                          )}
-                          {post.media_url && post.media_type === 'Audio' && (
-                            <figure className="post-card-media post-card-media-audio">
-                              <audio src={post.media_url} controls />
-                            </figure>
-                          )}
-                          {post.excerpt && (
-                            <p className="post-card-excerpt">{post.excerpt}</p>
-                          )}
-                          <footer className="post-card-footer">
+                          {locked ? (
+                            <>
+                              {post.content_text && (
+                                <div className="post-card-preview-blur" aria-hidden>
+                                  {stripHtml(post.content_text)}
+                                </div>
+                              )}
+                              <div
+                                className={`post-card-lock-overlay${post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif' || post.media_type === 'Video') ? ' post-card-lock-overlay-with-image' : ''}`}
+                              >
+                                {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
+                                  <div
+                                    className="post-card-lock-overlay-bg"
+                                    style={{ backgroundImage: `url(${post.media_url})` }}
+                                    aria-hidden
+                                  />
+                                )}
+                                {post.media_url && post.media_type === 'Video' && (
+                                  <div className="post-card-lock-overlay-bg post-card-lock-overlay-video" aria-hidden>
+                                    <video src={post.media_url} muted loop playsInline autoPlay />
+                                  </div>
+                                )}
+                                <div className="post-card-lock-icon-circle" aria-hidden>
+                                  <LockCircleIcon className="post-card-lock-svg" />
+                                </div>
+                                <h3 className="post-card-unlock-title">Subscriber-only post</h3>
+                                <p className="post-card-unlock-desc">
+                                  Subscribe to {post.required_tier?.tier_name} to unlock this post
+                                </p>
+                                <Link
+                                  to={creatorSlug ? `/creator/${creatorSlug}#profile-tiers` : '/explore'}
+                                  className="btn btn-primary post-card-join-btn"
+                                  onClick={() => saveHomeScroll(page)}
+                                >
+                                  View tiers
+                                </Link>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <Link
+                                to={postUrl}
+                                className="post-card-title-row"
+                                style={{ textDecoration: 'none', color: 'inherit' }}
+                                onClick={() => saveHomeScroll(page)}
+                              >
+                                <h3 className="post-card-title">{post.title}</h3>
+                              </Link>
+                              {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
+                                <Link to={postUrl} onClick={() => saveHomeScroll(page)}>
+                                  <PostMediaContainer
+                                    mediaUrl={post.media_url}
+                                    mediaType={post.media_type}
+                                    figureClassName="post-card-media"
+                                    videoWrapClassName="post-card-media-video-wrap"
+                                  />
+                                </Link>
+                              )}
+                              {post.media_url && post.media_type === 'Video' && (
+                                <PostMediaContainer
+                                  mediaUrl={post.media_url}
+                                  mediaType="Video"
+                                  figureClassName="post-card-media"
+                                  videoWrapClassName="post-card-media-video-wrap"
+                                  videoAttrs={{ controls: true }}
+                                />
+                              )}
+                              {post.media_url && post.media_type === 'Audio' && (
+                                <figure className="post-card-media post-card-media-audio">
+                                  <audio src={post.media_url} controls />
+                                </figure>
+                              )}
+                              {post.excerpt && (
+                                <p className="post-card-excerpt">{post.excerpt}</p>
+                              )}
+                              <footer className="post-card-footer">
                             <span className="post-card-stat" title="Views">
                               <span className="post-card-stat-icon" aria-hidden>👁</span> {post.views_count ?? 0}
                             </span>
@@ -457,6 +503,8 @@ export default function Home() {
                               </span>
                             )}
                           </footer>
+                            </>
+                          )}
                         </div>
                       </article>
                     </li>

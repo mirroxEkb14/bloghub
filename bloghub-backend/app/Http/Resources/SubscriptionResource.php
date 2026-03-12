@@ -31,6 +31,7 @@ class SubscriptionResource extends JsonResource
                     'profile_avatar_url' => $profile->profile_avatar_url,
                 ];
             }),
+            'card_last4' => $this->getAttribute('card_last4'),
         ];
     }
 }

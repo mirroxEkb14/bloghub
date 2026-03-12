@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -69,6 +70,12 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);
+    }
+
+    public function followingCreatorProfiles(): BelongsToMany
+    {
+        return $this->belongsToMany(CreatorProfile::class, 'creator_profile_follows', 'user_id', 'creator_profile_id')
+            ->withTimestamps();
     }
 
     public function setPhoneAttribute(?string $value): void
