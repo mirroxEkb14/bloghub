@@ -6,7 +6,7 @@ export const COVER_IMAGE_RECOMMENDED = '1920x480 px';
 export const AVATAR_IMAGE_RECOMMENDED = '256x256 px. Max 5 MB';
 export const TIER_COVER_IMAGE_RECOMMENDED = '400x200 px';
 export const POST_MEDIA_HINT =
-  'Recommended: 1200x720 (16:9). Image/Gif: max 5 MB. Video: max 50 MB. Audio: max 5 MB';
+  'Recommended: 1280x720 (16:9). Image/Gif: max 5 MB. Video: max 50 MB. Audio: max 5 MB';
 export const ACCEPT_MEDIA =
   'image/jpeg,image/png,image/webp,image/gif,video/mp4,audio/mpeg,audio/mp3,audio/mp4,audio/mp4';
 export const MAX_FILE_MB = 5;

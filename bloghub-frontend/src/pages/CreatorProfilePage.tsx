@@ -569,7 +569,14 @@ export default function CreatorProfilePage() {
               <>
                 <ul className="post-card-list">
                   {posts.map((post) => {
-                    const isLocked = !!post.required_tier && !post.user_has_access;
+                    const isOwnProfile = user?.creator_profile?.slug === profile.slug;
+                    const isLocked = !isOwnProfile && !!post.required_tier && !post.user_has_access;
+                    const visibilityLabel =
+                      isOwnProfile && post.required_tier
+                        ? (tiers.length && post.required_tier.level === Math.max(...tiers.map((t) => t.level))
+                            ? post.required_tier.tier_name
+                            : `${post.required_tier.tier_name} & Above`)
+                        : null;
                     return (
                       <li key={post.id} className="post-card-wrapper">
                         <article className={`post-card ${isLocked ? 'post-card-locked' : ''}`}>
@@ -591,14 +598,14 @@ export default function CreatorProfilePage() {
                                 {isLocked ? (
                                   <>
                                     <LockCircleIcon size={24} className="post-card-lock-icon" />
-                                    {(() => {
-                                      const maxTierLevel = tiers.length ? Math.max(...tiers.map((t) => t.level)) : 0;
-                                      const tierLabel = post.required_tier!.level === maxTierLevel
-                                        ? post.required_tier!.tier_name
-                                        : `${post.required_tier!.tier_name} & Above`;
-                                      return tierLabel;
-                                    })()}
+                                    {tiers.length
+                                      ? (post.required_tier!.level === Math.max(...tiers.map((t) => t.level))
+                                          ? post.required_tier!.tier_name
+                                          : `${post.required_tier!.tier_name} & Above`)
+                                      : post.required_tier!.tier_name}
                                   </>
+                                ) : visibilityLabel != null ? (
+                                  visibilityLabel
                                 ) : (
                                   'Public'
                                 )}
