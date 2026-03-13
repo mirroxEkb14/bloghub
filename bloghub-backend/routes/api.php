@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\FeedController;
 use App\Http\Controllers\Api\MeFollowingController;
 use App\Http\Controllers\Api\MePaymentController;
 use App\Http\Controllers\Api\SubscriptionCheckoutController;
+use App\Http\Controllers\Api\MeInsightsController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\TagController;
@@ -56,6 +57,7 @@ Route::middleware('throttle:api')->group(function () {
         Route::patch('/user/accept-terms-privacy', [AuthController::class, 'acceptTermsAndPrivacy']);
         Route::post('/user/upload-avatar', [UserUploadController::class, 'avatar']);
 
+        Route::get('/me/insights', MeInsightsController::class);
         Route::get('/me/creator-profile', [CreatorProfileController::class, 'me']);
         Route::put('/me/creator-profile', [CreatorProfileController::class, 'updateMe']);
         Route::post('/creator-profiles', [CreatorProfileController::class, 'store']);

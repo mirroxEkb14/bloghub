@@ -35,6 +35,7 @@ const Icons = {
   Home: () => <HomeIcon size={navIconSize} />,
   Explore: () => <ExploreIcon size={navIconSize} />,
   MyPage: () => <PersonIcon size={navIconSize} />,
+  Dashboard: () => <LayersIcon size={navIconSize} />,
   PublicPosts: () => <GlobeIcon size={navIconSize} />,
   TierPosts: () => <LockIcon size={navIconSize} />,
   Memberships: () => <CreditCardIcon size={navIconSize} />,
@@ -105,7 +106,7 @@ export default function Layout() {
     }
   }, [menuOpen]);
 
-  const isMyPageSection = location.pathname === myPageHref || location.pathname === '/creator/edit';
+  const isMyPageSection = location.pathname === myPageHref || location.pathname === '/creator/edit' || location.pathname === '/creator/dashboard';
   const isSubscriptionsSection = location.pathname === '/subscriptions' || location.pathname.startsWith('/subscriptions/');
   useEffect(() => {
     if (isMyPageSection) setMyPageDropdownOpen(true);
@@ -232,6 +233,13 @@ export default function Layout() {
                       >
                         <span className="sidebar-link-icon"><Icons.Profile /></span>
                         <span className="sidebar-link-label">Edit Creator</span>
+                      </Link>
+                      <Link
+                        to="/creator/dashboard"
+                        className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/dashboard' ? 'active' : ''}`}
+                      >
+                        <span className="sidebar-link-icon"><Icons.Dashboard /></span>
+                        <span className="sidebar-link-label">Dashboard</span>
                       </Link>
                     </div>
                   </div>

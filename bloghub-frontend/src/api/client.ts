@@ -750,6 +750,24 @@ export const paymentsApi = {
   },
 };
 
+export type InsightsPeriodKey = 'overall' | 'year' | '6m' | '3m' | '1m';
+
+export type InsightsResponse = {
+  members: { total: number; paid: number; free: number };
+  earnings: Record<InsightsPeriodKey, { amount: number }>;
+  engagement: Record<
+    InsightsPeriodKey,
+    { post_views: number; likes: number; comments: number }
+  >;
+  growth_30d: { new_paid: number; cancellations: number };
+};
+
+export const insightsApi = {
+  get() {
+    return api<InsightsResponse>('/api/me/insights');
+  },
+};
+
 export type NotificationItem = {
   id: number;
   type: string;

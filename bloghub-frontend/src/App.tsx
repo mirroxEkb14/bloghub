@@ -9,6 +9,7 @@ import Register from './pages/Register';
 import ExplorePage from './pages/Explore';
 import CreatorProfilePage from './pages/CreatorProfilePage';
 import CreatorStudioPage from './pages/CreatorStudioPage';
+import DashboardPage from './pages/DashboardPage';
 import PostPage from './pages/PostPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
 import FollowingPage from './pages/FollowingPage';
@@ -42,6 +43,7 @@ function App() {
             <Route path="/memberships/billings" element={<Navigate to="/subscriptions" replace />} />
             <Route path="/creator/new" element={<CreatorStudioPage />} />
             <Route path="/creator/edit" element={<CreatorStudioPage />} />
+            <Route path="/creator/dashboard" element={<DashboardPage />} />
             <Route path="/creator/tiers" element={<Navigate to="/creator/edit" replace />} />
             <Route path="/creator/post/new" element={<Navigate to="/creator/edit" replace />} />
             <Route path="/creator/:slug" element={<CreatorProfilePage />} />
