@@ -18,10 +18,10 @@ export function getDefaultPlaceholderForLevel(
 export function createEmptyPlaceholderPost(): DraftPost {
   return {
     id: -Date.now(),
-    slug: '',
-    title: '',
-    content_text: '',
-    excerpt: null,
+    slug: 'the-iniciation',
+    title: 'The Iniciation',
+    content_text: "Burial as a symbol of rebirth and a new beginning.",
+    excerpt: "Become a brother upon the ritual's completion...",
     media_url: null,
     media_type: null,
     required_tier: null,
