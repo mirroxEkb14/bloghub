@@ -13,11 +13,16 @@ export type Toast = {
   id: number;
   message: string;
   type: ToastType;
+  persistent?: boolean;
+};
+
+export type ShowToastOptions = {
+  persistent?: boolean;
 };
 
 type ToastContextValue = {
   toasts: Toast[];
-  showToast: (message: string, type: ToastType) => void;
+  showToast: (message: string, type: ToastType, options?: ShowToastOptions) => void;
 };
 
 const ToastContext = createContext<ToastContextValue | null>(null);
@@ -41,14 +46,17 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
 
-  const showToast = useCallback((message: string, type: ToastType) => {
+  const showToast = useCallback((message: string, type: ToastType, options?: ShowToastOptions) => {
     const id = nextIdRef.current++;
-    const toast: Toast = { id, message, type };
+    const persistent = options?.persistent ?? false;
+    const toast: Toast = { id, message, type, persistent };
     setToasts((prev) => [...prev, toast]);
-    const timeoutId = setTimeout(() => {
-      removeToast(id);
-    }, TOAST_VISIBLE_MS);
-    timeoutsRef.current.set(id, timeoutId);
+    if (!persistent) {
+      const timeoutId = setTimeout(() => {
+        removeToast(id);
+      }, TOAST_VISIBLE_MS);
+      timeoutsRef.current.set(id, timeoutId);
+    }
   }, [removeToast]);
 
   return (
@@ -67,10 +75,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           return (
             <div
               key={toast.id}
-              className={`subscription-toast subscription-toast-${toast.type}`}
+              className={`subscription-toast subscription-toast-${toast.type}${toast.persistent ? ' subscription-toast-persistent' : ''}`}
               role="status"
               aria-live="polite"
-              style={{ ['--toast-duration' as string]: `${TOAST_BAR_S}s` }}
+              style={toast.persistent ? undefined : { ['--toast-duration' as string]: `${TOAST_BAR_S}s` }}
             >
               <span className={`subscription-toast-icon ${iconClass}`} aria-hidden>
                 <Icon />
@@ -84,7 +92,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               >
                 ×
               </button>
-              <div className="subscription-toast-timer" aria-hidden />
+              {!toast.persistent && <div className="subscription-toast-timer" aria-hidden />}
             </div>
           );
         })}

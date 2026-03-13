@@ -104,6 +104,14 @@ export default function CreatorProfilePage() {
   }, [loading, loadingPosts]);
 
   useEffect(() => {
+    if (location.hash !== '#profile-tiers' || loading) return;
+    const id = requestAnimationFrame(() => {
+      document.getElementById('profile-tiers')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [loading, location.hash]);
+
+  useEffect(() => {
     if (!slug) return;
     let cancelled = false;
     (async () => {

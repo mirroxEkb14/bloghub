@@ -78,6 +78,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             ->withTimestamps();
     }
 
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
+    }
+
     public function setPhoneAttribute(?string $value): void
     {
         $this->attributes['phone'] = PhoneRule::normalize($value);

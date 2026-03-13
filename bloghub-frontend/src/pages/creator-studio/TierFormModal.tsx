@@ -67,7 +67,7 @@ export function TierFormModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.tier_name.trim()) {
-      showToast('Tier name is required', 'error');
+      showToast('Tier name is required', 'error', { persistent: true });
       return;
     }
     const saved: DraftTier = {

@@ -9,6 +9,7 @@ export { default as LockIcon } from './LockIcon';
 export { default as CreditCardIcon } from './CreditCardIcon';
 export { default as DocumentIcon } from './DocumentIcon';
 export { default as LayersIcon } from './LayersIcon';
+export { default as BellIcon } from './BellIcon';
 export { default as ShieldIcon } from './ShieldIcon';
 export { default as FileTextIcon } from './FileTextIcon';
 export { default as LogOutIcon } from './LogOutIcon';

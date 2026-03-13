@@ -10,6 +10,7 @@ use App\Http\Resources\TierResource;
 use App\Models\CreatorProfile;
 use App\Models\Payment;
 use App\Models\Subscription;
+use App\Services\NotificationService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -129,7 +130,7 @@ class SubscriptionController extends Controller
         ]);
     }
 
-    public function cancel(Request $request, Subscription $subscription): JsonResponse
+    public function cancel(Request $request, Subscription $subscription, NotificationService $notifications): JsonResponse
     {
         $this->authorize('cancel', $subscription);
 
@@ -139,6 +140,8 @@ class SubscriptionController extends Controller
             'sub_status' => SubStatus::Canceled,
             'end_date' => $endNow ? now() : $subscription->end_date,
         ]);
+
+        $notifications->subscriptionCanceled($subscription->fresh(), $endNow);
 
         return response()->json([
             'message' => __('Subscription canceled'),

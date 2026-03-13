@@ -8,6 +8,7 @@ use App\Http\Requests\Api\UpdateTierRequest;
 use App\Http\Resources\TierResource;
 use App\Models\CreatorProfile;
 use App\Models\Tier;
+use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
@@ -40,7 +41,7 @@ class CreatorProfileTierController extends Controller
         return TierResource::collection($tiers);
     }
 
-    public function store(StoreTierRequest $request): JsonResponse
+    public function store(StoreTierRequest $request, NotificationService $notifications): JsonResponse
     {
         $profile = $request->user()->creatorProfile;
         if ($profile->tiers()->count() >= self::MAX_TIERS) {
@@ -62,24 +63,34 @@ class CreatorProfileTierController extends Controller
             'tier_cover_path' => $request->input('tier_cover_path'),
         ]);
 
+        $tier->load('creatorProfile');
+        $notifications->tierCreated($tier);
+
         return response()->json(new TierResource($tier), 201);
     }
 
-    public function update(UpdateTierRequest $request, Tier $tier): TierResource
+    public function update(UpdateTierRequest $request, Tier $tier, NotificationService $notifications): TierResource
     {
         $data = $request->validated();
         $tier->update($data);
+        $tier->load('creatorProfile');
+        $notifications->tierEdited($tier->fresh());
 
         return new TierResource($tier->fresh());
     }
 
-    public function destroy(Tier $tier): JsonResponse|Response
+    public function destroy(Tier $tier, NotificationService $notifications): JsonResponse|Response
     {
         $profile = request()->user()?->creatorProfile;
         if ($profile === null || $tier->creator_profile_id !== $profile->id) {
             return response()->json(['message' => __('Tier not found or access denied')], 404);
         }
+        $tierId = $tier->id;
+        $tierName = $tier->tier_name;
+        $creatorProfile = $tier->creatorProfile;
         $tier->delete();
+
+        $notifications->tierRemoved($tierId, $tierName, $creatorProfile);
 
         return response()->noContent();
     }
