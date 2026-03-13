@@ -9,7 +9,7 @@ import { useToast } from '../contexts/ToastContext';
 type FormKey = 'name' | 'username' | 'email' | 'password' | 'password_confirmation' | 'terms_accepted' | 'privacy_accepted';
 
 export default function Register() {
-  const { register, error, clearError } = useAuth();
+  const { user, register, error, clearError } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -23,6 +23,10 @@ export default function Register() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<FormKey, string>>>({});
+
+  useEffect(() => {
+    if (user) navigate('/', { replace: true });
+  }, [user, navigate]);
 
   useEffect(() => {
     clearError();

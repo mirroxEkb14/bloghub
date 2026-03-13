@@ -673,7 +673,13 @@ export type SubscriptionStatusResponse = {
 export type CheckoutSessionResponse =
   | { type: 'free'; subscription: SubscriptionWithTier }
   | { type: 'checkout'; checkout_url: string }
-  | { type: 'already_subscribed'; message?: string };
+  | { type: 'already_subscribed'; message?: string }
+  | {
+      type: 'upgrade_confirm';
+      message?: string;
+      current_subscription: { tier_name: string | null; end_date: string | null };
+      new_tier_name: string;
+    };
 
 export const subscriptionsApi = {
   list() {
@@ -689,10 +695,12 @@ export const subscriptionsApi = {
     ).then(unwrapData);
   },
 
-  createCheckoutSession(tierId: number) {
+  createCheckoutSession(tierId: number, options?: { confirmUpgrade?: boolean }) {
+    const body: { tier_id: number; confirm_upgrade?: boolean } = { tier_id: tierId };
+    if (options?.confirmUpgrade === true) body.confirm_upgrade = true;
     return api<CheckoutSessionResponse>(
       '/api/subscriptions/create-checkout-session',
-      { method: 'POST', body: JSON.stringify({ tier_id: tierId }) }
+      { method: 'POST', body: JSON.stringify(body) }
     );
   },
 
@@ -709,10 +717,11 @@ export const subscriptionsApi = {
     );
   },
 
-  cancel(subscriptionId: number) {
+  cancel(subscriptionId: number, options?: { endNow?: boolean }) {
+    const body = options?.endNow !== undefined ? { end_now: options.endNow } : {};
     return api<{ message: string; subscription: SubscriptionWithTier }>(
       `/api/subscriptions/${subscriptionId}/cancel`,
-      { method: 'PATCH' }
+      { method: 'PATCH', body: Object.keys(body).length ? JSON.stringify(body) : undefined }
     );
   },
 };
@@ -738,5 +747,37 @@ export const paymentsApi = {
     return api<{ data: PaymentForUser[] } | PaymentForUser[]>(
       '/api/me/payments'
     ).then((r) => (Array.isArray(r) ? r : (r as { data: PaymentForUser[] }).data ?? []));
+  },
+};
+
+export type NotificationItem = {
+  id: number;
+  type: string;
+  data: Record<string, unknown>;
+  read_at: string | null;
+  created_at: string | null;
+};
+
+export const notificationsApi = {
+  list(params?: { page?: number; per_page?: number }) {
+    const sp = new URLSearchParams();
+    if (params?.page != null) sp.set('page', String(params.page));
+    if (params?.per_page != null) sp.set('per_page', String(params.per_page));
+    const q = sp.toString();
+    return api<PaginatedResponse<NotificationItem>>(
+      `/api/me/notifications${q ? `?${q}` : ''}`
+    );
+  },
+
+  unreadCount() {
+    return api<{ count: number }>('/api/me/notifications/unread-count');
+  },
+
+  markRead(id: number) {
+    return api<NotificationItem>(`/api/me/notifications/${id}/read`, { method: 'PATCH' });
+  },
+
+  markAllRead() {
+    return api<{ message: string }>('/api/me/notifications/read', { method: 'PATCH' });
   },
 };

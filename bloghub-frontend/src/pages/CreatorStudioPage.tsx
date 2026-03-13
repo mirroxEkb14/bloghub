@@ -85,6 +85,7 @@ export default function CreatorStudioPage() {
   const tierCoverInputRef = useRef<HTMLInputElement>(null);
   const displayNameInputRef = useRef<HTMLInputElement>(null);
   const aboutTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const initialTiersSnapshotRef = useRef<Map<number, { tier_name: string; tier_desc: string; price: number; tier_currency: string; tier_cover_path?: string }>>(new Map());
 
   const emptyProfileDraft = useCallback((): ProfileDraft => ({
     display_name: '',
@@ -168,7 +169,21 @@ export default function CreatorStudioPage() {
             postsApi.listByCreator(me.slug!, { per_page: POSTS_LOAD_PER_PAGE }).then((r) => r.data ?? []),
           ]);
           if (!cancelled) {
-            setTiersDraft(tiersRes as DraftTier[]);
+            const tiers = tiersRes as DraftTier[];
+            setTiersDraft(tiers);
+            const snap = new Map<number, { tier_name: string; tier_desc: string; price: number; tier_currency: string; tier_cover_path?: string }>();
+            for (const t of tiers) {
+              if (t._isNew) continue;
+              const tw = t as DraftTier & { tier_cover_path?: string };
+              snap.set(t.id, {
+                tier_name: t.tier_name,
+                tier_desc: t.tier_desc ?? '',
+                price: t.price ?? 0,
+                tier_currency: t.tier_currency ?? 'USD',
+                tier_cover_path: tw.tier_cover_path,
+              });
+            }
+            initialTiersSnapshotRef.current = snap;
             setPostsDraft(postsRes as DraftPost[]);
             setPlaceholderPosts([createEmptyPlaceholderPost()]);
             setIncludedPlaceholderPostIndices([]);
@@ -318,7 +333,7 @@ export default function CreatorStudioPage() {
     const displayName = profileDraft.display_name.trim();
     const slug = profileDraft.slug.trim() || slugify(displayName) || 'creator';
     if (!displayName) {
-      showToast('Display name is required', 'error');
+      showToast('Display name is required', 'error', { persistent: true });
       return;
     }
     setSaving(true);
@@ -385,12 +400,14 @@ export default function CreatorStudioPage() {
           }
         }
         for (const p of placeholderPosts) {
-          if ((p.content_text ?? '').trim().length === 0) continue;
+          const hasContent = (p.content_text ?? '').trim().length > 0;
+          const hasTitle = (p.title ?? '').trim().length > 0;
+          if (!hasContent && !hasTitle) continue;
           const postSlug = (p.slug || slugify(p.title || '')).trim() || 'post';
           const requiredTierId = p.required_tier?.id ? tierIdMap.get(p.required_tier.id) ?? p.required_tier.id : null;
           await postsApi.create({
             slug: postSlug,
-            title: p.title ?? '',
+            title: (p.title ?? '').trim() || 'Untitled',
             content_text: p.content_text ?? '',
             excerpt: p.excerpt ?? null,
             media_url: p.media_url ?? null,
@@ -440,17 +457,36 @@ export default function CreatorStudioPage() {
             tierIdByOldId.set(t.id, createdTier.id);
             newTiers.push({ ...createdTier, _isNew: false } as DraftTier);
           } else {
+            const tierWithPath = t as DraftTier & { tier_cover_path?: string };
             const payload: TierUpdatePayload = {
               tier_name: t.tier_name,
               tier_desc: t.tier_desc ?? '',
               price: t.price ?? 0,
               tier_currency: t.tier_currency ?? 'USD',
             };
-            const tierWithPath = t as DraftTier & { tier_cover_path?: string };
             if (tierWithPath.tier_cover_path !== undefined) payload.tier_cover_path = tierWithPath.tier_cover_path;
-            const updated = await tiersApi.update(t.id, payload);
-            tierIdByOldId.set(t.id, updated.id);
-            newTiers.push(updated as DraftTier);
+            const initial = initialTiersSnapshotRef.current.get(t.id);
+            const same =
+              initial &&
+              initial.tier_name === payload.tier_name &&
+              initial.tier_desc === payload.tier_desc &&
+              initial.price === payload.price &&
+              initial.tier_currency === payload.tier_currency &&
+              initial.tier_cover_path === (payload.tier_cover_path ?? initial.tier_cover_path);
+            if (!same) {
+              const updated = await tiersApi.update(t.id, payload);
+              tierIdByOldId.set(t.id, updated.id);
+              newTiers.push(updated as DraftTier);
+              initialTiersSnapshotRef.current.set(t.id, {
+                tier_name: payload.tier_name ?? '',
+                tier_desc: payload.tier_desc ?? '',
+                price: payload.price ?? 0,
+                tier_currency: payload.tier_currency ?? 'USD',
+                tier_cover_path: payload.tier_cover_path ?? undefined,
+              });
+            } else {
+              newTiers.push(t);
+            }
           }
         }
         for (const level of includedPlaceholderLevels) {
@@ -482,7 +518,9 @@ export default function CreatorStudioPage() {
         for (const p of postsDraft) {
           if (postSlugsToDelete.has(p.slug)) continue;
           if (p._isNew) {
-            const requiredTierId = p.required_tier?.id != null ? (tierIdByOldId.get(p.required_tier.id) ?? p.required_tier.id) : null;
+            const tierId = p.required_tier?.id != null && !tierIdsToDelete.has(p.required_tier.id)
+              ? (tierIdByOldId.get(p.required_tier.id) ?? p.required_tier.id)
+              : null;
             const created = await postsApi.create({
               slug: p.slug,
               title: p.title,
@@ -490,7 +528,7 @@ export default function CreatorStudioPage() {
               excerpt: p.excerpt ?? null,
               media_url: p.media_url ?? null,
               media_type: p.media_type ?? null,
-              required_tier_id: requiredTierId ?? undefined,
+              required_tier_id: tierId ?? undefined,
             } as PostCreatePayload);
             updatedPosts.push({ ...created, _isNew: false } as DraftPost);
           } else {
@@ -500,7 +538,9 @@ export default function CreatorStudioPage() {
             if (p.excerpt !== undefined) payload.excerpt = p.excerpt;
             if (p.media_url !== undefined) payload.media_url = p.media_url;
             if (p.media_type !== undefined) payload.media_type = p.media_type;
-            if (p.required_tier?.id !== undefined) payload.required_tier_id = p.required_tier.id ?? null;
+            if (p.required_tier?.id !== undefined) {
+              payload.required_tier_id = tierIdsToDelete.has(p.required_tier.id) ? null : (p.required_tier.id ?? null);
+            }
             if (Object.keys(payload).length > 0) {
               const updated = await postsApi.update(p.slug, payload);
               updatedPosts.push({ ...updated, _isNew: false } as DraftPost);
@@ -510,12 +550,16 @@ export default function CreatorStudioPage() {
           }
         }
         for (const p of placeholderPosts) {
-          if ((p.content_text ?? '').trim().length === 0) continue;
+          const hasContent = (p.content_text ?? '').trim().length > 0;
+          const hasTitle = (p.title ?? '').trim().length > 0;
+          if (!hasContent && !hasTitle) continue;
           const postSlug = (p.slug || slugify(p.title || '')).trim() || 'post';
-          const requiredTierId = p.required_tier?.id != null ? (tierIdByOldId.get(p.required_tier.id) ?? p.required_tier.id) : null;
+          const requiredTierId = p.required_tier?.id != null && !tierIdsToDelete.has(p.required_tier.id)
+            ? (tierIdByOldId.get(p.required_tier.id) ?? p.required_tier.id)
+            : null;
           const created = await postsApi.create({
             slug: postSlug,
-            title: p.title ?? '',
+            title: (p.title ?? '').trim() || 'Untitled',
             content_text: p.content_text ?? '',
             excerpt: p.excerpt ?? null,
             media_url: p.media_url ?? null,
@@ -525,7 +569,7 @@ export default function CreatorStudioPage() {
           updatedPosts.push({ ...created, _isNew: false } as DraftPost);
         }
         setPostsDraft(updatedPosts);
-        const keptPlaceholders = placeholderPosts.filter((p) => (p.content_text ?? '').trim().length === 0);
+        const keptPlaceholders = placeholderPosts.filter((p) => (p.content_text ?? '').trim().length === 0 && (p.title ?? '').trim().length === 0);
         setPlaceholderPosts(keptPlaceholders.length > 0 ? keptPlaceholders : [createEmptyPlaceholderPost()]);
         setIncludedPlaceholderPostIndices([]);
         await refreshUser();
@@ -541,12 +585,43 @@ export default function CreatorStudioPage() {
         (valErr && Array.isArray(valErr.errors?.slug));
       const socialKeys: SocialKey[] = ['telegram_url', 'instagram_url', 'facebook_url', 'youtube_url', 'twitch_url', 'website_url'];
       const firstSocialError = valErr && socialKeys.map((k) => valErr.errors?.[k]?.[0]).find(Boolean);
-      const displayMessage = isSlug
-        ? 'This slug is already taken. Choose another'
-        : typeof firstSocialError === 'string'
-          ? firstSocialError
-          : raw;
-      showToast(displayMessage, 'error');
+
+      let displayMessage: string;
+      if (isSlug) {
+        displayMessage = 'This slug is already taken. Choose another';
+      } else if (valErr?.errors && Object.keys(valErr.errors).length > 0) {
+        const fieldLabels: Record<string, string> = {
+          display_name: 'Display name',
+          slug: 'Slug',
+          title: 'Title',
+          content_text: 'Content',
+          excerpt: 'Excerpt',
+          tier_name: 'Tier name',
+          tier_desc: 'Tier description',
+          price: 'Price',
+          telegram_url: 'Telegram URL',
+          instagram_url: 'Instagram URL',
+          facebook_url: 'Facebook URL',
+          youtube_url: 'YouTube URL',
+          twitch_url: 'Twitch URL',
+          website_url: 'Website URL',
+          required_tier_id: 'Required tier',
+        };
+        const parts = Object.entries(valErr.errors).map(([key, messages]) => {
+          const label = fieldLabels[key] ?? key.replace(/_/g, ' ');
+          const msg = (Array.isArray(messages) ? messages[0] : String(messages)).replace(/\.$/, '');
+          return `${label}: ${msg}`;
+        });
+        displayMessage = parts.length > 1
+          ? `Please fix the following:\n• ${parts.join('\n• ')}`
+          : (parts[0] ?? raw);
+      } else if (typeof firstSocialError === 'string') {
+        displayMessage = firstSocialError.replace(/\.$/, '');
+      } else {
+        displayMessage = raw;
+      }
+
+      showToast(displayMessage, 'error', { persistent: true });
       if (isSlug) setSlugHighlightError(true);
     } finally {
       setSaving(false);
@@ -566,6 +641,16 @@ export default function CreatorStudioPage() {
     setTierIdConfirmRemove(null);
     if (id > 0) {
       setTierIdsToDelete((s) => new Set(s).add(id));
+      setPostsDraft((prev) =>
+        prev.map((p) =>
+          p.required_tier?.id === id ? { ...p, required_tier: null } : p
+        )
+      );
+      setPlaceholderPosts((prev) =>
+        prev.map((p) =>
+          p.required_tier?.id === id ? { ...p, required_tier: null } : p
+        )
+      );
     } else {
       setTiersDraft((prev) => prev.filter((t) => t.id !== id));
     }
@@ -980,7 +1065,7 @@ export default function CreatorStudioPage() {
                   <PostCardStudio
                     post={post}
                     isPlaceholder={false}
-                    willSave
+                    willSave={true}
                     visibleTiers={visibleTiers}
                     postMediaHint={POST_MEDIA_HINT}
                     uploading={uploadingPostMedia && postMediaUploadTarget !== null && !('placeholderIndex' in postMediaUploadTarget) && postMediaUploadTarget.id === post.id}

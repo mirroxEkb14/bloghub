@@ -30,8 +30,14 @@ import {
   YouTubeIcon,
   TwitchIcon,
   WebsiteIcon,
+  XCircleIcon,
 } from '../components/icons';
 import { formatDateTimeLocal } from '../utils/date';
+
+function formatDate(iso: string | null): string {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString(undefined, { dateStyle: 'medium' });
+}
 
 const POSTS_PAGE_SIZE = 12;
 
@@ -55,6 +61,13 @@ export default function CreatorProfilePage() {
   const [subscriptionError, setSubscriptionError] = useState<{ tierId: number; message: string } | null>(null);
   const [subscriptionSuccess, setSubscriptionSuccess] = useState<string | null>(null);
   const [highlightTierId, setHighlightTierId] = useState<number | null>(null);
+  const [upgradeConfirm, setUpgradeConfirm] = useState<{
+    tierId: number;
+    currentTierName: string | null;
+    endDate: string | null;
+    newTierName: string;
+  } | null>(null);
+  const [upgradeCursorLabel, setUpgradeCursorLabel] = useState<{ x: number; y: number; text: string } | null>(null);
   const [openMenuPostId, setOpenMenuPostId] = useState<number | null>(null);
   const [shareToast, setShareToast] = useState(false);
   const [postsRefetchTrigger, setPostsRefetchTrigger] = useState(0);
@@ -89,6 +102,14 @@ export default function CreatorProfilePage() {
       return () => clearTimeout(id);
     }
   }, [loading, loadingPosts]);
+
+  useEffect(() => {
+    if (location.hash !== '#profile-tiers' || loading) return;
+    const id = requestAnimationFrame(() => {
+      document.getElementById('profile-tiers')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [loading, location.hash]);
 
   useEffect(() => {
     if (!slug) return;
@@ -399,6 +420,15 @@ export default function CreatorProfilePage() {
 
   return (
     <div className="profile-page">
+      {upgradeCursorLabel && (
+        <div
+          className="membership-cursor-label"
+          style={{ left: upgradeCursorLabel.x, top: upgradeCursorLabel.y }}
+          aria-hidden
+        >
+          {upgradeCursorLabel.text}
+        </div>
+      )}
       <div
         className="profile-cover"
         style={
@@ -539,7 +569,14 @@ export default function CreatorProfilePage() {
               <>
                 <ul className="post-card-list">
                   {posts.map((post) => {
-                    const isLocked = !!post.required_tier && !post.user_has_access;
+                    const isOwnProfile = user?.creator_profile?.slug === profile.slug;
+                    const isLocked = !isOwnProfile && !!post.required_tier && !post.user_has_access;
+                    const visibilityLabel =
+                      isOwnProfile && post.required_tier
+                        ? (tiers.length && post.required_tier.level === Math.max(...tiers.map((t) => t.level))
+                            ? post.required_tier.tier_name
+                            : `${post.required_tier.tier_name} & Above`)
+                        : null;
                     return (
                       <li key={post.id} className="post-card-wrapper">
                         <article className={`post-card ${isLocked ? 'post-card-locked' : ''}`}>
@@ -561,14 +598,14 @@ export default function CreatorProfilePage() {
                                 {isLocked ? (
                                   <>
                                     <LockCircleIcon size={24} className="post-card-lock-icon" />
-                                    {(() => {
-                                      const maxTierLevel = tiers.length ? Math.max(...tiers.map((t) => t.level)) : 0;
-                                      const tierLabel = post.required_tier!.level === maxTierLevel
-                                        ? post.required_tier!.tier_name
-                                        : `${post.required_tier!.tier_name} & Above`;
-                                      return tierLabel;
-                                    })()}
+                                    {tiers.length
+                                      ? (post.required_tier!.level === Math.max(...tiers.map((t) => t.level))
+                                          ? post.required_tier!.tier_name
+                                          : `${post.required_tier!.tier_name} & Above`)
+                                      : post.required_tier!.tier_name}
                                   </>
+                                ) : visibilityLabel != null ? (
+                                  visibilityLabel
                                 ) : (
                                   'Public'
                                 )}
@@ -844,7 +881,19 @@ export default function CreatorProfilePage() {
                         setPostsRefetchTrigger((t) => t + 1);
                       }
                       if (result.type === 'already_subscribed') {
-                        setSubscriptionSuccess(result.message ?? 'You already have access to all tiers');
+                        setSubscriptionError({
+                          tierId: tier.id,
+                          message: result.message ?? 'You are already subscribed to this creator',
+                        });
+                        setHighlightTierId(tier.id);
+                      }
+                      if (result.type === 'upgrade_confirm') {
+                        setUpgradeConfirm({
+                          tierId: tier.id,
+                          currentTierName: result.current_subscription.tier_name,
+                          endDate: result.current_subscription.end_date,
+                          newTierName: result.new_tier_name,
+                        });
                       }
                     } catch (e) {
                       setSubscriptionError({
@@ -1001,6 +1050,54 @@ export default function CreatorProfilePage() {
             ×
           </button>
           <div className="subscription-toast-timer" aria-hidden />
+        </div>
+      )}
+
+      {upgradeConfirm && (
+        <div className="membership-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="upgrade-confirm-title">
+          <div className="membership-confirm-wrap">
+            <button
+              type="button"
+              className="membership-confirm-close"
+              aria-label="Keep current subscription"
+              onClick={() => { setUpgradeConfirm(null); setUpgradeCursorLabel(null); }}
+              onMouseEnter={(e) => setUpgradeCursorLabel({ x: e.clientX + 12, y: e.clientY + 12, text: 'Keep current subscription' })}
+              onMouseMove={(e) => setUpgradeCursorLabel((l) => l ? { ...l, x: e.clientX + 12, y: e.clientY + 12 } : null)}
+              onMouseLeave={() => setUpgradeCursorLabel(null)}
+            >
+              <XCircleIcon size={18} />
+            </button>
+            <div className="membership-confirm-dialog">
+              <h2 id="upgrade-confirm-title" className="membership-confirm-title">Already subscribed</h2>
+              <p className="membership-confirm-text">
+                You&apos;re already subscribed to <strong>{upgradeConfirm.currentTierName ?? 'a tier'}</strong>
+                {upgradeConfirm.endDate && <> (access until <strong>{formatDate(upgradeConfirm.endDate)}</strong>)</>}.
+                Subscribe to <strong>{upgradeConfirm.newTierName}</strong> to upgrade?
+              </p>
+              <div className="membership-confirm-actions">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  disabled={subscribingTierId === upgradeConfirm.tierId}
+                  onClick={async () => {
+                    setSubscribingTierId(upgradeConfirm.tierId);
+                    try {
+                      const result = await subscriptionsApi.createCheckoutSession(upgradeConfirm.tierId, { confirmUpgrade: true });
+                      if (result.type === 'checkout' && result.checkout_url) {
+                        setUpgradeConfirm(null);
+                        setUpgradeCursorLabel(null);
+                        window.location.href = result.checkout_url;
+                      }
+                    } finally {
+                      setSubscribingTierId(null);
+                    }
+                  }}
+                >
+                  {subscribingTierId === upgradeConfirm.tierId ? 'Redirecting…' : 'Continue anyway'}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

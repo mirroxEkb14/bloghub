@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\FeedController;
 use App\Http\Controllers\Api\MeFollowingController;
 use App\Http\Controllers\Api\MePaymentController;
 use App\Http\Controllers\Api\SubscriptionCheckoutController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\TagController;
 use Illuminate\Support\Facades\Route;
@@ -84,6 +85,10 @@ Route::middleware('throttle:api')->group(function () {
         Route::post('/subscriptions/confirm-checkout', [SubscriptionCheckoutController::class, 'confirmCheckout']);
         Route::get('/creator-profiles/{slug}/subscription-status', [SubscriptionController::class, 'statusByCreator']);
         Route::patch('/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel']);
+        Route::get('/me/notifications', [NotificationController::class, 'index']);
+        Route::get('/me/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+        Route::patch('/me/notifications/read', [NotificationController::class, 'markAllRead']);
+        Route::patch('/me/notifications/{notification}/read', [NotificationController::class, 'markRead']);
         Route::post('/creator-profiles/{slug}/follow', [CreatorProfileFollowController::class, 'follow']);
         Route::delete('/creator-profiles/{slug}/follow', [CreatorProfileFollowController::class, 'unfollow']);
 

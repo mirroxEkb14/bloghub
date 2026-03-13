@@ -125,12 +125,14 @@
   position: relative;
 }
 
-.post-card-will-save {
+.profile-page.creator-studio .post-card-will-save,
+.creator-studio .post-card.post-card-will-save {
   border-top: 3px solid #22c55e;
   border-bottom: 3px solid #22c55e;
 }
 
-.post-card-wont-save {
+.profile-page.creator-studio .post-card-wont-save,
+.creator-studio .post-card.post-card-wont-save {
   border-top: 3px solid #d97706;
   border-bottom: 3px solid #d97706;
 }
@@ -870,11 +872,13 @@
   margin-left: auto;
 }
 
-.tier-card-will-save {
+.profile-page.creator-studio .tier-card-will-save,
+.creator-studio .tier-card.tier-card-will-save {
   border-bottom: 3px solid #22c55e;
 }
 
-.tier-card-wont-save {
+.profile-page.creator-studio .tier-card-wont-save,
+.creator-studio .tier-card.tier-card-wont-save {
   border-bottom: 3px solid #d97706;
 }
 

@@ -18,6 +18,7 @@ import TierPostsPage from './pages/TierPostsPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import ProfilePage from './pages/ProfilePage';
+import NotificationsPage from './pages/NotificationsPage';
 import './index.css';
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/profile/social" element={<Navigate to="/creator/edit" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />

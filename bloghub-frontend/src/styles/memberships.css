@@ -276,6 +276,12 @@
   margin-top: 0.25rem;
 }
 
+.membership-card-access-until {
+  font-size: 0.8rem;
+  color: var(--text-secondary, var(--text-muted));
+  margin: 0.35rem 0 0;
+}
+
 .membership-card-meta {
   display: flex;
   align-items: center;
@@ -322,12 +328,42 @@
   padding: 1rem;
 }
 
+.membership-confirm-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.membership-confirm-close {
+  position: absolute;
+  top: 0;
+  right: -0.25rem;
+  z-index: 2;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  transition: background 0.2s;
+  transform: translateY(-50%);
+}
+
+.membership-confirm-close:hover {
+  background: var(--color-error, #dc2626);
+}
+
 .membership-confirm-dialog {
   background: var(--card-bg, var(--bg-card));
   border: 1px solid var(--border);
   border-radius: var(--radius-md, var(--radius));
   padding: 1.5rem;
-  max-width: 400px;
+  min-width: 420px;
+  max-width: 480px;
   width: 100%;
   box-shadow: var(--shadow-drop);
 }
@@ -347,8 +383,19 @@
 .membership-confirm-actions {
   display: flex;
   gap: 0.75rem;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+}
+
+.membership-confirm-end-period {
+  border-color: var(--border);
+  background: var(--bg-secondary, rgba(0, 0, 0, 0.04));
+  color: var(--text-secondary);
+}
+
+.membership-confirm-end-period:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.25);
+  border-color: var(--color-error, #f87171);
+  color: var(--color-error, #f87171);
 }
 
 .membership-confirm-cancel-btn {

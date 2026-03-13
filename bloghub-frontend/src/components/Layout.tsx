@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { authApi } from '../api/client';
+import { authApi, notificationsApi } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
@@ -25,6 +25,8 @@ import {
   SunIcon,
   MoonIcon,
   ChevronDownIcon,
+  BellIcon,
+  EnvelopeIcon,
 } from './icons';
 
 const navIconSize = 22;
@@ -42,6 +44,7 @@ const Icons = {
   Tiers: () => <LayersIcon size={navIconSize} />,
   Privacy: () => <ShieldIcon size={navIconSize} />,
   Terms: () => <FileTextIcon size={navIconSize} />,
+  Notifications: () => <BellIcon size={navIconSize} />,
   Logout: () => <LogOutIcon size={navIconSize} />,
   Social: () => <Share2Icon size={navIconSize} />,
   Register: () => <UserPlusIcon size={navIconSize} />,
@@ -117,6 +120,20 @@ export default function Layout() {
 
   const [resendVerificationLoading, setResendVerificationLoading] = useState(false);
   const verificationHandledRef = useRef(false);
+  const [unreadNotifications, setUnreadNotifications] = useState<number>(0);
+
+  useEffect(() => {
+    if (!user) {
+      setUnreadNotifications(0);
+      return;
+    }
+    notificationsApi.unreadCount().then((r) => setUnreadNotifications(r.count ?? 0)).catch(() => {});
+  }, [user]);
+
+  useEffect(() => {
+    if (!user || !menuOpen) return;
+    notificationsApi.unreadCount().then((r) => setUnreadNotifications(r.count ?? 0)).catch(() => {});
+  }, [user, menuOpen]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -300,6 +317,17 @@ export default function Layout() {
                   <Link to="/profile" className="sidebar-user-menu-item" role="menuitem" onClick={() => setMenuOpen(false)}>
                     <Icons.Profile />
                     <span>Edit profile</span>
+                  </Link>
+                  <Link to="/notifications" className="sidebar-user-menu-item" role="menuitem" onClick={() => setMenuOpen(false)}>
+                    <span className="sidebar-user-menu-item-icon-wrap">
+                      <Icons.Notifications />
+                      {unreadNotifications > 0 && (
+                        <span className="sidebar-notifications-badge" aria-label={`${unreadNotifications} unread`}>
+                          <EnvelopeIcon size={14} />
+                        </span>
+                      )}
+                    </span>
+                    <span>Notifications</span>
                   </Link>
                   <Link to="/privacy" className="sidebar-user-menu-item" role="menuitem" onClick={() => setMenuOpen(false)}>
                     <Icons.Privacy />
