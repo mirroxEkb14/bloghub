@@ -203,6 +203,7 @@ export type CreatorProfile = {
   followers_count?: number;
   subscribers_count?: number;
   subscriptions_count?: number;
+  last_post_at?: string | null;
   is_following?: boolean;
   created_at?: string;
   updated_at?: string;
@@ -649,6 +650,8 @@ export type SubscriptionCreator = {
   slug: string;
   display_name: string;
   profile_avatar_url: string | null;
+  followers_count?: number | null;
+  last_post_at?: string | null;
 };
 
 export type SubscriptionWithTier = {

@@ -45,7 +45,10 @@ class SubscriptionController extends Controller
     {
         $subscriptions = request()->user()
             ->subscriptions()
-            ->with(['tier', 'tier.creatorProfile'])
+            ->with([
+                'tier',
+                'tier.creatorProfile' => fn ($q) => $q->withCount('followers')->withMax('posts', 'created_at'),
+            ])
             ->orderByDesc('created_at')
             ->get();
 
