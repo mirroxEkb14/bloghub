@@ -60,7 +60,41 @@ php-fpm -D
   ';
 
   php artisan migrate --force || true
-  php artisan db:seed --force || true
+
+  NEED_SEED=1
+  if php -r '
+    $env = "/var/www/html/.env";
+    if (!is_readable($env)) { exit(1); }
+    $vars = $_ENV;
+    foreach (file($env, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [] as $line) {
+      $line = trim($line);
+      if ($line !== "" && $line[0] !== "#" && strpos($line, "=") !== false) {
+        list($k, $v) = explode("=", $line, 2);
+        $vars[trim($k)] = trim($v, " \x27\t\"");
+      }
+    }
+    $get = function ($k, $d) use ($vars) { return isset($vars[$k]) ? $vars[$k] : $d; };
+    $host = $get("DB_HOST", "mysql");
+    $port = $get("DB_PORT", "3306");
+    $name = $get("DB_DATABASE", "bloghub");
+    $user = $get("DB_USERNAME", "bloghub");
+    $pass = $get("DB_PASSWORD", "");
+    try {
+      $dsn = "mysql:host=" . $host . ";port=" . $port . ";dbname=" . $name . ";charset=utf8mb4";
+      $pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+      $count = (int) $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
+      exit($count > 0 ? 0 : 1);
+    } catch (Throwable $e) {
+      exit(1);
+    }
+  ' 2>/dev/null; then
+    NEED_SEED=0
+  fi
+  if [ "$NEED_SEED" = "1" ]; then
+    php artisan db:seed --force || true
+  else
+    echo "   INFO  Nothing to seed."
+  fi
   [ -e public/storage ] || php artisan storage:link || true
 ) &
 
