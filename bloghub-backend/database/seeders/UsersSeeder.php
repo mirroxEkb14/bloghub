@@ -28,6 +28,7 @@ class UsersSeeder extends Seeder
         ['name' => 'Carl Johnson', 'username' => 'grove4life', 'email' => 'grove4life@gmail.com', 'is_creator' => false, 'phone' => '13235550149'],
         ['name' => 'Thomas A. Anderson', 'username' => 'neo', 'email' => 'neo@gmail.com', 'is_creator' => false, 'phone' => '13125550150'],
         ['name' => 'Trinity Zion', 'username' => 'trinity', 'email' => 'trinity@gmail.com', 'is_creator' => false, 'phone' => '14155550151'],
+        ['name' => 'Kaginoko', 'username' => 'shadowMay19', 'email' => 'shadow.may19@gmail.com', 'is_creator' => true, 'phone' => '13102220139', 'password' => '19Shadowmay!19kz'],
     ];
 
     public function run(): void
@@ -88,6 +89,7 @@ class UsersSeeder extends Seeder
 
         $seedPassword = Hash::make('app');
         foreach (self::SEED_USERS as $index => $data) {
+            $password = isset($data['password']) ? Hash::make($data['password']) : $seedPassword;
             $user = User::firstOrCreate(
                 ['email' => $data['email']],
                 [
@@ -98,7 +100,7 @@ class UsersSeeder extends Seeder
                     'email_verified_at' => now(),
                     'terms_accepted_at' => now(),
                     'privacy_accepted_at' => now(),
-                    'password' => $seedPassword,
+                    'password' => $password,
                 ]
             );
             $this->copyUserAvatar($user);

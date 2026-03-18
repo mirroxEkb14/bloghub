@@ -15,6 +15,7 @@ class MeFollowingController extends Controller
         $follows = $user->followingCreatorProfiles()
             ->with(['user:id,name,username', 'tags'])
             ->withCount(['posts', 'followers'])
+            ->withMax('posts', 'created_at')
             ->orderByDesc('creator_profile_follows.created_at')
             ->get();
 

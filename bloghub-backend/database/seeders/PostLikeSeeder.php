@@ -102,5 +102,50 @@ class PostLikeSeeder extends Seeder
                 }
             }
         }
+        foreach (['kusarigama', 'gates-of-shadows'] as $slug) {
+            $post = Post::with(['creatorProfile'])
+                ->where('slug', $slug)
+                ->first();
+
+            if (! $post) {
+                continue;
+            }
+
+            $creatorUserId = $post->creatorProfile?->user_id;
+            if (! $creatorUserId) {
+                continue;
+            }
+
+            $postCreatedAt = Carbon::parse($post->created_at);
+            $start = $postCreatedAt->copy()->addSecond();
+            $end = $postCreatedAt->copy()->addDays(4);
+
+            $likerUsers = User::query()
+                ->where('id', '!=', $creatorUserId)
+                ->get();
+
+            foreach ($likerUsers as $liker) {
+                $likeAt = $this->randomBetween($start, $end);
+
+                PostLike::updateOrCreate(
+                    [
+                        'post_id' => $post->id,
+                        'user_id' => $liker->id,
+                    ],
+                    [
+                        'created_at' => $likeAt,
+                        'updated_at' => $likeAt,
+                    ]
+                );
+            }
+        }
+    }
+
+    private function randomBetween(Carbon $start, Carbon $end): Carbon
+    {
+        $startTs = $start->getTimestamp();
+        $endTs = $end->getTimestamp();
+        $ts = $startTs + (int) (($endTs - $startTs) * (mt_rand() / mt_getrandmax()));
+        return Carbon::createFromTimestamp($ts);
     }
 }

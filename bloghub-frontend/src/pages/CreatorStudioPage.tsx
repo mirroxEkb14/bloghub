@@ -35,6 +35,7 @@ import type { DraftPost, DraftTier, PlaceholderTier, ProfileDraft, SocialKey } f
 import {
   createEmptyPlaceholderPost,
   getDefaultPlaceholderForLevel,
+  isDefaultPlaceholderPost,
   slugify,
 } from './creator-studio/utils';
 
@@ -403,6 +404,7 @@ export default function CreatorStudioPage() {
           const hasContent = (p.content_text ?? '').trim().length > 0;
           const hasTitle = (p.title ?? '').trim().length > 0;
           if (!hasContent && !hasTitle) continue;
+          if (isDefaultPlaceholderPost(p)) continue;
           const postSlug = (p.slug || slugify(p.title || '')).trim() || 'post';
           const requiredTierId = p.required_tier?.id ? tierIdMap.get(p.required_tier.id) ?? p.required_tier.id : null;
           await postsApi.create({
@@ -553,6 +555,7 @@ export default function CreatorStudioPage() {
           const hasContent = (p.content_text ?? '').trim().length > 0;
           const hasTitle = (p.title ?? '').trim().length > 0;
           if (!hasContent && !hasTitle) continue;
+          if (isDefaultPlaceholderPost(p)) continue;
           const postSlug = (p.slug || slugify(p.title || '')).trim() || 'post';
           const requiredTierId = p.required_tier?.id != null && !tierIdsToDelete.has(p.required_tier.id)
             ? (tierIdByOldId.get(p.required_tier.id) ?? p.required_tier.id)
@@ -1446,7 +1449,9 @@ export default function CreatorStudioPage() {
               {postToConfirmRemove.isPlaceholder || postToConfirmRemove.post._isNew ? 'Discard this draft?' : 'Remove this post?'}
             </h2>
             <p className="form-subtitle" style={{ marginBottom: '1rem' }}>
-              {postToConfirmRemove.isPlaceholder || postToConfirmRemove.post._isNew ? 'This post will not be saved' : 'This cannot be undone'}
+              {postToConfirmRemove.isPlaceholder || postToConfirmRemove.post._isNew
+                ? 'This post will not be saved'
+                : 'This cannot be undone. The post will be permanently removed, along with all its comments, likes, and view data'}
             </p>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button type="button" className="btn btn-primary" onClick={() => postToConfirmRemove !== null && removePost(postToConfirmRemove)}>

@@ -203,6 +203,7 @@ export type CreatorProfile = {
   followers_count?: number;
   subscribers_count?: number;
   subscriptions_count?: number;
+  last_post_at?: string | null;
   is_following?: boolean;
   created_at?: string;
   updated_at?: string;
@@ -649,6 +650,8 @@ export type SubscriptionCreator = {
   slug: string;
   display_name: string;
   profile_avatar_url: string | null;
+  followers_count?: number | null;
+  last_post_at?: string | null;
 };
 
 export type SubscriptionWithTier = {
@@ -747,6 +750,24 @@ export const paymentsApi = {
     return api<{ data: PaymentForUser[] } | PaymentForUser[]>(
       '/api/me/payments'
     ).then((r) => (Array.isArray(r) ? r : (r as { data: PaymentForUser[] }).data ?? []));
+  },
+};
+
+export type InsightsPeriodKey = 'overall' | 'year' | '6m' | '3m' | '1m';
+
+export type InsightsResponse = {
+  members: { total: number; paid: number; free: number };
+  earnings: Record<InsightsPeriodKey, { amount: number }>;
+  engagement: Record<
+    InsightsPeriodKey,
+    { post_views: number; likes: number; comments: number }
+  >;
+  growth_30d: { new_paid: number; cancellations: number };
+};
+
+export const insightsApi = {
+  get() {
+    return api<InsightsResponse>('/api/me/insights');
   },
 };
 

@@ -270,7 +270,7 @@ export default function PostPage() {
           </p>
         )}
         {!commentsLoading && comments.length === 0 && !commentError && (
-          <p className="comments-empty">No comments yet. Be the first to comment</p>
+          <p className="comments-empty">No comments yet. Be the first to comment!</p>
         )}
         <ul className="comments-list">
           {comments.map((c) => {

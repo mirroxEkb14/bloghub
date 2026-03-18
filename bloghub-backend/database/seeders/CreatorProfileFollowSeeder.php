@@ -21,6 +21,14 @@ class CreatorProfileFollowSeeder extends Seeder
         'Gregory House' => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Gordon Freeman', 'Maggie Rhee'],
         'Maggie Rhee' => ['Dana Scully', 'Fox Mulder', 'Negan', 'Carl Johnson'],
         'Negan' => ['Fox Mulder', 'Gordon Freeman', 'Gregory House', 'Maggie Rhee', 'Carl Johnson', 'Thomas A. Anderson'],
+        'Shadow' => [
+            'followed_at_date' => '2013-10-22',
+            'followers' => [
+                'Super Admin', 'Admin',
+                'Fox Mulder', 'Dana Scully', 'Gordon Freeman', 'Gregory House', 'Caroline',
+                'Ellen Ripley', 'Maggie Rhee', 'Negan', 'Carl Johnson', 'Thomas A. Anderson', 'Trinity Zion',
+            ],
+        ],
     ];
 
     public function run(): void
@@ -34,13 +42,16 @@ class CreatorProfileFollowSeeder extends Seeder
             : Carbon::create(self::FOLLOW_START_YEAR, 1, 1)->startOfDay();
         $rangeEnd = now();
 
-        foreach (self::FOLLOWS as $creatorDisplayName => $followerNames) {
+        foreach (self::FOLLOWS as $creatorDisplayName => $followerNamesOrConfig) {
             $profile = $profilesByDisplayName->get($creatorDisplayName);
             if (! $profile) {
                 $this->command->warn("Creator profile \"{$creatorDisplayName}\" not found, skipping follows");
 
                 continue;
             }
+
+            $followerNames = $followerNamesOrConfig['followers'] ?? $followerNamesOrConfig;
+            $followedAtDate = $followerNamesOrConfig['followed_at_date'] ?? null;
 
             foreach ($followerNames as $followerName) {
                 $user = $usersByName->get($followerName);
@@ -58,7 +69,9 @@ class CreatorProfileFollowSeeder extends Seeder
                     continue;
                 }
 
-                $followedAt = $this->randomDateTimeBetween($rangeStart, $rangeEnd);
+                $followedAt = $followedAtDate !== null
+                    ? Carbon::parse($followedAtDate)->setTime(rand(0, 23), rand(0, 59), rand(0, 59))
+                    : $this->randomDateTimeBetween($rangeStart, $rangeEnd);
                 $profile->followers()->attach($user->id, [
                     'created_at' => $followedAt,
                     'updated_at' => $followedAt,

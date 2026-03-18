@@ -48,3 +48,4 @@ export { default as CircleCheckIcon } from './CircleCheckIcon';
 export { default as NumberedListIcon } from './NumberedListIcon';
 export { default as XCircleIcon } from './XCircleIcon';
 export { default as ClockIcon } from './ClockIcon';
+export { default as InfoIcon } from './InfoIcon';

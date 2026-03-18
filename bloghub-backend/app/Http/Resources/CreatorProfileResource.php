@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -32,6 +33,16 @@ class CreatorProfileResource extends JsonResource
             'followers_count' => $this->when(isset($this->followers_count), fn () => (int) $this->followers_count),
             'subscribers_count' => $this->when(isset($this->subscribers_count), fn () => (int) $this->subscribers_count),
             'subscriptions_count' => $this->when(isset($this->subscriptions_count), fn () => (int) $this->subscriptions_count),
+            'last_post_at' => $this->when(
+                isset($this->posts_max_created_at),
+                function () {
+                    $raw = $this->posts_max_created_at;
+                    if (! $raw) {
+                        return null;
+                    }
+                    return Carbon::parse($raw)->toIso8601String();
+                }
+            ),
             'is_following' => $this->when(isset($this->is_following), fn () => (bool) $this->is_following),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),

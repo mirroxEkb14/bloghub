@@ -15,18 +15,35 @@ export function getDefaultPlaceholderForLevel(
   return { ...PLACEHOLDER_BY_LEVEL[level] };
 }
 
+const DEFAULT_PLACEHOLDER_POST = {
+  title: 'The Initiation',
+  content_text: "Burial as a symbol of rebirth and a new beginning.",
+  excerpt: "Become a brother upon the ritual's completion...",
+};
+
 export function createEmptyPlaceholderPost(): DraftPost {
   return {
     id: -Date.now(),
-    slug: 'the-iniciation',
-    title: 'The Iniciation',
-    content_text: "Burial as a symbol of rebirth and a new beginning.",
-    excerpt: "Become a brother upon the ritual's completion...",
+    slug: 'the-initiation',
+    title: DEFAULT_PLACEHOLDER_POST.title,
+    content_text: DEFAULT_PLACEHOLDER_POST.content_text,
+    excerpt: DEFAULT_PLACEHOLDER_POST.excerpt,
     media_url: null,
     media_type: null,
     required_tier: null,
     _isNew: true,
   } as unknown as DraftPost;
+}
+
+export function isDefaultPlaceholderPost(p: DraftPost): boolean {
+  const t = (p.title ?? '').trim();
+  const c = (p.content_text ?? '').trim();
+  const e = (p.excerpt ?? '').trim();
+  return (
+    t === DEFAULT_PLACEHOLDER_POST.title &&
+    c === DEFAULT_PLACEHOLDER_POST.content_text &&
+    e === DEFAULT_PLACEHOLDER_POST.excerpt
+  );
 }
 
 export function validateSocialUrl(
