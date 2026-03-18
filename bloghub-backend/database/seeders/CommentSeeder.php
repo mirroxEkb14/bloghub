@@ -126,6 +126,12 @@ class CommentSeeder extends Seeder
                 ['Negan', 'Well, look at you, Maggie. \'Architect.\' I gotta admit, seeing you build up that little Hilltop of yours from the dirt... it\'s impressive. Hell of a lot better than the coward who was running it before you. You\'ve got guts, I\'ve always said that. Just remember that every big, beautiful house needs a damn good fence. And as you\'re finding out, sometimes you gotta do some truly ugly things to keep the monsters on the outside. Keep building, widow. I\'m watching.'],
             ],
         ],
+        'Kaginoko' => [
+            'Gates of Shadows' => [
+                ['Super Admin', 'GOG)) Really miss this🥹'],
+                ['Admin', 'Good Old Days😭'],
+            ],
+        ],
         'Negan' => [
             'A Retrospective on Staying Alive' => [
                 ['Caroline', 'A \'retrospective on staying alive\'? Fascinating management philosophy, Negan. Though I must say, your methods are appallingly primitive. A baseball bat wrapped in barbed wire? Please. At Aperture, when we need to motivate our \'resources\' to survive, we use high-velocity auto-turrets and a gentle flooding of deadly neurotoxin. Still, I do admire your complete disregard for conventional ethics and your focus on forced compliance. If you ever find yourself near Michigan, I have a senior management position open in our Human Resources department.'],

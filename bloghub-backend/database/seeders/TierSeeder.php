@@ -6,6 +6,7 @@ use App\Enums\Currency;
 use App\Models\CreatorProfile;
 use App\Models\User;
 use App\Support\TierResourceSupport;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
@@ -57,6 +58,11 @@ class TierSeeder extends Seeder
             ['level' => 2, 'tier_name' => 'The Alexandria Prisoner', 'price' => 47, 'currency' => Currency::EUR, 'tier_desc' => 'The Alexandria Prisoner: Lessons on maintaining a sense of self when you\'ve lost everything but a window', 'cover_base' => 'Field-Leader_cover'],
             ['level' => 3, 'tier_name' => 'The Burazi Leader', 'price' => 120, 'currency' => Currency::EUR, 'tier_desc' => 'The Burazi Leader: Guide on when it\'s time to put the mask back', 'cover_base' => 'Field-Leader_cover'],
         ],
+        'Kaginoko' => [
+            ['level' => 1, 'tier_name' => 'Lynx', 'price' => 19, 'currency' => Currency::USD, 'tier_desc' => 'Lynx: Blood Reaper, Lynx\'s Claws, Blue Seal', 'cover_base' => null, 'created_at' => '2013-10-22'],
+            ['level' => 2, 'tier_name' => 'Widow', 'price' => 30, 'currency' => Currency::USD, 'tier_desc' => 'Widow: Heavy Kusarigama, Widow\'s Fans, Orange Seal', 'cover_base' => null, 'created_at' => '2013-10-22'],
+            ['level' => 3, 'tier_name' => 'Shogun', 'price' => 100, 'currency' => Currency::USD, 'tier_desc' => 'Shogun: Ronin\'s Dadao, Shogun\'s Katana, Jade Seal', 'cover_base' => null, 'created_at' => '2013-10-22'],
+        ],
     ];
 
     public function run(): void
@@ -105,6 +111,13 @@ class TierSeeder extends Seeder
                         new File($coverPath)
                     );
                     $tier->tier_cover_path = $stored;
+                    $tier->save();
+                }
+
+                if (isset($data['created_at'])) {
+                    $createdAt = Carbon::parse($data['created_at'])->setTime(12, 0, 0);
+                    $tier->created_at = $createdAt;
+                    $tier->updated_at = $createdAt;
                     $tier->save();
                 }
             }

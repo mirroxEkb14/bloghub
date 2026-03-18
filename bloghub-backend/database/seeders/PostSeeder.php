@@ -224,6 +224,27 @@ class PostSeeder extends Seeder
                 ],
             ],
         ],
+        'Kaginoko' => [
+            'shadowMay19',
+            [
+                'gates-of-shadows' => [
+                    MediaType::Gif->value,
+                    '<p>I discovered the <a target="_blank" rel="noopener noreferrer" href="https://shadowfight.fandom.com/wiki/Gates_of_Shadows ">Gates</a> when I was searching for a worthy opponent who matched my skills. Defying the rules established by my ancestors, I opened the Gates - and in the process, released the <strong>demons</strong> contained inside. I also lost my body to the powerful emission of Shadow Energy unleashed from the Gates, turning me into a mere silhouette of my former self. Seeking to retrieve the demon seals and close the Gates of Shadows once again, I set to correct my mistake and lock away the evil I have unleashed upon the world.</p><p>After a long journey, I manage to defeat all the demons and obtain their seals. I and my companions then proceed to close the Gates. However, the six demons - <strong>Lynx</strong>, <strong>Hermit</strong>, <strong>Butcher</strong>, <strong>Wasp</strong>, <strong>Widow</strong> and <strong>Shogun</strong> – unite to prevent me from sealing them away. Lynx, Butcher and Wasp attempt to intimidate me, with Butcher even going to the extent of laying claims on my corpse.</p><p>I battle all six demons in a row and prove to be greater than all of them combined. Shogun is once again shocked by their defeat and says that despite being the "most powerful warriors who ever lived", they were somehow still overwhelmed by me. Hermit remarks that I am too powerful and that I do not belong to their world because of my skills. Widow begrudgingly congratulates me on my victory, but warns that this would not be their last encounter.</p><p>My path cleared once more, I proceed to close the Gates of Shadows. As they begin to shut, powerful torrents of dust and debris begin to swirl around them. We struggle to maintain our balance, however, at the very last moment, a huge torrent of energy makes its way towards the Gates, sweeping <u>May</u> along with it. Despite my best efforts to reach her, I am unable to help and she is pulled inside the Gates just as they slam shut.</p><p>In order to save May, I set out to open the Gates one more time. Sensei tells me that it seems the seals were connected to their demons, so I  must defeat all six demons again to break the seals and reopen the gates. After the seals are broken, the Gates open once again. Sensei admits he feels I am ready and have enough experience to face whatever comes next. After Sensei and Sly bid their farewell to me, I proceed to enter the Gates, which are revealed to be a portal that leads to another dimension called the Shadow World, ruled by the mighty conqueror <strong>Titan</strong>.</p><p>After May is rescued and Titan is defeated, the Gates of Shadows are destroyed as well. However, a mysterious shadow is seen slithering after me and May from the ruins of the Gates...</p>',
+                    'I travelled the lands, searching for a worthy battle, until I discovered the Gates of Shadows. I broke the laws of the elders and opened the gates. The demons of the other world were beyond them...',
+                    '2013-10-22 23:00:00',
+                    null,
+                    'Gates of Shadows',
+                ],
+                'kusarigama' => [
+                    MediaType::Image->value,
+                    '<p>Kusarigama (鎖鎌, lit. "chain-sickle") is a traditional Japanese weapon that consists of a kama (the Japanese equivalent of a sickle) on a type of metal chain (kusari) with a heavy iron weight at the end. The art of handling the kusarigama is called <u>kusarigamajutsu</u>.</p><p>The usage of Kusarigama usually entails in swinging the weighted chain in a large circle over one\'s head, and then whipping it forward to entangle an opponent\'s weapon, or immobilizing his arms or legs. This allows the kusarigama user to easily rush forward and strike with the sickle. A kusarigama wielder might also strike with the spinning weighted end of the chain directly while still outside the range of an opponent\'s hand weapon.</p><p>There were three Kusarigama-type weapons available to me during the Path – the gem <a target="_blank" rel="noopener noreferrer" href="https://shadowfight.fandom.com/wiki/Blood_Reaper_(SF2)">Blood Reaper</a> (from <strong>Hero Reborn</strong>), the Kusarigama (from <strong>Pirate Throne</strong>) for <em>471,000</em> gold, and the <a target="_blank" rel="noopener noreferrer" href="https://shadowfight.fandom.com/wiki/Heavy_Kusarigama">Heavy Kusarigama</a> (from <strong>The Greatest Temptation</strong>) (which I obtained by defeating the challenger Outcast.</p><p>Usually, it consists of a sickle and a weight, both of them connected with a rope. In case of the Blood Reaper, it has a decorated sickle and a barbed circle-shaped weight, connected with a chain. The weapon has long range, slow attack speed and, as the name suggests, comes with the Bleeding enchantment. Despite having a slow attack speed, kusarigama can easily inflict headshots and combos.</p><p>Attack Overview:<ul><li>Kusarigama Stance,</li><li>Kusarigama Slash,</li><li>Kusarigama Double Slash,</li><li>Kusarigama Strong Slash,</li><li>Kusarigama Super Slash,</li><li>Kusarigama Spinning Slash,</li><li>Kusarigama Upper Slash,</li><li>Kusarigama Low Slash.</li></ul></p><p>Trivia: Widow\'s fifth bodyguard, <a target="_blank" rel="noopener noreferrer" href="https://shadowfight.fandom.com/wiki/Puma">Puma</a>, uses a modified version of the Kusarigama named <u>Sentinel Kusarigama</u>, which I wasn\'t able to obtain.</p>',
+                    'It has been voted as the most favorite weapon by the community.',
+                    '2013-10-22 20:00:00',
+                    1,
+                    'Kusarigama',
+                ],
+            ],
+        ],
     ];
 
     public function run(): void
@@ -274,8 +295,12 @@ class PostSeeder extends Seeder
                         $tier = $tiersByLevel->get($tierLevel);
                         $attributes['required_tier_id'] = $tier?->id;
                     }
-                    $attributes['created_at'] = Carbon::parse($createdAtKey)
-                        ->setTime(rand(0, 23), rand(0, 59), rand(0, 59));
+                    $createdAt = Carbon::parse($createdAtKey);
+                    if (str_contains($createdAtKey, ':')) {
+                        $attributes['created_at'] = $createdAt;
+                    } else {
+                        $attributes['created_at'] = $createdAt->setTime(rand(0, 23), rand(0, 59), rand(0, 59));
+                    }
                 }
 
                 $post = Post::firstOrCreate(

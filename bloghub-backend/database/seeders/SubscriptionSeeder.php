@@ -30,7 +30,52 @@ class SubscriptionSeeder extends Seeder
             $this->createSubscriptionWithCompletedPayment($subscriberName, $creatorName, $tierName);
         }
 
+        $this->createShadowAdminSubscriptions();
+
         $this->createExtraSubscriptionsWithPendingOrFailedPayments();
+    }
+
+    private function createShadowAdminSubscriptions(): void
+    {
+        $users = User::whereIn('name', ['Super Admin', 'Admin'])->get();
+        $kaginoko = User::where('name', 'Kaginoko')->first();
+        if (! $kaginoko) {
+            return;
+        }
+        $profile = CreatorProfile::where('user_id', $kaginoko->id)->first();
+        if (! $profile) {
+            return;
+        }
+        $lynxTier = Tier::where('creator_profile_id', $profile->id)->where('tier_name', 'Lynx')->first();
+        if (! $lynxTier) {
+            return;
+        }
+
+        $startDate = Carbon::parse('2026-03-22')->startOfDay();
+        $endDate = Carbon::parse('2026-04-22')->startOfDay();
+
+        foreach ($users as $user) {
+            if (Subscription::where('user_id', $user->id)->where('tier_id', $lynxTier->id)->exists()) {
+                continue;
+            }
+
+            $sub = Subscription::create([
+                'user_id' => $user->id,
+                'tier_id' => $lynxTier->id,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'sub_status' => SubStatus::Active,
+            ]);
+
+            Payment::create([
+                'subscription_id' => $sub->id,
+                'amount' => $lynxTier->price,
+                'currency' => $lynxTier->tier_currency,
+                'checkout_date' => $startDate->copy(),
+                'card_last4' => '4242',
+                'payment_status' => PaymentStatus::Completed,
+            ]);
+        }
     }
 
     private function randomDateTimeInYear(int $year): Carbon

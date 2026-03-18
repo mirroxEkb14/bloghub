@@ -92,6 +92,18 @@ class CreatorProfileSeeder extends Seeder
                 'website_url' => 'https://negan.example.com',
             ],
         ],
+        'Kaginoko' => [
+            'about' => 'Once an invincible warrior seeking battle, I defied the elders and opened the Gates of Shadows. Demons rushed out, stripping my flesh and soul, turning me into a Shadow. Now, I am doomed to eternally wander and fight the very demons I freed!',
+            'tag_slugs' => ['leadership', 'survival', 'space'],
+            'social' => [
+                'website_url' => 'https://shadowfight.fandom.com/wiki/Shadow_(SF2)',
+            ],
+            'slug' => 'shadow',
+            'display_name' => 'Shadow',
+            'created_at' => '2013-10-22',
+            'avatar_base' => 'shadowMay19',
+            'cover_base' => 'shadowMay19_cover',
+        ],
     ];
 
     public function run(): void
@@ -110,8 +122,8 @@ class CreatorProfileSeeder extends Seeder
                 ? mb_substr($rawAbout, 0, $maxAbout - 3).'...'
                 : $rawAbout;
 
-            $displayName = $userName;
-            $slug = CreatorProfile::uniqueSlugForDisplayName($displayName);
+            $displayName = $data['display_name'] ?? $userName;
+            $slug = $data['slug'] ?? CreatorProfile::uniqueSlugForDisplayName($displayName);
 
             $social = $data['social'] ?? [];
             $profile = CreatorProfile::firstOrCreate(
@@ -140,7 +152,8 @@ class CreatorProfileSeeder extends Seeder
             }
 
             $basePath = base_path(self::FIXTURES_BASE);
-            $avatarPath = $this->findFixtureFile($basePath.'/avatars', $user->username.'_avatar');
+            $avatarBase = $data['avatar_base'] ?? $user->username.'_avatar';
+            $avatarPath = $this->findFixtureFile($basePath.'/avatars', $avatarBase);
             if ($avatarPath !== null) {
                 $stored = Storage::disk('public')->putFile(
                     CreatorProfileResourceSupport::AVATAR_DIRECTORY,
@@ -149,7 +162,8 @@ class CreatorProfileSeeder extends Seeder
                 $profile->profile_avatar_path = $stored;
             }
 
-            $coverPath = $this->findFixtureFile($basePath.'/covers', $user->username.'_cover');
+            $coverBase = $data['cover_base'] ?? $user->username.'_cover';
+            $coverPath = $this->findFixtureFile($basePath.'/covers', $coverBase);
             if ($coverPath !== null) {
                 $stored = Storage::disk('public')->putFile(
                     CreatorProfileResourceSupport::COVER_DIRECTORY,
@@ -163,8 +177,11 @@ class CreatorProfileSeeder extends Seeder
             $tagIds = Tag::whereIn('slug', $data['tag_slugs'])->pluck('id');
             $profile->tags()->sync($tagIds);
 
-            $profile->created_at = Carbon::parse('2024-01-15')
-                ->setTime(rand(6, 22), rand(0, 59), rand(0, 59));
+            $createdAt = isset($data['created_at'])
+                ? Carbon::parse($data['created_at'])->setTime(12, 0, 0)
+                : Carbon::parse('2024-01-15')->setTime(rand(6, 22), rand(0, 59), rand(0, 59));
+            $profile->created_at = $createdAt;
+            $profile->updated_at = $createdAt;
             $profile->save();
         }
     }
