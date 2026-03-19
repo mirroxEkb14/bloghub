@@ -60,6 +60,7 @@ Route::middleware('throttle:api')->group(function () {
         Route::get('/me/insights', MeInsightsController::class);
         Route::get('/me/creator-profile', [CreatorProfileController::class, 'me']);
         Route::put('/me/creator-profile', [CreatorProfileController::class, 'updateMe']);
+        Route::delete('/me/creator-profile', [CreatorProfileController::class, 'destroyMe']);
         Route::post('/creator-profiles', [CreatorProfileController::class, 'store']);
         Route::post('/creator-profiles/upload-avatar', [CreatorProfileUploadController::class, 'avatar']);
         Route::post('/creator-profiles/upload-cover', [CreatorProfileUploadController::class, 'cover']);

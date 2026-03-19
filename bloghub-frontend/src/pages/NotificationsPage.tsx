@@ -66,6 +66,8 @@ function notificationMessage(n: NotificationItem): NotificationMessage {
       const tierName = (d.tier_name as string) ?? 'a tier';
       return { creatorName, creatorSlug, creatorAvatarUrl, actionText: `removed tier: ${tierName}`, link: creatorSlug ? `/creator/${creatorSlug}` : undefined, linkLabel: 'View creator' };
     }
+    case 'creator_profile_removed':
+      return { creatorName, creatorSlug: undefined, creatorAvatarUrl, actionText: 'has removed their creator profile' };
     default:
       return { creatorName, creatorSlug: undefined, creatorAvatarUrl: null, actionText: 'Notification' };
   }

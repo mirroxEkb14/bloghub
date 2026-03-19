@@ -354,6 +354,10 @@ export const creatorProfilesApi = {
     ).then((r) => (r && typeof r === 'object' && 'data' in r ? (r as { data: { creator_profile: CreatorProfile; followed_at: string | null }[] }).data : []) ?? []);
   },
 
+  deleteMe() {
+    return api<{ message: string }>('/api/me/creator-profile', { method: 'DELETE' });
+  },
+
   updateMe(body: {
     slug?: string;
     display_name?: string;

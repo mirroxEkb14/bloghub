@@ -164,6 +164,27 @@ class NotificationService
         return $count;
     }
 
+    public function creatorProfileRemoved(CreatorProfile $profile): void
+    {
+        $userIds = $this->followerAndSubscriberUserIds($profile);
+        $ownerId = $profile->user_id;
+        $userIds = array_values(array_filter($userIds, fn ($id) => (int) $id !== (int) $ownerId));
+
+        $data = [
+            'creator_slug' => $profile->slug,
+            'creator_display_name' => $profile->display_name,
+            'creator_avatar_url' => $profile->profile_avatar_url,
+        ];
+
+        foreach ($userIds as $userId) {
+            Notification::query()->create([
+                'user_id' => $userId,
+                'type' => 'creator_profile_removed',
+                'data' => $data,
+            ]);
+        }
+    }
+
     private function followerAndSubscriberUserIds(CreatorProfile $profile): array
     {
         $followerIds = $profile->followers()->pluck('users.id')->all();

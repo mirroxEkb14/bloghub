@@ -9,6 +9,7 @@ use App\Http\Requests\Api\UpdateCreatorProfileRequest;
 use App\Http\Requests\Api\UpdateMyCreatorProfileRequest;
 use App\Http\Resources\CreatorProfileResource;
 use App\Models\CreatorProfile;
+use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -144,5 +145,18 @@ class CreatorProfileController extends Controller
         $profile->load(['user:id,name,username', 'tags'])->loadCount(['posts', 'subscriptions']);
 
         return new CreatorProfileResource($profile);
+    }
+
+    public function destroyMe(Request $request, NotificationService $notificationService): JsonResponse
+    {
+        $profile = $request->user()?->creatorProfile;
+        if ($profile === null) {
+            return response()->json(['message' => __('You do not have a creator profile')], 404);
+        }
+
+        $notificationService->creatorProfileRemoved($profile);
+        $profile->delete();
+
+        return response()->json(['message' => __('Creator profile removed')]);
     }
 }

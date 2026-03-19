@@ -71,6 +71,9 @@ export default function CreatorStudioPage() {
   const [tierIdConfirmRemove, setTierIdConfirmRemove] = useState<number | null>(null);
   const [placeholderConfirmRemoveLevel, setPlaceholderConfirmRemoveLevel] = useState<number | null>(null);
   const [postToConfirmRemove, setPostToConfirmRemove] = useState<{ post: DraftPost; isPlaceholder: boolean; placeholderIndex?: number } | null>(null);
+  const [showRemoveProfileConfirm, setShowRemoveProfileConfirm] = useState(false);
+  const [showRemoveProfileConfirmSecond, setShowRemoveProfileConfirmSecond] = useState(false);
+  const [removingProfile, setRemovingProfile] = useState(false);
   const [placeholderPosts, setPlaceholderPosts] = useState<DraftPost[]>(() => [createEmptyPlaceholderPost()]);
   const [includedPlaceholderPostIndices, setIncludedPlaceholderPostIndices] = useState<number[]>([]);
   const [postMediaUploadTarget, setPostMediaUploadTarget] = useState<{ slug: string; id: number } | { placeholderIndex: number } | null>(null);
@@ -719,6 +722,22 @@ export default function CreatorStudioPage() {
     [postMediaUploadTarget, updatePlaceholderPostAt, updateDraftPost, showToast]
   );
 
+  const handleRemoveProfile = useCallback(async () => {
+    setRemovingProfile(true);
+    try {
+      await creatorProfilesApi.deleteMe();
+      await refreshUser();
+      showToast('Creator profile removed', 'success');
+      setShowRemoveProfileConfirm(false);
+      setShowRemoveProfileConfirmSecond(false);
+      navigate('/creator/new', { replace: true });
+    } catch {
+      showToast('Failed to remove creator profile', 'error');
+    } finally {
+      setRemovingProfile(false);
+    }
+  }, [refreshUser, showToast, navigate]);
+
   const removePost = useCallback((payload: { post: DraftPost; isPlaceholder: boolean; placeholderIndex?: number }) => {
     setPostToConfirmRemove(null);
     const { post, isPlaceholder, placeholderIndex } = payload;
@@ -766,6 +785,16 @@ export default function CreatorStudioPage() {
             : 'Edit your page - changes are preview only until you Save'}
         </span>
         <div className="creator-studio-toolbar-actions">
+          {mode === 'edit' && (
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setShowRemoveProfileConfirm(true)}
+              aria-label="Remove creator profile"
+            >
+              Remove profile
+            </button>
+          )}
           {mode === 'edit' && profileSlug && (
             <button
               type="button"
@@ -1441,6 +1470,48 @@ export default function CreatorStudioPage() {
           </section>
         </aside>
       </div>
+
+      {showRemoveProfileConfirm && (
+        <div className="tier-delete-overlay" role="dialog" aria-modal="true" aria-labelledby="remove-profile-confirm-title" onClick={() => !removingProfile && setShowRemoveProfileConfirm(false)}>
+          <div className="tier-delete-card card" style={{ maxWidth: 420 }} onClick={(e) => e.stopPropagation()}>
+            <h2 id="remove-profile-confirm-title" className="form-title">Remove creator profile?</h2>
+            <p className="form-subtitle" style={{ marginBottom: '0.75rem' }}>If you proceed, the following will happen:</p>
+            <ul className="form-subtitle" style={{ marginBottom: '1rem', paddingLeft: '1.25rem', listStyle: 'disc' }}>
+              <li>Your creator page will be permanently deleted</li>
+              <li>All your posts, tiers, and media will be removed</li>
+              <li>All active subscriptions to your tiers will be ended</li>
+              <li>Your followers will be removed</li>
+              <li>You can create a new creator profile later</li>
+            </ul>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                disabled={removingProfile}
+                onClick={() => { setShowRemoveProfileConfirm(false); setShowRemoveProfileConfirmSecond(true); }}
+              >
+                Remove profile
+              </button>
+              <button type="button" className="btn btn-secondary" disabled={removingProfile} onClick={() => setShowRemoveProfileConfirm(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showRemoveProfileConfirmSecond && (
+        <div className="tier-delete-overlay" role="dialog" aria-modal="true" aria-labelledby="remove-profile-confirm-second-title" onClick={() => !removingProfile && (setShowRemoveProfileConfirmSecond(false), setShowRemoveProfileConfirm(true))}>
+          <div className="tier-delete-card card" style={{ maxWidth: 360 }} onClick={(e) => e.stopPropagation()}>
+            <h2 id="remove-profile-confirm-second-title" className="form-title">Are you sure?</h2>
+            <p className="form-subtitle" style={{ marginBottom: '1rem' }}>This action cannot be undone</p>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button type="button" className="btn btn-primary" disabled={removingProfile} onClick={handleRemoveProfile}>
+                {removingProfile ? 'Removing...' : 'Yes, absolutely'}
+              </button>
+              <button type="button" className="btn btn-secondary" disabled={removingProfile} onClick={() => { setShowRemoveProfileConfirmSecond(false); setShowRemoveProfileConfirm(true); }}>Back</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {postToConfirmRemove !== null && (
         <div className="tier-delete-overlay" role="dialog" aria-modal="true" aria-labelledby="post-remove-confirm-title" onClick={() => setPostToConfirmRemove(null)}>
