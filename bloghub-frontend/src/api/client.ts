@@ -200,7 +200,11 @@ export type CreatorProfile = {
   user?: CreatorProfileUser;
   tags?: Tag[];
   posts_count?: number;
+  followers_count?: number;
+  subscribers_count?: number;
   subscriptions_count?: number;
+  last_post_at?: string | null;
+  is_following?: boolean;
   created_at?: string;
   updated_at?: string;
 };
@@ -237,7 +241,7 @@ export type CommentUser = {
   name: string;
   username: string;
   avatar_url?: string | null;
-  creator_profile?: { slug: string } | null;
+  creator_profile?: { slug: string; profile_avatar_url?: string | null } | null;
 };
 
 export type Comment = {
@@ -328,8 +332,50 @@ export const creatorProfilesApi = {
     ).then(unwrapData);
   },
 
+  follow(slug: string) {
+    return api<{ message: string }>(`/api/creator-profiles/${encodeURIComponent(slug)}/follow`, {
+      method: 'POST',
+    });
+  },
+
+  unfollow(slug: string) {
+    return api<{ message: string }>(`/api/creator-profiles/${encodeURIComponent(slug)}/follow`, {
+      method: 'DELETE',
+    });
+  },
+
   me() {
     return api<CreatorProfile | { data: CreatorProfile }>('/api/me/creator-profile').then(unwrapData);
+  },
+
+  getFollowing() {
+    return api<{ data: { creator_profile: CreatorProfile; followed_at: string | null }[] }>(
+      '/api/me/following'
+    ).then((r) => (r && typeof r === 'object' && 'data' in r ? (r as { data: { creator_profile: CreatorProfile; followed_at: string | null }[] }).data : []) ?? []);
+  },
+
+  deleteMe() {
+    return api<{ message: string }>('/api/me/creator-profile', { method: 'DELETE' });
+  },
+
+  updateMe(body: {
+    slug?: string;
+    display_name?: string;
+    about?: string | null;
+    profile_avatar_path?: string | null;
+    profile_cover_path?: string | null;
+    telegram_url?: string | null;
+    instagram_url?: string | null;
+    facebook_url?: string | null;
+    youtube_url?: string | null;
+    twitch_url?: string | null;
+    website_url?: string | null;
+    tag_ids?: number[];
+  }) {
+    return api<CreatorProfile | { data: CreatorProfile }>('/api/me/creator-profile', {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    }).then(unwrapData);
   },
 
   create(body: {
@@ -338,6 +384,12 @@ export const creatorProfilesApi = {
     about?: string | null;
     profile_avatar_path?: string | null;
     profile_cover_path?: string | null;
+    telegram_url?: string | null;
+    instagram_url?: string | null;
+    facebook_url?: string | null;
+    youtube_url?: string | null;
+    twitch_url?: string | null;
+    website_url?: string | null;
     tag_ids?: number[];
   }) {
     return api<CreatorProfile | { data: CreatorProfile }>('/api/creator-profiles', {
@@ -445,6 +497,16 @@ export type PostCreatePayload = {
   required_tier_id?: number | null;
 };
 
+export type PostUpdatePayload = Partial<{
+  slug: string;
+  title: string;
+  content_text: string;
+  excerpt: string | null;
+  media_url: string | null;
+  media_type: string | null;
+  required_tier_id: number | null;
+}>;
+
 export type PostMediaUploadResponse = {
   path: string;
   url: string;
@@ -467,6 +529,13 @@ export const postsApi = {
     return api<Post | { data: Post }>(
       '/api/me/creator-profile/posts',
       { method: 'POST', body: JSON.stringify(payload) }
+    ).then((r) => (r != null && typeof r === 'object' && 'data' in r ? (r as { data: Post }).data : r) as Post);
+  },
+
+  update(postSlug: string, payload: PostUpdatePayload) {
+    return api<Post | { data: Post }>(
+      `/api/me/creator-profile/posts/${encodeURIComponent(postSlug)}`,
+      { method: 'PUT', body: JSON.stringify(payload) }
     ).then((r) => (r != null && typeof r === 'object' && 'data' in r ? (r as { data: Post }).data : r) as Post);
   },
 
@@ -585,6 +654,8 @@ export type SubscriptionCreator = {
   slug: string;
   display_name: string;
   profile_avatar_url: string | null;
+  followers_count?: number | null;
+  last_post_at?: string | null;
 };
 
 export type SubscriptionWithTier = {
@@ -598,6 +669,7 @@ export type SubscriptionWithTier = {
   updated_at: string | null;
   tier: Tier;
   creator: SubscriptionCreator;
+  card_last4?: string | null;
 };
 
 export type SubscriptionStatusResponse = {
@@ -608,7 +680,13 @@ export type SubscriptionStatusResponse = {
 export type CheckoutSessionResponse =
   | { type: 'free'; subscription: SubscriptionWithTier }
   | { type: 'checkout'; checkout_url: string }
-  | { type: 'already_subscribed'; message?: string };
+  | { type: 'already_subscribed'; message?: string }
+  | {
+      type: 'upgrade_confirm';
+      message?: string;
+      current_subscription: { tier_name: string | null; end_date: string | null };
+      new_tier_name: string;
+    };
 
 export const subscriptionsApi = {
   list() {
@@ -624,10 +702,12 @@ export const subscriptionsApi = {
     ).then(unwrapData);
   },
 
-  createCheckoutSession(tierId: number) {
+  createCheckoutSession(tierId: number, options?: { confirmUpgrade?: boolean }) {
+    const body: { tier_id: number; confirm_upgrade?: boolean } = { tier_id: tierId };
+    if (options?.confirmUpgrade === true) body.confirm_upgrade = true;
     return api<CheckoutSessionResponse>(
       '/api/subscriptions/create-checkout-session',
-      { method: 'POST', body: JSON.stringify({ tier_id: tierId }) }
+      { method: 'POST', body: JSON.stringify(body) }
     );
   },
 
@@ -644,10 +724,11 @@ export const subscriptionsApi = {
     );
   },
 
-  cancel(subscriptionId: number) {
+  cancel(subscriptionId: number, options?: { endNow?: boolean }) {
+    const body = options?.endNow !== undefined ? { end_now: options.endNow } : {};
     return api<{ message: string; subscription: SubscriptionWithTier }>(
       `/api/subscriptions/${subscriptionId}/cancel`,
-      { method: 'PATCH' }
+      { method: 'PATCH', body: Object.keys(body).length ? JSON.stringify(body) : undefined }
     );
   },
 };
@@ -673,5 +754,55 @@ export const paymentsApi = {
     return api<{ data: PaymentForUser[] } | PaymentForUser[]>(
       '/api/me/payments'
     ).then((r) => (Array.isArray(r) ? r : (r as { data: PaymentForUser[] }).data ?? []));
+  },
+};
+
+export type InsightsPeriodKey = 'overall' | 'year' | '6m' | '3m' | '1m';
+
+export type InsightsResponse = {
+  members: { total: number; paid: number; free: number };
+  earnings: Record<InsightsPeriodKey, { amount: number }>;
+  engagement: Record<
+    InsightsPeriodKey,
+    { post_views: number; likes: number; comments: number }
+  >;
+  growth_30d: { new_paid: number; cancellations: number };
+};
+
+export const insightsApi = {
+  get() {
+    return api<InsightsResponse>('/api/me/insights');
+  },
+};
+
+export type NotificationItem = {
+  id: number;
+  type: string;
+  data: Record<string, unknown>;
+  read_at: string | null;
+  created_at: string | null;
+};
+
+export const notificationsApi = {
+  list(params?: { page?: number; per_page?: number }) {
+    const sp = new URLSearchParams();
+    if (params?.page != null) sp.set('page', String(params.page));
+    if (params?.per_page != null) sp.set('per_page', String(params.per_page));
+    const q = sp.toString();
+    return api<PaginatedResponse<NotificationItem>>(
+      `/api/me/notifications${q ? `?${q}` : ''}`
+    );
+  },
+
+  unreadCount() {
+    return api<{ count: number }>('/api/me/notifications/unread-count');
+  },
+
+  markRead(id: number) {
+    return api<NotificationItem>(`/api/me/notifications/${id}/read`, { method: 'PATCH' });
+  },
+
+  markAllRead() {
+    return api<{ message: string }>('/api/me/notifications/read', { method: 'PATCH' });
   },
 };

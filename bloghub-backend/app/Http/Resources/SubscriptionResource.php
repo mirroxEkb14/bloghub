@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -29,8 +30,13 @@ class SubscriptionResource extends JsonResource
                     'slug' => $profile->slug,
                     'display_name' => $profile->display_name,
                     'profile_avatar_url' => $profile->profile_avatar_url,
+                    'followers_count' => isset($profile->followers_count) ? (int) $profile->followers_count : null,
+                    'last_post_at' => isset($profile->posts_max_created_at) && $profile->posts_max_created_at
+                        ? Carbon::parse($profile->posts_max_created_at)->toIso8601String()
+                        : null,
                 ];
             }),
+            'card_last4' => $this->getAttribute('card_last4'),
         ];
     }
 }

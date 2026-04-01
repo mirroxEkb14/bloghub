@@ -14,7 +14,7 @@ class PostViewSeeder extends Seeder
 {
     private const PUBLIC_POST_VIEWS = [
         'Caroline' => [
-            'The Borealis: A Lesson in Spontaneous Relocation' => ['Gordon Freeman', 'Dana Scully', 'Fox Mulder', 'Thomas A. Anderson', 'Tiffany Zion'],
+            'The Borealis: A Lesson in Spontaneous Relocation' => ['Gordon Freeman', 'Dana Scully', 'Fox Mulder', 'Thomas A. Anderson', 'Trinity Zion'],
             'The Black Mesa Anomaly: A Study in Incompetence' => ['Ellen Ripley', 'Gordon Freeman', 'Maggie Rhee', 'Negan'],
         ],
         'Dana Scully' => [
@@ -29,10 +29,10 @@ class PostViewSeeder extends Seeder
             'The Blackwood Anomaly and the Texas Bio-Lobby' => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Gordon Freeman', 'Gregory House'],
         ],
         'Gordon Freeman' => [
-            "The Universal 'Combine' Union" => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder', 'Thomas A. Anderson', 'Tiffany Zion'],
+            "The Universal 'Combine' Union" => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder', 'Thomas A. Anderson', 'Trinity Zion'],
             '"Xenocrystal Bloom" - Sound Insight' => ['Caroline'],
             'Resonance Cascade Event – Video Insight' => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder'],
-            'Resonance Cascade Event' => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder', 'Gregory House', 'Maggie Rhee', 'Negan', 'Thomas A. Anderson', 'Tiffany Zion', 'Carl Johnson'],
+            'Resonance Cascade Event' => ['Caroline', 'Dana Scully', 'Ellen Ripley', 'Fox Mulder', 'Gregory House', 'Maggie Rhee', 'Negan', 'Thomas A. Anderson', 'Trinity Zion', 'Carl Johnson'],
         ],
         'Maggie Rhee' => [
             'From Survivor to Architect' => ['Gregory House', 'Negan'],
@@ -46,6 +46,43 @@ class PostViewSeeder extends Seeder
     {
         $this->seedViewsForLockedPosts();
         $this->seedViewsForPublicPosts();
+        foreach (['kusarigama', 'gates-of-shadows'] as $slug) {
+            $post = Post::with(['creatorProfile'])
+                ->where('slug', $slug)
+                ->first();
+
+            if (! $post) {
+                continue;
+            }
+
+            $creatorUserId = $post->creatorProfile?->user_id;
+            if (! $creatorUserId) {
+                continue;
+            }
+
+            $postCreatedAt = Carbon::parse($post->created_at);
+            $start = $postCreatedAt->copy()->addSecond();
+            $end = $postCreatedAt->copy()->addDays(4);
+
+            $viewerUsers = User::query()
+                ->where('id', '!=', $creatorUserId)
+                ->get();
+
+            foreach ($viewerUsers as $viewer) {
+                $viewAt = $this->randomBetween($start, $end);
+
+                PostView::updateOrCreate(
+                    [
+                        'post_id' => $post->id,
+                        'user_id' => $viewer->id,
+                    ],
+                    [
+                        'created_at' => $viewAt,
+                        'updated_at' => $viewAt,
+                    ]
+                );
+            }
+        }
     }
 
     private function seedViewsForLockedPosts(): void
@@ -55,6 +92,10 @@ class PostViewSeeder extends Seeder
             ->get();
 
         foreach ($lockedPosts as $post) {
+            if ($post->slug === 'kusarigama') {
+                continue;
+            }
+
             $requiredLevel = $post->requiredTier?->level;
             if ($requiredLevel === null) {
                 continue;
@@ -112,6 +153,9 @@ class PostViewSeeder extends Seeder
                     ->where('title', $postTitle)
                     ->first();
                 if (! $post) {
+                    continue;
+                }
+                if ($post->slug === 'kusarigama') {
                     continue;
                 }
 

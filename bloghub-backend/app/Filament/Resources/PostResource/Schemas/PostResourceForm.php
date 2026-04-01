@@ -7,6 +7,7 @@ use App\Rules\SlugUniquePerCreatorProfileRule;
 use App\Support\PostResourceSupport;
 use App\Support\TierResourceSupport;
 use Carbon\Carbon;
+use App\Filament\Schemas\Components\PostMediaPreview;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -57,6 +58,11 @@ class PostResourceForm
                                             ->required()
                                             ->maxLength(PostResourceSupport::TITLE_MAX_LENGTH)
                                             ->columnSpanFull(),
+                                        Textarea::make('excerpt')
+                                            ->label(__('filament.posts.form.excerpt'))
+                                            ->maxLength(PostResourceSupport::EXCERPT_MAX_LENGTH)
+                                            ->columnSpanFull()
+                                            ->rows(3),
                                         Textarea::make('content_text')
                                             ->label(__('filament.posts.form.content_text'))
                                             ->placeholder(__('filament.posts.form.content_text_placeholder'))
@@ -104,6 +110,8 @@ class PostResourceForm
                                             ->label(__('filament.posts.form.media_type'))
                                             ->options(PostResourceSupport::mediaTypeOptions())
                                             ->nullable(),
+                                        PostMediaPreview::make()
+                                            ->columnSpanFull(),
                                     ]),
                                 Section::make(__('filament.posts.form.section_metadata'))
                                     ->schema([

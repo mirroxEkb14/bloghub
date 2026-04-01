@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\SubStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreCreatorProfileRequest;
 use App\Http\Requests\Api\UpdateCreatorProfileRequest;
+use App\Http\Requests\Api\UpdateMyCreatorProfileRequest;
 use App\Http\Resources\CreatorProfileResource;
 use App\Models\CreatorProfile;
+use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -44,16 +47,28 @@ class CreatorProfileController extends Controller
         return CreatorProfileResource::collection($profiles);
     }
 
-    public function show(string $slug): CreatorProfileResource|JsonResponse
+    public function show(Request $request, string $slug): CreatorProfileResource|JsonResponse
     {
         $profile = CreatorProfile::query()
             ->where('slug', $slug)
             ->with(['user:id,name,username', 'tags'])
-            ->withCount(['posts', 'subscriptions'])
+            ->withCount(['posts', 'followers'])
+            ->withCount(['subscriptions as subscribers_count' => function ($q) {
+                $q->where('sub_status', SubStatus::Active)
+                    ->where(function ($q2) {
+                        $q2->whereNull('end_date')->orWhere('end_date', '>', now());
+                    })
+                    ->selectRaw('count(distinct user_id)');
+            }])
             ->first();
 
         if ($profile === null) {
             return response()->json(['message' => __('Creator profile not found')], 404);
+        }
+
+        $user = $request->user();
+        if ($user) {
+            $profile->is_following = $profile->followers()->where('users.id', $user->id)->exists();
         }
 
         return new CreatorProfileResource($profile);
@@ -66,7 +81,16 @@ class CreatorProfileController extends Controller
             return response()->json(['message' => __('You do not have a creator profile')], 404);
         }
 
-        $profile->load(['user:id,name,username', 'tags'])->loadCount('posts');
+        $profile->load(['user:id,name,username', 'tags'])
+            ->loadCount(['posts', 'followers'])
+            ->loadCount(['subscriptions as subscribers_count' => function ($q) {
+                $q->where('sub_status', SubStatus::Active)
+                    ->where(function ($q2) {
+                        $q2->whereNull('end_date')->orWhere('end_date', '>', now());
+                    })
+                    ->selectRaw('count(distinct user_id)');
+            }]);
+        $profile->is_following = false;
 
         return new CreatorProfileResource($profile);
     }
@@ -85,7 +109,7 @@ class CreatorProfileController extends Controller
         $profile = CreatorProfile::create($data);
         $profile->tags()->sync($tagIds);
 
-        $profile->load(['user:id,name,username', 'tags'])->loadCount('posts');
+        $profile->load(['user:id,name,username', 'tags'])->loadCount(['posts', 'subscriptions']);
 
         return response()->json(new CreatorProfileResource($profile), 201);
     }
@@ -101,8 +125,38 @@ class CreatorProfileController extends Controller
             $creatorProfile->tags()->sync($tagIds);
         }
 
-        $creatorProfile->load(['user:id,name,username', 'tags'])->loadCount('posts');
+        $creatorProfile->load(['user:id,name,username', 'tags'])->loadCount(['posts', 'subscriptions']);
 
         return new CreatorProfileResource($creatorProfile);
+    }
+
+    public function updateMe(UpdateMyCreatorProfileRequest $request): CreatorProfileResource
+    {
+        $profile = $request->user()->creatorProfile;
+        $data = $request->validated();
+        $tagIds = $data['tag_ids'] ?? null;
+        unset($data['tag_ids']);
+
+        $profile->update($data);
+        if ($tagIds !== null) {
+            $profile->tags()->sync($tagIds);
+        }
+
+        $profile->load(['user:id,name,username', 'tags'])->loadCount(['posts', 'subscriptions']);
+
+        return new CreatorProfileResource($profile);
+    }
+
+    public function destroyMe(Request $request, NotificationService $notificationService): JsonResponse
+    {
+        $profile = $request->user()?->creatorProfile;
+        if ($profile === null) {
+            return response()->json(['message' => __('You do not have a creator profile')], 404);
+        }
+
+        $notificationService->creatorProfileRemoved($profile);
+        $profile->delete();
+
+        return response()->json(['message' => __('Creator profile removed')]);
     }
 }

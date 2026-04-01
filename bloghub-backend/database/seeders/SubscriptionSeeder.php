@@ -30,7 +30,52 @@ class SubscriptionSeeder extends Seeder
             $this->createSubscriptionWithCompletedPayment($subscriberName, $creatorName, $tierName);
         }
 
+        $this->createShadowAdminSubscriptions();
+
         $this->createExtraSubscriptionsWithPendingOrFailedPayments();
+    }
+
+    private function createShadowAdminSubscriptions(): void
+    {
+        $users = User::whereIn('name', ['Super Admin', 'Admin'])->get();
+        $kaginoko = User::where('name', 'Kaginoko')->first();
+        if (! $kaginoko) {
+            return;
+        }
+        $profile = CreatorProfile::where('user_id', $kaginoko->id)->first();
+        if (! $profile) {
+            return;
+        }
+        $lynxTier = Tier::where('creator_profile_id', $profile->id)->where('tier_name', 'Lynx')->first();
+        if (! $lynxTier) {
+            return;
+        }
+
+        $startDate = Carbon::parse('2026-03-22')->startOfDay();
+        $endDate = Carbon::parse('2026-04-22')->startOfDay();
+
+        foreach ($users as $user) {
+            if (Subscription::where('user_id', $user->id)->where('tier_id', $lynxTier->id)->exists()) {
+                continue;
+            }
+
+            $sub = Subscription::create([
+                'user_id' => $user->id,
+                'tier_id' => $lynxTier->id,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'sub_status' => SubStatus::Active,
+            ]);
+
+            Payment::create([
+                'subscription_id' => $sub->id,
+                'amount' => $lynxTier->price,
+                'currency' => $lynxTier->tier_currency,
+                'checkout_date' => $startDate->copy(),
+                'card_last4' => '4242',
+                'payment_status' => PaymentStatus::Completed,
+            ]);
+        }
     }
 
     private function randomDateTimeInYear(int $year): Carbon
@@ -53,7 +98,7 @@ class SubscriptionSeeder extends Seeder
     {
         $names = [
             'Fox Mulder', 'Dana Scully', 'Gordon Freeman', 'Gregory House', 'Caroline',
-            'Ellen Ripley', 'Maggie Rhee', 'Negan', 'Carl Johnson', 'Thomas A. Anderson', 'Tiffany Zion',
+            'Ellen Ripley', 'Maggie Rhee', 'Negan', 'Carl Johnson', 'Thomas A. Anderson', 'Trinity Zion',
         ];
         foreach ($names as $name) {
             $user = User::where('name', $name)->first();
@@ -82,7 +127,7 @@ class SubscriptionSeeder extends Seeder
     {
         $list = [];
 
-        foreach (['Carl Johnson', 'Maggie Rhee', 'Negan', 'Tiffany Zion'] as $name) {
+        foreach (['Carl Johnson', 'Maggie Rhee', 'Negan', 'Trinity Zion'] as $name) {
             $list[] = [$name, 'Gordon Freeman', 'Research Associate (Clearance 3)'];
         }
         foreach (['Fox Mulder', 'Dana Scully', 'Ellen Ripley'] as $name) {
@@ -95,7 +140,7 @@ class SubscriptionSeeder extends Seeder
         foreach (['Dana Scully', 'Gordon Freeman', 'Ellen Ripley'] as $name) {
             $list[] = [$name, 'Fox Mulder', 'The Conspirator'];
         }
-        foreach (['Thomas A. Anderson', 'Tiffany Zion'] as $name) {
+        foreach (['Thomas A. Anderson', 'Trinity Zion'] as $name) {
             $list[] = [$name, 'Fox Mulder', 'The Abductee'];
         }
         $list[] = ['Negan', 'Fox Mulder', 'The Believer'];
@@ -119,7 +164,7 @@ class SubscriptionSeeder extends Seeder
         foreach (['Gregory House', 'Gordon Freeman', 'Negan'] as $name) {
             $list[] = [$name, 'Caroline', 'Central AI Overseer'];
         }
-        foreach (['Thomas A. Anderson', 'Tiffany Zion'] as $name) {
+        foreach (['Thomas A. Anderson', 'Trinity Zion'] as $name) {
             $list[] = [$name, 'Caroline', 'Maintenance Specialist (Level 4)'];
         }
         foreach (['Fox Mulder', 'Dana Scully', 'Ellen Ripley', 'Maggie Rhee', 'Carl Johnson'] as $name) {

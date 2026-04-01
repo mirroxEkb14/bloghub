@@ -33,8 +33,10 @@ class CreatorProfilePostController extends Controller
         if ($user && ! $hasFullAccess) {
             $subscription = Subscription::query()
                 ->where('user_id', $user->id)
-                ->where('sub_status', SubStatus::Active)
-                ->where('end_date', '>', now())
+                ->whereIn('sub_status', [SubStatus::Active, SubStatus::Canceled])
+                ->where(function ($q) {
+                    $q->whereNull('end_date')->orWhere('end_date', '>', now());
+                })
                 ->whereHas('tier', fn ($q) => $q->where('creator_profile_id', $profile->id))
                 ->with('tier:id,level')
                 ->first();
@@ -105,8 +107,10 @@ class CreatorProfilePostController extends Controller
             if ($user) {
                 $subscription = Subscription::query()
                     ->where('user_id', $user->id)
-                    ->where('sub_status', SubStatus::Active)
-                    ->where('end_date', '>', now())
+                    ->whereIn('sub_status', [SubStatus::Active, SubStatus::Canceled])
+                    ->where(function ($q) {
+                        $q->whereNull('end_date')->orWhere('end_date', '>', now());
+                    })
                     ->whereHas('tier', fn ($q) => $q->where('creator_profile_id', $profile->id))
                     ->with('tier:id,level')
                     ->first();
@@ -129,8 +133,10 @@ class CreatorProfilePostController extends Controller
             }
             $hasAccess = Subscription::query()
                 ->where('user_id', $user->id)
-                ->where('sub_status', SubStatus::Active)
-                ->where('end_date', '>', now())
+                ->whereIn('sub_status', [SubStatus::Active, SubStatus::Canceled])
+                ->where(function ($q) {
+                    $q->whereNull('end_date')->orWhere('end_date', '>', now());
+                })
                 ->whereHas('tier', function ($q) use ($post) {
                     $q->where('creator_profile_id', $post->creator_profile_id)
                         ->where('level', '>=', $post->requiredTier->level);

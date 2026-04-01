@@ -84,6 +84,12 @@ class CreatorProfile extends Model
         return $this->hasManyThrough(Subscription::class, Tier::class, 'creator_profile_id', 'tier_id', 'id', 'id');
     }
 
+    public function followers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'creator_profile_follows', 'creator_profile_id', 'user_id')
+            ->withTimestamps();
+    }
+
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'creator_profile_tag')

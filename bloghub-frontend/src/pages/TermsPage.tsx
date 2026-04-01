@@ -21,6 +21,15 @@ export default function TermsPage() {
             keeping your account credentials secure.
           </p>
           <p>
+            <strong>Subscriptions and notifications.</strong> Paid subscriptions are managed per creator and per tier.
+            When you upgrade to a higher tier, no refund is given for the previous tier. If a creator removes a tier,
+            subscriptions to that tier end immediately (access is not kept until period end), and any posts that were
+            available only on that tier become public; followers and subscribers are notified when a tier is removed.
+            Followers and subscribers receive notifications when the creator publishes a new post or creates, edits, or
+            removes a tier. You can cancel your own subscription at any time (no refunds); you may choose to end access
+            immediately or at the current period end.
+          </p>
+          <p>
             <strong>No warranty.</strong> The application is provided “as is” without warranty of any kind.
             The developers are not liable for any loss or damage arising from your use of BlogHub,
             especially in a local or non-production setting.

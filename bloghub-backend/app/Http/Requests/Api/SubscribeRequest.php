@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Api;
 
-use App\Enums\SubStatus;
 use App\Models\Tier;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -22,21 +21,8 @@ class SubscribeRequest extends FormRequest
                 'integer',
                 Rule::exists('tiers', 'id'),
             ],
+            'confirm_upgrade' => ['sometimes', 'boolean'],
         ];
-    }
-
-    public function withValidator($validator): void
-    {
-        $validator->after(function ($validator) {
-            if (! $this->tierExists()) {
-                $validator->errors()->add('tier_id', __('Tier not found'));
-                return;
-            }
-            $user = $this->user();
-            if ($user && $this->hasActiveSubscriptionToThisCreator()) {
-                $validator->errors()->add('tier_id', __('You already have an active subscription to this creator'));
-            }
-        });
     }
 
     private function tierExists(): bool
@@ -44,25 +30,6 @@ class SubscribeRequest extends FormRequest
         return Tier::query()
             ->where('id', $this->input('tier_id'))
             ->whereHas('creatorProfile')
-            ->exists();
-    }
-
-    private function hasActiveSubscriptionToThisCreator(): bool
-    {
-        $tier = Tier::query()
-            ->where('id', $this->input('tier_id'))
-            ->whereHas('creatorProfile')
-            ->first();
-
-        if (! $tier) {
-            return false;
-        }
-
-        return $this->user()
-            ->subscriptions()
-            ->where('sub_status', SubStatus::Active)
-            ->where('end_date', '>', now())
-            ->whereHas('tier', fn ($q) => $q->where('creator_profile_id', $tier->creator_profile_id))
             ->exists();
     }
 }

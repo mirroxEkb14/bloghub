@@ -8,9 +8,12 @@ use App\Http\Requests\Api\SubscribeRequest;
 use App\Http\Resources\SubscriptionResource;
 use App\Http\Resources\TierResource;
 use App\Models\CreatorProfile;
+use App\Models\Payment;
 use App\Models\Subscription;
+use App\Services\NotificationService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class SubscriptionController extends Controller
@@ -42,9 +45,26 @@ class SubscriptionController extends Controller
     {
         $subscriptions = request()->user()
             ->subscriptions()
-            ->with(['tier', 'tier.creatorProfile'])
+            ->with([
+                'tier',
+                'tier.creatorProfile' => fn ($q) => $q->withCount('followers')->withMax('posts', 'created_at'),
+            ])
             ->orderByDesc('created_at')
             ->get();
+
+        $subscriptionIds = $subscriptions->pluck('id')->all();
+        if (count($subscriptionIds) > 0) {
+            $latestPaymentBySub = Payment::query()
+                ->whereIn('subscription_id', $subscriptionIds)
+                ->orderByDesc('checkout_date')
+                ->get()
+                ->unique('subscription_id')
+                ->keyBy('subscription_id');
+            $subscriptions->each(function (Subscription $sub) use ($latestPaymentBySub) {
+                $payment = $latestPaymentBySub->get($sub->id);
+                $sub->setAttribute('card_last4', $payment?->card_last4);
+            });
+        }
 
         return SubscriptionResource::collection($subscriptions);
     }
@@ -96,10 +116,15 @@ class SubscriptionController extends Controller
 
         $active = Subscription::query()
             ->where('user_id', $user->id)
-            ->where('sub_status', SubStatus::Active)
-            ->where('end_date', '>', now())
+            ->whereIn('sub_status', [SubStatus::Active, SubStatus::Canceled])
+            ->where(function ($q) {
+                $q->whereNull('end_date')->orWhere('end_date', '>', now());
+            })
             ->whereHas('tier', fn ($q) => $q->where('creator_profile_id', $profile->id))
             ->with(['tier', 'tier.creatorProfile'])
+            ->join('tiers', 'subscriptions.tier_id', '=', 'tiers.id')
+            ->orderByDesc('tiers.level')
+            ->select('subscriptions.*')
             ->first();
 
         return response()->json([
@@ -108,14 +133,18 @@ class SubscriptionController extends Controller
         ]);
     }
 
-    public function cancel(Subscription $subscription): JsonResponse
+    public function cancel(Request $request, Subscription $subscription, NotificationService $notifications): JsonResponse
     {
         $this->authorize('cancel', $subscription);
 
+        $endNow = $request->boolean('end_now', false);
+
         $subscription->update([
             'sub_status' => SubStatus::Canceled,
-            'end_date' => now(),
+            'end_date' => $endNow ? now() : $subscription->end_date,
         ]);
+
+        $notifications->subscriptionCanceled($subscription->fresh(), $endNow);
 
         return response()->json([
             'message' => __('Subscription canceled'),

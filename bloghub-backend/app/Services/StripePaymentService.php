@@ -121,6 +121,16 @@ class StripePaymentService
         }
 
         $subscription = DB::transaction(function () use ($session, $sessionId, $tier, $user) {
+            $creatorProfileId = $tier->creator_profile_id;
+            Subscription::query()
+                ->where('user_id', $user->id)
+                ->where('tier_id', '!=', $tier->id)
+                ->whereHas('tier', fn ($q) => $q->where('creator_profile_id', $creatorProfileId))
+                ->update([
+                    'sub_status' => SubStatus::Canceled,
+                    'end_date' => now(),
+                ]);
+
             $startDate = now();
             $endDate = $startDate->copy()->addMonth();
 

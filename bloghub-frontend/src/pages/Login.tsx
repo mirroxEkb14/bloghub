@@ -8,7 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 type LoginFormKey = 'email' | 'password';
 
 export default function Login() {
-  const { login, error, clearError } = useAuth();
+  const { user, login, error, clearError } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const from = (location.state as { from?: string } | null)?.from ?? '/';
@@ -16,6 +16,10 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<LoginFormKey, string>>>({});
+
+  useEffect(() => {
+    if (user) navigate(from, { replace: true });
+  }, [user, from, navigate]);
 
   useEffect(() => {
     clearError();

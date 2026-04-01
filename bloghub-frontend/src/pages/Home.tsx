@@ -1,14 +1,59 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { feedApi, postsApi, type Post } from '../api/client';
+import {
+  creatorProfilesApi,
+  feedApi,
+  postsApi,
+  subscriptionsApi,
+  type CreatorProfile,
+  type Post,
+  type SubscriptionWithTier,
+} from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import LoadingPage from '../components/LoadingPage';
+import PostMediaContainer from '../components/PostMediaContainer';
+import { stripHtml } from '../components/PostContent';
+import { LockCircleIcon, ShareIcon } from '../components/icons';
 import { formatDateTimeLocal } from '../utils/date';
 import '../styles/public-feed.css';
+import '../styles/profile-page.css';
 
 const PER_PAGE = 15;
 const HOME_SCROLL_KEY = 'homeFeedScroll';
+
+function roundToHalf(n: number): number {
+  return Math.round(n * 2) / 2;
+}
+
+function formatHalf(n: number): string {
+  const rounded = roundToHalf(n);
+  const s = Number.isInteger(rounded) ? String(rounded) : String(rounded).replace('.', ',');
+  return s;
+}
+
+function formatPostAgo(iso: string | null | undefined): string {
+  if (!iso) return 'NO POSTS YET';
+  const d = new Date(iso);
+  const t = d.getTime();
+  if (Number.isNaN(t)) return 'NO POSTS YET';
+  const diffMs = Date.now() - t;
+  const diffMin = Math.max(0, Math.floor(diffMs / 60000));
+  if (diffMin < 60) return `POST ${diffMin}M AGO`;
+  const diffH = Math.floor(diffMin / 60);
+  if (diffH < 24) return `POST ${diffH}H AGO`;
+  const diffD = Math.floor(diffH / 24);
+  if (diffD < 7) return `POST ${diffD}D AGO`;
+
+  const weeks = diffD / 7;
+  if (weeks < 4.5) return `POST ${formatHalf(weeks)}W AGO`;
+
+  const months = diffD / 30;
+  if (months < 12) return `POST ${formatHalf(months)}M AGO`;
+
+  const years = diffD / 365;
+  return `POST ${formatHalf(years)}Y AGO`;
+}
 
 function saveHomeScroll(currentPage: number) {
   try {
@@ -28,11 +73,16 @@ export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [meta, setMeta] = useState<{ current_page: number; last_page: number; total: number } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sidebarLoading, setSidebarLoading] = useState(true);
+  const [subscriptions, setSubscriptions] = useState<SubscriptionWithTier[]>([]);
+  const [following, setFollowing] = useState<{ creator_profile: CreatorProfile; followed_at: string | null }[]>([]);
   const [page, setPage] = useState(1);
   const prevPageRef = useRef(0);
   const prevLoadingRef = useRef(false);
   const skipRestoreRef = useRef(false);
   const paginationRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const [sidebarTopOffsetPx, setSidebarTopOffsetPx] = useState(0);
   const [openMenuPostId, setOpenMenuPostId] = useState<number | null>(null);
   const [likingPostId, setLikingPostId] = useState<number | null>(null);
 
@@ -66,6 +116,27 @@ export default function Home() {
       cancelled = true;
     };
   }, [user, authLoading, navigate, page]);
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    setSidebarLoading(true);
+    Promise.all([
+      subscriptionsApi.list().catch(() => [] as SubscriptionWithTier[]),
+      creatorProfilesApi.getFollowing().catch(() => [] as { creator_profile: CreatorProfile; followed_at: string | null }[]),
+    ])
+      .then(([subs, fol]) => {
+        if (cancelled) return;
+        setSubscriptions(Array.isArray(subs) ? subs : []);
+        setFollowing(Array.isArray(fol) ? fol : []);
+      })
+      .finally(() => {
+        if (!cancelled) setSidebarLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -197,6 +268,20 @@ export default function Home() {
     }
   }, [loading, page]);
 
+  useLayoutEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const measure = () => {
+      const rect = el.getBoundingClientRect();
+      const computed = window.getComputedStyle(el);
+      const mb = Number.parseFloat(computed.marginBottom || '0') || 0;
+      setSidebarTopOffsetPx(Math.max(0, rect.height + mb));
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [posts.length, meta?.total]);
+
   useEffect(() => {
     if (openMenuPostId === null) return;
     const close = () => setOpenMenuPostId(null);
@@ -258,12 +343,42 @@ export default function Home() {
 
   const displayName = (post: Post) => post.creator_profile?.display_name ?? 'Creator';
   const visibilityLabel = (post: Post) => (post.required_tier?.tier_name ? post.required_tier.tier_name : 'Public');
+  const isLocked = (post: Post) => !!post.required_tier && post.user_has_access === false;
+
+  const activeSubscriptions = subscriptions.filter((sub) => {
+    if (sub.sub_status !== 'Active') return false;
+    const endDate = sub.end_date ? new Date(sub.end_date) : null;
+    return endDate === null || endDate >= new Date();
+  });
+
+  const topSubscriptionCreators = (() => {
+    const bySlug = new Map<string, SubscriptionWithTier['creator']>();
+    for (const sub of activeSubscriptions) {
+      const c = sub.creator;
+      if (!c?.slug) continue;
+      const prev = bySlug.get(c.slug);
+      const prevScore = prev?.followers_count ?? 0;
+      const nextScore = c.followers_count ?? 0;
+      if (!prev || nextScore > prevScore) bySlug.set(c.slug, c);
+    }
+    return Array.from(bySlug.values())
+      .sort((a, b) => (b.followers_count ?? 0) - (a.followers_count ?? 0))
+      .slice(0, 3);
+  })();
+
+  const topFollowingCreators = (() => {
+    return following
+      .map((i) => i.creator_profile)
+      .filter((p) => !!p?.slug)
+      .sort((a, b) => (b.followers_count ?? 0) - (a.followers_count ?? 0))
+      .slice(0, 3);
+  })();
 
   return (
     <div className="profile-page public-feed-page home-feed-page">
       <div className="public-feed-layout">
         <div className="profile-main">
-          <header className="profile-header public-feed-header">
+          <header ref={headerRef} className="profile-header public-feed-header">
             <div className="public-feed-header-inner">
               <h1 className="profile-name">Home</h1>
               <p className="profile-meta">
@@ -293,9 +408,10 @@ export default function Home() {
                 {posts.map((post) => {
                   const creatorSlug = post.creator_profile?.slug ?? '';
                   const postUrl = creatorSlug ? `/creator/${creatorSlug}/post/${post.slug}` : '#';
+                  const locked = isLocked(post);
                   return (
                     <li key={post.id} className="post-card-wrapper">
-                      <article className="post-card">
+                      <article className={`post-card ${locked ? 'post-card-locked' : ''}`}>
                         <header className="post-card-header">
                           {post.creator_profile?.profile_avatar_url ? (
                             <img
@@ -317,7 +433,14 @@ export default function Home() {
                               {displayName(post)}
                             </Link>
                             <span className="post-card-visibility">
-                              {visibilityLabel(post)}
+                              {locked ? (
+                                <>
+                                  <LockCircleIcon size={24} className="post-card-lock-icon" />
+                                  {post.required_tier?.tier_name}
+                                </>
+                              ) : (
+                                visibilityLabel(post)
+                              )}
                               {post.created_at && (
                                 <>
                                   <span className="post-card-sep"> • </span>
@@ -349,13 +472,7 @@ export default function Home() {
                                   onClick={() => handleSharePost(post)}
                                 >
                                   <span className="post-card-dropdown-item-icon" aria-hidden>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                      <circle cx="6" cy="12" r="3" />
-                                      <circle cx="18" cy="5" r="3" />
-                                      <circle cx="18" cy="19" r="3" />
-                                      <line x1="6" y1="12" x2="18" y2="5" />
-                                      <line x1="6" y1="12" x2="18" y2="19" />
-                                    </svg>
+                                    <ShareIcon size={18} />
                                   </span>
                                   Share
                                 </button>
@@ -364,34 +481,82 @@ export default function Home() {
                           </div>
                         </header>
                         <div className="post-card-body">
-                          <Link
-                              to={postUrl}
-                              className="post-card-title-row"
-                              style={{ textDecoration: 'none', color: 'inherit' }}
-                              onClick={() => saveHomeScroll(page)}
-                            >
-                            <h3 className="post-card-title">{post.title}</h3>
-                          </Link>
-                          {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
-                            <Link to={postUrl} onClick={() => saveHomeScroll(page)}>
-                              <figure className="post-card-media">
-                                <img src={post.media_url} alt="" />
-                              </figure>
-                            </Link>
-                          )}
-                          {post.media_url && (post.media_type === 'Video' || post.media_type === 'Audio') && (
-                            <figure className={`post-card-media${post.media_type === 'Audio' ? ' post-card-media-audio' : ''}`}>
-                              {post.media_type === 'Video' ? (
-                                <video src={post.media_url} controls />
-                              ) : (
-                                <audio src={post.media_url} controls />
+                          {locked ? (
+                            <>
+                              {post.content_text && (
+                                <div className="post-card-preview-blur" aria-hidden>
+                                  {stripHtml(post.content_text)}
+                                </div>
                               )}
-                            </figure>
-                          )}
-                          {post.excerpt && (
-                            <p className="post-card-excerpt">{post.excerpt}</p>
-                          )}
-                          <footer className="post-card-footer">
+                              <div
+                                className={`post-card-lock-overlay${post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif' || post.media_type === 'Video') ? ' post-card-lock-overlay-with-image' : ''}`}
+                              >
+                                {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
+                                  <div
+                                    className="post-card-lock-overlay-bg"
+                                    style={{ backgroundImage: `url(${post.media_url})` }}
+                                    aria-hidden
+                                  />
+                                )}
+                                {post.media_url && post.media_type === 'Video' && (
+                                  <div className="post-card-lock-overlay-bg post-card-lock-overlay-video" aria-hidden>
+                                    <video src={post.media_url} muted loop playsInline autoPlay />
+                                  </div>
+                                )}
+                                <div className="post-card-lock-icon-circle" aria-hidden>
+                                  <LockCircleIcon className="post-card-lock-svg" />
+                                </div>
+                                <h3 className="post-card-unlock-title">Subscriber-only post</h3>
+                                <p className="post-card-unlock-desc">
+                                  Subscribe to {post.required_tier?.tier_name} to unlock this post
+                                </p>
+                                <Link
+                                  to={creatorSlug ? `/creator/${creatorSlug}#profile-tiers` : '/explore'}
+                                  className="btn btn-primary post-card-join-btn"
+                                  onClick={() => saveHomeScroll(page)}
+                                >
+                                  View tiers
+                                </Link>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <Link
+                                to={postUrl}
+                                className="post-card-title-row"
+                                style={{ textDecoration: 'none', color: 'inherit' }}
+                                onClick={() => saveHomeScroll(page)}
+                              >
+                                <h3 className="post-card-title">{post.title}</h3>
+                              </Link>
+                              {post.media_url && (post.media_type === 'Image' || post.media_type === 'Gif') && (
+                                <Link to={postUrl} onClick={() => saveHomeScroll(page)}>
+                                  <PostMediaContainer
+                                    mediaUrl={post.media_url}
+                                    mediaType={post.media_type}
+                                    figureClassName="post-card-media"
+                                    videoWrapClassName="post-card-media-video-wrap"
+                                  />
+                                </Link>
+                              )}
+                              {post.media_url && post.media_type === 'Video' && (
+                                <PostMediaContainer
+                                  mediaUrl={post.media_url}
+                                  mediaType="Video"
+                                  figureClassName="post-card-media"
+                                  videoWrapClassName="post-card-media-video-wrap"
+                                  videoAttrs={{ controls: true }}
+                                />
+                              )}
+                              {post.media_url && post.media_type === 'Audio' && (
+                                <figure className="post-card-media post-card-media-audio">
+                                  <audio src={post.media_url} controls />
+                                </figure>
+                              )}
+                              {post.excerpt && (
+                                <p className="post-card-excerpt">{post.excerpt}</p>
+                              )}
+                              <footer className="post-card-footer">
                             <span className="post-card-stat" title="Views">
                               <span className="post-card-stat-icon" aria-hidden>👁</span> {post.views_count ?? 0}
                             </span>
@@ -448,6 +613,8 @@ export default function Home() {
                               </span>
                             )}
                           </footer>
+                            </>
+                          )}
                         </div>
                       </article>
                     </li>
@@ -495,6 +662,106 @@ export default function Home() {
             </>
           )}
         </div>
+
+        <aside
+          className="home-feed-sidebar-wrap"
+          aria-label="Subscriptions and Following"
+          style={{ marginTop: sidebarTopOffsetPx }}
+        >
+          <div className="home-feed-sidebar">
+            <section className="home-feed-sidebar-section">
+              <header className="home-feed-sidebar-section-header">
+                <div className="home-feed-sidebar-section-title">Subscriptions</div>
+                <div className="home-feed-sidebar-section-count">{activeSubscriptions.length} Active</div>
+              </header>
+              <div className="home-feed-sidebar-section-body">
+                {sidebarLoading ? (
+                  <div className="home-feed-sidebar-muted">Loading…</div>
+                ) : topSubscriptionCreators.length === 0 ? (
+                  <div className="home-feed-sidebar-muted">No active subscriptions yet</div>
+                ) : (
+                  <ul className="home-feed-creator-list">
+                    {topSubscriptionCreators.map((c) => {
+                      const name = c.display_name ?? c.slug ?? 'Creator';
+                      return (
+                        <li key={c.slug} className="home-feed-creator-row">
+                          <div className="home-feed-creator-row-inner">
+                            <Link to={`/creator/${c.slug}`} className="home-feed-creator-avatar-link" aria-label={name}>
+                              {c.profile_avatar_url ? (
+                                <img src={c.profile_avatar_url} alt="" className="home-feed-creator-avatar" />
+                              ) : (
+                                <span className="home-feed-creator-avatar home-feed-creator-avatar--placeholder">
+                                  {name.charAt(0).toUpperCase()}
+                                </span>
+                              )}
+                            </Link>
+                            <span className="home-feed-creator-meta">
+                              <Link to={`/creator/${c.slug}`} className="home-feed-creator-name-link">
+                                {name}
+                              </Link>
+                              <span className="home-feed-creator-last-post">{formatPostAgo(c.last_post_at)}</span>
+                            </span>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+              <div className="home-feed-sidebar-section-footer">
+                <Link to="/subscriptions/supporting" className="home-feed-sidebar-footer-link">
+                  View all subscriptions
+                </Link>
+              </div>
+            </section>
+
+            <section className="home-feed-sidebar-section">
+              <header className="home-feed-sidebar-section-header">
+                <div className="home-feed-sidebar-section-title">Following</div>
+                <div className="home-feed-sidebar-section-count">{following.length} Active</div>
+              </header>
+              <div className="home-feed-sidebar-section-body">
+                {sidebarLoading ? (
+                  <div className="home-feed-sidebar-muted">Loading…</div>
+                ) : topFollowingCreators.length === 0 ? (
+                  <div className="home-feed-sidebar-muted">You aren’t following anyone yet</div>
+                ) : (
+                  <ul className="home-feed-creator-list">
+                    {topFollowingCreators.map((p) => {
+                      const name = p.display_name ?? p.slug ?? 'Creator';
+                      return (
+                        <li key={p.slug} className="home-feed-creator-row">
+                          <div className="home-feed-creator-row-inner">
+                            <Link to={`/creator/${p.slug}`} className="home-feed-creator-avatar-link" aria-label={name}>
+                              {p.profile_avatar_url ? (
+                                <img src={p.profile_avatar_url} alt="" className="home-feed-creator-avatar" />
+                              ) : (
+                                <span className="home-feed-creator-avatar home-feed-creator-avatar--placeholder">
+                                  {name.charAt(0).toUpperCase()}
+                                </span>
+                              )}
+                            </Link>
+                            <span className="home-feed-creator-meta">
+                              <Link to={`/creator/${p.slug}`} className="home-feed-creator-name-link">
+                                {name}
+                              </Link>
+                              <span className="home-feed-creator-last-post">{formatPostAgo(p.last_post_at)}</span>
+                            </span>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+              <div className="home-feed-sidebar-section-footer">
+                <Link to="/subscriptions/following" className="home-feed-sidebar-footer-link">
+                  View all following
+                </Link>
+              </div>
+            </section>
+          </div>
+        </aside>
       </div>
     </div>
   );

@@ -1,0 +1,228 @@
+.dashboard-page {
+  padding: 1.5rem 2rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dashboard-page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 1.5rem 0;
+}
+
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 1200px) {
+  .dashboard-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dashboard-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-card:hover {
+  background: var(--hover-overlay);
+  border-color: var(--accent-muted);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dashboard-card-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+.dashboard-card-info-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.dashboard-card-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: help;
+  border-radius: 50%;
+  transition: color 0.15s ease;
+}
+
+.dashboard-card-info-btn:hover {
+  color: var(--accent);
+}
+
+.dashboard-card-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  padding: 0.4rem 0.65rem;
+  background: var(--overlay);
+  color: #fff;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  border-radius: var(--radius-sm);
+  white-space: normal;
+  max-width: 220px;
+  width: max-content;
+  box-shadow: var(--shadow-drop);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.dashboard-card-tooltip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--overlay);
+}
+
+.dashboard-card-filter {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.dashboard-card-select {
+  appearance: none;
+  padding: 0.35rem 1.75rem 0.35rem 0.6rem;
+  font-size: 0.8125rem;
+  color: var(--text);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.dashboard-card-select:hover,
+.dashboard-card-select:focus {
+  border-color: var(--text-muted);
+  outline: none;
+}
+
+.dashboard-card-select-chevron {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--text-muted);
+}
+
+.dashboard-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dashboard-card-main-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.dashboard-card-main-value--growth {
+  font-size: 1.5rem;
+}
+
+.dashboard-card-sub-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.25rem;
+}
+
+.dashboard-card-sub-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.dashboard-card-sub-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.dashboard-card-sub-value {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.dashboard-card-sub-value--positive {
+  color: #22c55e;
+}
+
+.dashboard-card-sub-value--negative {
+  color: #ef4444;
+}
+
+.dashboard-placeholder-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.dashboard-placeholder {
+  max-width: 420px;
+  width: 100%;
+  padding: 2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.dashboard-placeholder-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.dashboard-placeholder-text {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}

@@ -10,7 +10,7 @@ Projekt je rozdělen na backend (**Laravel** + **Filament**) a frontend (**React
 
 > Krátká demonstrace aplikace:
 
-[![Demo video](https://img.youtube.com/vi/Gc-ZOfxGkHQ/hqdefault.jpg)](https://youtu.be/Gc-ZOfxGkHQ)
+[![Demo video](https://img.youtube.com/vi/DPbAqUDozI0/hqdefault.jpg)](https://youtu.be/DPbAqUDozI0)
 
 ---
 

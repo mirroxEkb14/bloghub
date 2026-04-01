@@ -1,140 +1,59 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { authApi } from '../api/client';
+import { authApi, notificationsApi } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
 import AcceptLegalModal from './AcceptLegalModal';
+import {
+  HomeIcon,
+  ExploreIcon,
+  PersonIcon,
+  GlobeIcon,
+  LockIcon,
+  CreditCardIcon,
+  DocumentDollarIcon,
+  LayersIcon,
+  ShieldIcon,
+  FileTextIcon,
+  LogOutIcon,
+  Share2Icon,
+  UserPlusIcon,
+  UserCheckIcon,
+  EditIcon,
+  FilePlusIcon,
+  SunIcon,
+  MoonIcon,
+  ChevronDownIcon,
+  BellIcon,
+  EnvelopeIcon,
+} from './icons';
 
-const iconSize = 22;
+const navIconSize = 22;
 
 const Icons = {
-  Home: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-      <polyline points="9 22 9 12 15 12 15 22" />
-    </svg>
-  ),
-  Explore: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="12" cy="12" r="10" />
-      <line x1="2" y1="12" x2="22" y2="12" />
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-    </svg>
-  ),
-  MyPage: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  ),
-  PublicPosts: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="12" cy="12" r="10" />
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-    </svg>
-  ),
-  TierPosts: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>
-  ),
-  Memberships: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <rect x="2" y="5" width="20" height="14" rx="2" />
-      <line x1="2" y1="10" x2="22" y2="10" />
-    </svg>
-  ),
-  Billings: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="16" y1="12" x2="8" y2="12" />
-      <line x1="16" y1="16" x2="8" y2="16" />
-      <line x1="10" y1="8" x2="8" y2="8" />
-    </svg>
-  ),
-  Tiers: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <rect x="4" y="4" width="16" height="4" rx="1" />
-      <rect x="4" y="10" width="16" height="4" rx="1" />
-      <rect x="4" y="16" width="16" height="4" rx="1" />
-    </svg>
-  ),
-  Privacy: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-    </svg>
-  ),
-  Terms: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="16" y1="13" x2="8" y2="13" />
-      <line x1="16" y1="17" x2="8" y2="17" />
-      <polyline points="10 9 9 9 8 9" />
-    </svg>
-  ),
-  Logout: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-      <polyline points="16 17 21 12 16 7" />
-      <line x1="21" y1="12" x2="9" y2="12" />
-    </svg>
-  ),
-  Social: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="6" cy="12" r="3" />
-      <circle cx="18" cy="12" r="3" />
-      <line x1="6" y1="12" x2="18" y2="12" />
-    </svg>
-  ),
-  Register: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-      <circle cx="8.5" cy="7" r="4" />
-      <line x1="20" y1="8" x2="20" y2="14" />
-      <line x1="23" y1="11" x2="17" y2="11" />
-    </svg>
-  ),
-  Profile: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-      <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-    </svg>
-  ),
-  NewPost: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="12" y1="18" x2="12" y2="12" />
-      <line x1="9" y1="15" x2="15" y2="15" />
-    </svg>
-  ),
-  Sun: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="12" cy="12" r="5" />
-      <line x1="12" y1="1" x2="12" y2="3" />
-      <line x1="12" y1="21" x2="12" y2="23" />
-      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-      <line x1="1" y1="12" x2="3" y2="12" />
-      <line x1="21" y1="12" x2="23" y2="12" />
-      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-    </svg>
-  ),
-  Moon: () => (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-    </svg>
-  ),
-  ChevronDown: () => (
-    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
-  ),
+  Home: () => <HomeIcon size={navIconSize} />,
+  Explore: () => <ExploreIcon size={navIconSize} />,
+  MyPage: () => <PersonIcon size={navIconSize} />,
+  Dashboard: () => <LayersIcon size={navIconSize} />,
+  PublicPosts: () => <GlobeIcon size={navIconSize} />,
+  TierPosts: () => <LockIcon size={navIconSize} />,
+  Memberships: () => <CreditCardIcon size={navIconSize} />,
+  Following: () => <UserCheckIcon size={navIconSize} />,
+  Supporting: () => <DocumentDollarIcon size={navIconSize} />,
+  Billings: () => <DocumentDollarIcon size={navIconSize} />,
+  Tiers: () => <LayersIcon size={navIconSize} />,
+  Privacy: () => <ShieldIcon size={navIconSize} />,
+  Terms: () => <FileTextIcon size={navIconSize} />,
+  Notifications: () => <BellIcon size={navIconSize} />,
+  Logout: () => <LogOutIcon size={navIconSize} />,
+  Social: () => <Share2Icon size={navIconSize} />,
+  Register: () => <UserPlusIcon size={navIconSize} />,
+  Profile: () => <EditIcon size={navIconSize} />,
+  NewPost: () => <FilePlusIcon size={navIconSize} />,
+  Sun: () => <SunIcon size={navIconSize} />,
+  Moon: () => <MoonIcon size={navIconSize} />,
+  ChevronDown: () => <ChevronDownIcon size={16} />,
 };
 
 function NavLink({
@@ -164,7 +83,7 @@ export default function Layout() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [myPageDropdownOpen, setMyPageDropdownOpen] = useState(false);
-  const [membershipsDropdownOpen, setMembershipsDropdownOpen] = useState(false);
+  const [subscriptionsDropdownOpen, setSubscriptionsDropdownOpen] = useState(false);
 
   const initial = user?.name?.charAt(0)?.toUpperCase()
     ?? user?.username?.charAt(0)?.toUpperCase()
@@ -174,8 +93,6 @@ export default function Layout() {
     ? `/creator/${user.creator_profile.slug}`
     : '/creator/new';
 
-  const isMyPageActive = location.pathname === myPageHref;
-  const showEditCreatorSubItems = !!user?.creator_profile?.slug;
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -189,21 +106,35 @@ export default function Layout() {
     }
   }, [menuOpen]);
 
-  const isOnMyPageSection = location.pathname === myPageHref || location.pathname === '/creator/edit' || location.pathname === '/profile/social' || location.pathname === '/creator/tiers' || location.pathname.startsWith('/creator/post/');
-  const isOnMembershipsSection = location.pathname === '/memberships' || location.pathname.startsWith('/memberships/');
+  const isMyPageSection = location.pathname === myPageHref || location.pathname === '/creator/edit' || location.pathname === '/creator/dashboard';
+  const isSubscriptionsSection = location.pathname === '/subscriptions' || location.pathname.startsWith('/subscriptions/');
   useEffect(() => {
-    if (isOnMyPageSection) setMyPageDropdownOpen(true);
-  }, [isOnMyPageSection]);
+    if (isMyPageSection) setMyPageDropdownOpen(true);
+  }, [isMyPageSection]);
   useEffect(() => {
-    if (isOnMembershipsSection) setMembershipsDropdownOpen(true);
-  }, [isOnMembershipsSection]);
+    if (isSubscriptionsSection) setSubscriptionsDropdownOpen(true);
+  }, [isSubscriptionsSection]);
   useEffect(() => {
-    if (!isOnMyPageSection) setMyPageDropdownOpen(false);
-    if (!isOnMembershipsSection) setMembershipsDropdownOpen(false);
-  }, [location.pathname, isOnMyPageSection, isOnMembershipsSection]);
+    if (!isMyPageSection) setMyPageDropdownOpen(false);
+    if (!isSubscriptionsSection) setSubscriptionsDropdownOpen(false);
+  }, [location.pathname, isMyPageSection, isSubscriptionsSection]);
 
   const [resendVerificationLoading, setResendVerificationLoading] = useState(false);
   const verificationHandledRef = useRef(false);
+  const [unreadNotifications, setUnreadNotifications] = useState<number>(0);
+
+  useEffect(() => {
+    if (!user) {
+      setUnreadNotifications(0);
+      return;
+    }
+    notificationsApi.unreadCount().then((r) => setUnreadNotifications(r.count ?? 0)).catch(() => {});
+  }, [user]);
+
+  useEffect(() => {
+    if (!user || !menuOpen) return;
+    notificationsApi.unreadCount().then((r) => setUnreadNotifications(r.count ?? 0)).catch(() => {});
+  }, [user, menuOpen]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -278,84 +209,77 @@ export default function Layout() {
 
             {user && (
               <section className="sidebar-section" aria-label="Account">
-                <div className="sidebar-dropdown sidebar-my-page-group">
-                  {showEditCreatorSubItems ? (
-                    <>
+                {user?.creator_profile?.slug ? (
+                  <div className="sidebar-dropdown sidebar-my-page-group">
+                    <Link
+                      to={myPageHref}
+                      className={`sidebar-link sidebar-dropdown-trigger ${location.pathname === myPageHref ? 'active' : ''} ${myPageDropdownOpen ? 'open' : ''}`}
+                      onClick={() => setMyPageDropdownOpen((o) => !o)}
+                      aria-expanded={myPageDropdownOpen}
+                    >
+                      <span className="sidebar-link-icon"><Icons.MyPage /></span>
+                      <span className="sidebar-link-label">My page</span>
+                      <span className="sidebar-dropdown-chevron" aria-hidden>
+                        <Icons.ChevronDown />
+                      </span>
+                    </Link>
+                    <div
+                      className={`sidebar-dropdown-children ${myPageDropdownOpen ? 'open' : ''}`}
+                      aria-hidden={!myPageDropdownOpen}
+                    >
                       <Link
-                        to={myPageHref}
-                        className={`sidebar-link sidebar-dropdown-trigger ${isMyPageActive ? 'active' : ''} ${myPageDropdownOpen ? 'open' : ''}`}
-                        onClick={() => setMyPageDropdownOpen((o) => !o)}
-                        aria-expanded={myPageDropdownOpen}
+                        to="/creator/edit"
+                        className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/edit' ? 'active' : ''}`}
                       >
-                        <span className="sidebar-link-icon"><Icons.MyPage /></span>
-                        <span className="sidebar-link-label">My page</span>
-                        <span className="sidebar-dropdown-chevron" aria-hidden>
-                          <Icons.ChevronDown />
-                        </span>
+                        <span className="sidebar-link-icon"><Icons.Profile /></span>
+                        <span className="sidebar-link-label">Edit Creator</span>
                       </Link>
-                      <div
-                        className={`sidebar-dropdown-children ${myPageDropdownOpen ? 'open' : ''}`}
-                        aria-hidden={!myPageDropdownOpen}
+                      <Link
+                        to="/creator/dashboard"
+                        className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/dashboard' ? 'active' : ''}`}
                       >
-                        <Link
-                          to="/creator/edit"
-                          className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/edit' ? 'active' : ''}`}
-                        >
-                            <span className="sidebar-link-icon"><Icons.Profile /></span>
-                            <span className="sidebar-link-label">Edit Creator</span>
-                          </Link>
-                          <Link
-                            to="/profile/social"
-                            className={`sidebar-link sidebar-link-sub ${location.pathname === '/profile/social' ? 'active' : ''}`}
-                          >
-                            <span className="sidebar-link-icon"><Icons.Social /></span>
-                            <span className="sidebar-link-label">Social networks</span>
-                          </Link>
-                          <Link
-                            to="/creator/tiers"
-                            className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/tiers' ? 'active' : ''}`}
-                          >
-                            <span className="sidebar-link-icon"><Icons.Tiers /></span>
-                            <span className="sidebar-link-label">Edit Tiers</span>
-                          </Link>
-                          <Link
-                            to="/creator/post/new"
-                            className={`sidebar-link sidebar-link-sub ${location.pathname === '/creator/post/new' ? 'active' : ''}`}
-                          >
-                            <span className="sidebar-link-icon"><Icons.NewPost /></span>
-                            <span className="sidebar-link-label">New Post</span>
-                          </Link>
-                      </div>
-                    </>
-                  ) : (
+                        <span className="sidebar-link-icon"><Icons.Dashboard /></span>
+                        <span className="sidebar-link-label">Dashboard</span>
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="sidebar-my-page-group">
                     <NavLink to={myPageHref} icon={Icons.MyPage}>My page</NavLink>
-                  )}
-                </div>
+                  </div>
+                )}
                 <NavLink to="/feed/public" icon={Icons.PublicPosts}>Public posts</NavLink>
                 <NavLink to="/feed/tier" icon={Icons.TierPosts}>Tier posts</NavLink>
                 <div className="sidebar-dropdown sidebar-my-page-group">
                   <Link
-                    to="/memberships"
-                    className={`sidebar-link sidebar-dropdown-trigger ${location.pathname === '/memberships' ? 'active' : ''} ${membershipsDropdownOpen ? 'open' : ''}`}
-                    onClick={() => setMembershipsDropdownOpen((o) => !o)}
-                    aria-expanded={membershipsDropdownOpen}
+                    to="/subscriptions"
+                    className={`sidebar-link sidebar-dropdown-trigger ${location.pathname === '/subscriptions' ? 'active' : ''} ${subscriptionsDropdownOpen ? 'open' : ''}`}
+                    onClick={() => setSubscriptionsDropdownOpen((o) => !o)}
+                    aria-expanded={subscriptionsDropdownOpen}
                   >
                     <span className="sidebar-link-icon"><Icons.Memberships /></span>
-                    <span className="sidebar-link-label">Memberships</span>
+                    <span className="sidebar-link-label">Subscriptions</span>
                     <span className="sidebar-dropdown-chevron" aria-hidden>
                       <Icons.ChevronDown />
                     </span>
                   </Link>
                   <div
-                    className={`sidebar-dropdown-children ${membershipsDropdownOpen ? 'open' : ''}`}
-                    aria-hidden={!membershipsDropdownOpen}
+                    className={`sidebar-dropdown-children ${subscriptionsDropdownOpen ? 'open' : ''}`}
+                    aria-hidden={!subscriptionsDropdownOpen}
                   >
                     <Link
-                      to="/memberships/billings"
-                      className={`sidebar-link sidebar-link-sub ${location.pathname === '/memberships/billings' ? 'active' : ''}`}
+                      to="/subscriptions/following"
+                      className={`sidebar-link sidebar-link-sub ${location.pathname === '/subscriptions/following' ? 'active' : ''}`}
                     >
-                      <span className="sidebar-link-icon"><Icons.Billings /></span>
-                      <span className="sidebar-link-label">Billings</span>
+                      <span className="sidebar-link-icon"><Icons.Following /></span>
+                      <span className="sidebar-link-label">Following</span>
+                    </Link>
+                    <Link
+                      to="/subscriptions/supporting"
+                      className={`sidebar-link sidebar-link-sub ${location.pathname === '/subscriptions/supporting' ? 'active' : ''}`}
+                    >
+                      <span className="sidebar-link-icon"><Icons.Supporting /></span>
+                      <span className="sidebar-link-label">Supporting</span>
                     </Link>
                   </div>
                 </div>
@@ -401,6 +325,17 @@ export default function Layout() {
                   <Link to="/profile" className="sidebar-user-menu-item" role="menuitem" onClick={() => setMenuOpen(false)}>
                     <Icons.Profile />
                     <span>Edit profile</span>
+                  </Link>
+                  <Link to="/notifications" className="sidebar-user-menu-item" role="menuitem" onClick={() => setMenuOpen(false)}>
+                    <span className="sidebar-user-menu-item-icon-wrap">
+                      <Icons.Notifications />
+                      {unreadNotifications > 0 && (
+                        <span className="sidebar-notifications-badge" aria-label={`${unreadNotifications} unread`}>
+                          <EnvelopeIcon size={14} />
+                        </span>
+                      )}
+                    </span>
+                    <span>Notifications</span>
                   </Link>
                   <Link to="/privacy" className="sidebar-user-menu-item" role="menuitem" onClick={() => setMenuOpen(false)}>
                     <Icons.Privacy />

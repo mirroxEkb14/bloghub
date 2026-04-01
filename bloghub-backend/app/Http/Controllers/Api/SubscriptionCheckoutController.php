@@ -18,12 +18,47 @@ class SubscriptionCheckoutController extends Controller
     {
         $user = $request->user();
         $tierId = (int) $request->input('tier_id');
+        $confirmUpgrade = $request->boolean('confirm_upgrade', false);
         $tier = Tier::query()->with('creatorProfile')->findOrFail($tierId);
+        $creatorProfileId = $tier->creatorProfile?->id;
 
         if ($user->hasRole('super_admin')) {
             return response()->json([
                 'type' => 'already_subscribed',
                 'message' => __('You already have access to all tiers as Super Admin'),
+            ]);
+        }
+
+        $currentSubscription = null;
+        if (! $confirmUpgrade && $creatorProfileId) {
+            $currentSubscription = Subscription::query()
+                ->where('user_id', $user->id)
+                ->whereIn('sub_status', [SubStatus::Active, SubStatus::Canceled])
+                ->where(function ($q) {
+                    $q->whereNull('end_date')->orWhere('end_date', '>', now());
+                })
+                ->whereHas('tier', fn ($q) => $q->where('creator_profile_id', $creatorProfileId))
+                ->with('tier')
+                ->first();
+        }
+
+        if ($currentSubscription) {
+            $currentLevel = (int) $currentSubscription->tier->level;
+            $requestedLevel = (int) $tier->level;
+            if ($requestedLevel <= $currentLevel) {
+                return response()->json([
+                    'type' => 'already_subscribed',
+                    'message' => __('You\'re already subscribed to a higher tier'),
+                ]);
+            }
+            return response()->json([
+                'type' => 'upgrade_confirm',
+                'message' => __('You\'re already subscribed to a lower tier. Subscribe to this tier to upgrade'),
+                'current_subscription' => [
+                    'tier_name' => $currentSubscription->tier->tier_name ?? null,
+                    'end_date' => $currentSubscription->end_date?->toIso8601String(),
+                ],
+                'new_tier_name' => $tier->tier_name,
             ]);
         }
 
