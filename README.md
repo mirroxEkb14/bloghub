@@ -14,17 +14,6 @@ Projekt je rozdělen na backend (**Laravel** + **Filament**) a frontend (**React
 
 ---
 
-## ⚠️ Disclaimer k seedovaným datům
-
-Veškerá **seedovaná / demoverzní data** v projektu (profilové a titulkové obrázky, videa, GIFy, ukázkové příspěvky a komentáře) byla **vygenerována pomocí nástrojů Google Gemini** a slouží pouze k demonstraci a vývoji:
-
-- **Fotografie / obrázky:** generovány pomocí **Nano Banana 2**.
-- **Videa a GIFy:** generovány pomocí **Veo**.
-
-Tato data nejsou reálným obsahem ani duševním vlastnictvím třetích stran a v produkčním nasazení by měla být nahrazena skutečným obsahem nebo odstraněna.
-
----
-
 ## 🛠️ Nástroje a technologie
 
 ![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)
@@ -42,6 +31,17 @@ Tato data nejsou reálným obsahem ani duševním vlastnictvím třetích stran 
 
 ---
 
+## ⚠️ Disclaimer k seedovaným datům
+
+Veškerá **seedovaná / demoverzní data** v projektu (profilové a titulkové obrázky, videa, GIFy, ukázkové příspěvky a komentáře) byla **vygenerována pomocí nástrojů Google Gemini** a slouží pouze k demonstraci a vývoji:
+
+- **Fotografie / obrázky:** generovány pomocí **Nano Banana 2**.
+- **Videa a GIFy:** generovány pomocí **Veo**.
+
+Tato data nejsou reálným obsahem ani duševním vlastnictvím třetích stran a v produkčním nasazení by měla být nahrazena skutečným obsahem nebo odstraněna.
+
+---
+
 ## 📁 Adresářová struktura
 
 ```
@@ -52,14 +52,24 @@ bloghub/
 │   │   ├── Enums/
 │   │   ├── Filament/
 │   │   │   ├── Pages/
-│   │   │   └── Resources/
+│   │   │   ├── Resources/
+│   │   │   ├── Schemas/
+│   │   │   └── Widgets/
+│   │   ├── Filters/
 │   │   ├── Http/
 │   │   │   ├── Controllers/
-│   │   │   └── Requests/
+│   │   │   ├── Middleware/
+│   │   │   ├── Requests/
+│   │   │   └── Resources/
 │   │   ├── Models/
 │   │   ├── Policies/
 │   │   ├── Providers/
-│   │   └── Rules/
+│   │   │   ├── Filament/AdminPanelProvider.php
+│   │   │   ├── AppServiceProvider.php
+│   │   │   └── AuthServiceProvider.php
+│   │   ├── Rules/
+│   │   ├── Services/
+│   │   └── Support/
 │   ├── bootstrap/
 │   ├── config/
 │   ├── database/
@@ -83,23 +93,30 @@ bloghub/
 │   ├── Dockerfile
 │   ├── entrypoint.sh
 │   └── ...
+├── bloghub-frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── api/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── contexts/
+│   │   ├── pages/
+│   │   ├── styles/
+│   │   ├── utils/
+│   │   ├── App.css
+│   │   ├── App.tsx
+│   │   ├── index.css
+│   │   └── main.tsx
+│   ├── Dockerfile
+│   ├── entrypoint.sh
+│   ├── package.json
+│   └── ...
 ├── docker/
 │   ├── mysql/
 │   │   └── init/
 │   │       └── 01-create-test-db.sql
 │   └── nginx/
 │       └── backend.conf
-├── bloghub-frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── assets/
-│   │   ├── App.css
-│   │   ├── App.tsx
-│   │   ├── index.css
-│   │   └── main.tsx
-│   ├── Dockerfile
-│   ├── package.json
-│   └── ...
 ├── imgs/
 │   └── bloghub-erd.png
 ├── docker-compose.yml
@@ -131,8 +148,8 @@ Projekt běží v následujících kontejnerech:
 
 ### Síťová komunikace
 - Frontend: http://localhost:5174
-- Backend (API): http://localhost:8080
 - Admin panel: http://localhost:8080/admin
+- Swagger: http://localhost:8080/docs/swagger#/
 
 ---
 
@@ -144,10 +161,12 @@ Projekt běží v následujících kontejnerech:
 > docker compose up -d --build
 ```
 
-**Poznámka №1**: první building kontejnerů muže potrvat do 5 minut.
+**Poznámka №1**: za pomoci `entrypoint.sh` automaticky bude vygeneroná `.env` s daty z `.env.example` (stejně tak i **APP_KEY** při prvním buildu; pro funkci testů tato stejná hodnota musí být manuálně zkopírována do `.env.testing`). Pak je potřeba nastavit hodnoty pro určité proměnné prostředí, aby bylo možné používat veškeré features:
+- Email verifikace: **MAIL_USERNAME**, **MAIL_PASSWORD**, **MAIL_FROM_ADDRESS**.
+- Stripe: **STRIPE_KEY**, **STRIPE_SECRET**, **STRIPE_WEBHOOK_SECRET**.
 
-**Poznámka №2**: lze narazit na **race condition** kvůli `entrypoint.sh` skriptu, když Filament začne obsluhovat requesty dřív, než doběhnou veškeré migrace a seedery, protože backendový `entrypoint.sh` je nastaven tak, že **PHP-FPM** je spouštěn hned, zatímco migrace a seedery běží na pozadí. Tzn. server už pžijímá requesty, ale DB ještě není připravená.
-- `Table 'app.sessions' doesn't exist` (zpřístupnění `/admin`) a `These credentials do not match our records.` (login)
+**Poznámka №2**: lze narazit na **race condition** kvůli `entrypoint.sh` skriptu, když server začne přijímat requesty, ale DB ještě není připravená.
+- `Table 'app.sessions' doesn't exist` (zpřístupnění skrz `/admin`) a `These credentials do not match our records.` (login).
 
 ---
 
@@ -205,7 +224,7 @@ Výchozí účty (z `.env`):
 | Super Admin | superadmin@bloghub.cz  | qWerty123456! |
 | Admin       | admin@bloghub.cz       | qWerty123456! |
 
-**Poznámka**: běžní uživatelé (user@bloghub.cz) nemají přístup do administrace (`/admin`).
+**Poznámka**: běžní uživatelé nemají přístup do administrace (`/admin`).
 
 ---
 
