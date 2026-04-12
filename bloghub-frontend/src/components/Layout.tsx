@@ -181,7 +181,15 @@ export default function Layout() {
       <div className="app-with-sidebar">
         <aside className="app-sidebar">
           <Link to="/" className="sidebar-logo">
-            BlogHub
+            <img
+              src="/bloghub-logo.png"
+              alt=""
+              className="sidebar-logo-mark"
+              width={36}
+              height={36}
+              decoding="async"
+            />
+            <span className="sidebar-logo-text">BlogHub</span>
           </Link>
 
           <nav className="sidebar-nav">
