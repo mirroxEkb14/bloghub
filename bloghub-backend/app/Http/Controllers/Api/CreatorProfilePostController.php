@@ -7,12 +7,15 @@ use App\Enums\UserRoleEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 use App\Models\CreatorProfile;
+use App\Models\Post;
 use App\Models\PostLike;
 use App\Models\PostView;
 use App\Models\Subscription;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Str;
 
 class CreatorProfilePostController extends Controller
 {
@@ -120,16 +123,32 @@ class CreatorProfilePostController extends Controller
         }
 
         if ($post->required_tier_id !== null && ! $hasFullAccess) {
-            if (! $user) {
+            $subscriptionGate = function () use ($post, $request) {
+                $preview = (new PostResource($post))->toArray($request);
+
+                $excerpt = $post->excerpt;
+                if (! is_string($excerpt) || trim($excerpt) === '') {
+                    $excerpt = Str::of(strip_tags((string) $post->content_text))
+                        ->squish()
+                        ->limit(420, '…')
+                        ->toString();
+                }
+
+                $preview['content_text'] = $excerpt !== '' ? '<p>'.e($excerpt).'</p>' : null;
+
                 return response()->json([
-                    'message' => __('This post is for subscribers only'),
-                    'requires_subscription' => true,
-                    'required_tier' => [
-                        'id' => $post->requiredTier->id,
-                        'tier_name' => $post->requiredTier->tier_name,
-                        'level' => $post->requiredTier->level,
-                    ],
-                ], 403);
+                'message' => __('This post is for subscribers only'),
+                'requires_subscription' => true,
+                'required_tier' => [
+                    'id' => $post->requiredTier->id,
+                    'tier_name' => $post->requiredTier->tier_name,
+                    'level' => $post->requiredTier->level,
+                ],
+                'preview' => $preview,
+            ], 403);
+            };
+            if (! $user) {
+                return $subscriptionGate();
             }
             $hasAccess = Subscription::query()
                 ->where('user_id', $user->id)
@@ -143,15 +162,7 @@ class CreatorProfilePostController extends Controller
                 })
                 ->exists();
             if (! $hasAccess) {
-                return response()->json([
-                    'message' => __('This post is for subscribers only'),
-                    'requires_subscription' => true,
-                    'required_tier' => [
-                        'id' => $post->requiredTier->id,
-                        'tier_name' => $post->requiredTier->tier_name,
-                        'level' => $post->requiredTier->level,
-                    ],
-                ], 403);
+                return $subscriptionGate();
             }
         }
 
@@ -160,22 +171,11 @@ class CreatorProfilePostController extends Controller
 
     public function recordView(Request $request, string $slug, string $postSlug): JsonResponse
     {
-        $profile = CreatorProfile::query()->where('slug', $slug)->first();
-
-        if ($profile === null) {
-            return response()->json(['message' => __('Creator profile not found')], 404);
+        $resolved = $this->resolveProfilePostAndAuthenticatedUser($request, $slug, $postSlug);
+        if ($resolved instanceof JsonResponse) {
+            return $resolved;
         }
-
-        $post = $profile->posts()->where('slug', $postSlug)->first();
-
-        if ($post === null) {
-            return response()->json(['message' => __('Post not found')], 404);
-        }
-
-        $user = $request->user();
-        if (! $user) {
-            return response()->json(['message' => __('Unauthenticated')], 401);
-        }
+        [, $post, $user] = $resolved;
 
         PostView::firstOrCreate(
             [
@@ -189,22 +189,11 @@ class CreatorProfilePostController extends Controller
 
     public function like(Request $request, string $slug, string $postSlug): JsonResponse
     {
-        $profile = CreatorProfile::query()->where('slug', $slug)->first();
-
-        if ($profile === null) {
-            return response()->json(['message' => __('Creator profile not found')], 404);
+        $resolved = $this->resolveProfilePostAndAuthenticatedUser($request, $slug, $postSlug);
+        if ($resolved instanceof JsonResponse) {
+            return $resolved;
         }
-
-        $post = $profile->posts()->where('slug', $postSlug)->first();
-
-        if ($post === null) {
-            return response()->json(['message' => __('Post not found')], 404);
-        }
-
-        $user = $request->user();
-        if (! $user) {
-            return response()->json(['message' => __('Unauthenticated')], 401);
-        }
+        [, $post, $user] = $resolved;
 
         PostLike::firstOrCreate([
             'post_id' => $post->id,
@@ -215,6 +204,22 @@ class CreatorProfilePostController extends Controller
     }
 
     public function unlike(Request $request, string $slug, string $postSlug): JsonResponse
+    {
+        $resolved = $this->resolveProfilePostAndAuthenticatedUser($request, $slug, $postSlug);
+        if ($resolved instanceof JsonResponse) {
+            return $resolved;
+        }
+        [, $post, $user] = $resolved;
+
+        PostLike::query()
+            ->where('post_id', $post->id)
+            ->where('user_id', $user->id)
+            ->delete();
+
+        return response()->json(['message' => 'OK'], 204);
+    }
+
+    private function resolveProfilePostAndAuthenticatedUser(Request $request, string $slug, string $postSlug): JsonResponse|array
     {
         $profile = CreatorProfile::query()->where('slug', $slug)->first();
 
@@ -233,11 +238,6 @@ class CreatorProfilePostController extends Controller
             return response()->json(['message' => __('Unauthenticated')], 401);
         }
 
-        PostLike::query()
-            ->where('post_id', $post->id)
-            ->where('user_id', $user->id)
-            ->delete();
-
-        return response()->json(['message' => 'OK'], 204);
+        return [$profile, $post, $user];
     }
 }
