@@ -3,7 +3,7 @@ export default function TermsPage() {
     <div className="page-center">
       <div className="card legal-page">
         <h1 className="form-title">Terms of Service</h1>
-        <p className="form-subtitle">Last updated: March 2026</p>
+        <p className="form-subtitle">Last updated: May 2026</p>
         <div className="legal-content">
           <p>
             <strong>Scope.</strong> BlogHub is a blog and creator platform that lets you publish posts,
@@ -21,13 +21,10 @@ export default function TermsPage() {
             keeping your account credentials secure.
           </p>
           <p>
-            <strong>Subscriptions and notifications.</strong> Paid subscriptions are managed per creator and per tier.
-            When you upgrade to a higher tier, no refund is given for the previous tier. If a creator removes a tier,
-            subscriptions to that tier end immediately (access is not kept until period end), and any posts that were
-            available only on that tier become public; followers and subscribers are notified when a tier is removed.
-            Followers and subscribers receive notifications when the creator publishes a new post or creates, edits, or
-            removes a tier. You can cancel your own subscription at any time (no refunds); you may choose to end access
-            immediately or at the current period end.
+            <strong>Subscriptions.</strong> Paid subscriptions are managed per creator and per tier.
+            When you upgrade to a higher tier, no refund is given for the previous tier. You can cancel your
+            own subscription at any time (no refunds); you may choose to end access immediately or at the
+            current period end.
           </p>
           <p>
             <strong>No warranty.</strong> The application is provided “as is” without warranty of any kind.
