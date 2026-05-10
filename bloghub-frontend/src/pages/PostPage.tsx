@@ -10,7 +10,6 @@ import { formatDateTimeLocal } from '../utils/date';
 type SubscriptionRequiredBody = {
   requires_subscription?: boolean;
   required_tier?: { id: number; tier_name: string; level: number };
-  preview?: Post;
 };
 
 function PostPageArticleBody({
@@ -123,7 +122,7 @@ export default function PostPage() {
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [subscriptionGate, setSubscriptionGate] = useState<{ tierName: string; preview?: Post } | null>(null);
+  const [subscriptionGate, setSubscriptionGate] = useState<{ tierName: string } | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [commentError, setCommentError] = useState<string | null>(null);
@@ -159,10 +158,7 @@ export default function PostPage() {
         if (e instanceof ApiError && e.status === 403) {
           const body = e.body as SubscriptionRequiredBody | undefined;
           if (body?.requires_subscription && body?.required_tier) {
-            setSubscriptionGate({
-              tierName: body.required_tier.tier_name,
-              ...(body.preview ? { preview: body.preview } : {}),
-            });
+            setSubscriptionGate({ tierName: body.required_tier.tier_name });
             return;
           }
         }
@@ -251,27 +247,14 @@ export default function PostPage() {
     return <LoadingPage message="Loading post..." />;
   }
 
-  if (subscriptionGate?.preview && slug) {
-    const peek = subscriptionGate.preview;
-    const tierLabel = peek.required_tier?.tier_name ?? subscriptionGate.tierName;
+  if (subscriptionGate && slug) {
     return (
       <article className="post-page post-page-gated">
-        <div className="post-page-gated-blur" aria-hidden>
-          <PostPageArticleBody
-            post={peek}
-            slug={slug}
-            user={user}
-            commentsCountDisplay={0}
-            interactiveMediaAndLikes={false}
-            togglingLike={false}
-            onToggleLike={() => {}}
-          />
-        </div>
         <div className="post-page-gated-overlay">
           <div className="card post-page-gated-card">
             <h2 className="post-page-gated-card-title">Subscriber-only post</h2>
             <p className="post-page-gated-card-copy">
-              This post is for <strong>{tierLabel}</strong> subscribers. Subscribe to this creator to read it
+              This post is for <strong>{subscriptionGate.tierName}</strong> subscribers. Subscribe to this creator to read it
             </p>
             <div className="post-page-gated-card-actions">
               <Link to={`/creator/${slug}#profile-tiers`} className="btn btn-primary">
@@ -284,7 +267,7 @@ export default function PostPage() {
     );
   }
 
-  if (subscriptionGate) {
+  if (subscriptionGate && !slug) {
     return (
       <div className="page-center">
         <div className="card" style={{ maxWidth: 420 }}>
@@ -292,11 +275,6 @@ export default function PostPage() {
           <p className="form-subtitle">
             This post is for <strong>{subscriptionGate.tierName}</strong> subscribers. Subscribe to this creator to read it
           </p>
-          {slug && (
-            <Link to={`/creator/${slug}#profile-tiers`} className="btn btn-primary" style={{ display: 'inline-block', marginTop: '1rem' }}>
-              View subscription tiers
-            </Link>
-          )}
         </div>
       </div>
     );

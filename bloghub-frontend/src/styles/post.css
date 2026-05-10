@@ -151,22 +151,7 @@
 
 .post-page-gated {
   padding-bottom: 3rem;
-}
-
-.post-page-gated-blur {
-  filter: blur(5px);
-  transform: translateZ(0);
-  opacity: 0.96;
-  pointer-events: none;
-  user-select: none;
-  padding-bottom: 0.5rem;
-  contain: paint;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .post-page-gated-blur {
-    filter: blur(3px);
-  }
+  min-height: 50vh;
 }
 
 .post-page-gated-overlay {

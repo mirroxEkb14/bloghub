@@ -15,7 +15,6 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Str;
 
 class CreatorProfilePostController extends Controller
 {
@@ -123,29 +122,16 @@ class CreatorProfilePostController extends Controller
         }
 
         if ($post->required_tier_id !== null && ! $hasFullAccess) {
-            $subscriptionGate = function () use ($post, $request) {
-                $preview = (new PostResource($post))->toArray($request);
-
-                $excerpt = $post->excerpt;
-                if (! is_string($excerpt) || trim($excerpt) === '') {
-                    $excerpt = Str::of(strip_tags((string) $post->content_text))
-                        ->squish()
-                        ->limit(420, '…')
-                        ->toString();
-                }
-
-                $preview['content_text'] = $excerpt !== '' ? '<p>'.e($excerpt).'</p>' : null;
-
+            $subscriptionGate = function () use ($post) {
                 return response()->json([
-                'message' => __('This post is for subscribers only'),
-                'requires_subscription' => true,
-                'required_tier' => [
-                    'id' => $post->requiredTier->id,
-                    'tier_name' => $post->requiredTier->tier_name,
-                    'level' => $post->requiredTier->level,
-                ],
-                'preview' => $preview,
-            ], 403);
+                    'message' => __('This post is for subscribers only'),
+                    'requires_subscription' => true,
+                    'required_tier' => [
+                        'id' => $post->requiredTier->id,
+                        'tier_name' => $post->requiredTier->tier_name,
+                        'level' => $post->requiredTier->level,
+                    ],
+                ], 403);
             };
             if (! $user) {
                 return $subscriptionGate();
