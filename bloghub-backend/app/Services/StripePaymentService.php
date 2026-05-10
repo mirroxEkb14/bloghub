@@ -12,12 +12,11 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Stripe\Checkout\Session as StripeSession;
 use Stripe\StripeClient;
+use Throwable;
 
 class StripePaymentService
 {
-    public function __construct(
-        protected StripeClient $stripe
-    ) {}
+    public function __construct(protected StripeClient $stripe) { }
 
     public function createCheckoutSession(User $user, Tier $tier, string $successUrl, string $cancelUrl): StripeSession
     {
@@ -34,6 +33,15 @@ class StripePaymentService
         $currency = strtolower($tier->tier_currency->value);
         $unitAmount = (int) round($tier->price * 100);
 
+        $checkoutProductMetadata = [
+            'tier_id' => (string) $tier->id,
+        ];
+        $checkoutSessionMetadata = [
+            'tier_id' => (string) $tier->id,
+            'user_id' => (string) $user->id,
+            'creator_slug' => (string) ($tier->creatorProfile?->slug ?? ''),
+        ];
+
         $session = $this->stripe->checkout->sessions->create([
             'customer' => $customerId,
             'mode' => 'payment',
@@ -45,9 +53,7 @@ class StripePaymentService
                         'product_data' => [
                             'name' => $tier->tier_name,
                             'description' => $tier->tier_desc ?? null,
-                            'metadata' => [
-                                'tier_id' => (string) $tier->id,
-                            ],
+                            'metadata' => $checkoutProductMetadata,
                         ],
                         'unit_amount' => $unitAmount,
                     ],
@@ -57,11 +63,7 @@ class StripePaymentService
             'success_url' => $successUrl,
             'cancel_url' => $cancelUrl,
             'client_reference_id' => (string) $user->id,
-            'metadata' => [
-                'tier_id' => (string) $tier->id,
-                'user_id' => (string) $user->id,
-                'creator_slug' => $tier->creatorProfile->slug ?? '',
-            ],
+            'metadata' => $checkoutSessionMetadata,
         ]);
 
         return $session;
@@ -76,7 +78,7 @@ class StripePaymentService
 
         try {
             $session = $this->stripe->checkout->sessions->retrieve($sessionId);
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return ['status' => 'invalid'];
         }
 

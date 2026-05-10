@@ -36,9 +36,7 @@ class CreatorProfileTableFilters
                         ->placeholder(__('filament.creator_profiles.table.filters.posts_count_to_placeholder')),
                 ])
                 ->query(function (Builder $query, array $data): Builder {
-                    $base = $data['posts_count'] ?? $data;
-                    $from = isset($base['from']) && $base['from'] !== '' ? (int) $base['from'] : null;
-                    $to = isset($base['to']) && $base['to'] !== '' ? (int) $base['to'] : null;
+                    ['from' => $from, 'to' => $to] = self::postsCountBounds($data);
                     if ($from === null && $to === null) {
                         return $query;
                     }
@@ -53,9 +51,7 @@ class CreatorProfileTableFilters
                     return $query;
                 })
                 ->indicateUsing(function (array $data): ?string {
-                    $base = $data['posts_count'] ?? $data;
-                    $from = isset($base['from']) && $base['from'] !== '' ? (int) $base['from'] : null;
-                    $to = isset($base['to']) && $base['to'] !== '' ? (int) $base['to'] : null;
+                    ['from' => $from, 'to' => $to] = self::postsCountBounds($data);
                     if ($from === null && $to === null) {
                         return null;
                     }
@@ -69,5 +65,14 @@ class CreatorProfileTableFilters
                     return __('filament.creator_profiles.table.filters.posts_count_indicator_to', ['to' => $to]);
                 }),
         ];
+    }
+
+    private static function postsCountBounds(array $data): array
+    {
+        $base = $data['posts_count'] ?? $data;
+        $from = isset($base['from']) && $base['from'] !== '' ? (int) $base['from'] : null;
+        $to = isset($base['to']) && $base['to'] !== '' ? (int) $base['to'] : null;
+
+        return compact('from', 'to');
     }
 }

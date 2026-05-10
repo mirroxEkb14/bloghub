@@ -187,12 +187,12 @@ class SubscriptionSeeder extends Seeder
         return $list;
     }
 
-    private function createSubscriptionWithCompletedPayment(string $subscriberName, string $creatorName, string $tierName): void
+    private function createRandomActiveSubscription(string $subscriberName, string $creatorName, string $tierName): ?array
     {
         $user = $this->usersByName[$subscriberName] ?? null;
         $tier = $this->tiersByCreatorAndName[$creatorName . '|' . $tierName] ?? null;
         if (! $user || ! $tier) {
-            return;
+            return null;
         }
 
         $year = $this->pickRandomYear();
@@ -206,6 +206,17 @@ class SubscriptionSeeder extends Seeder
             'end_date' => $endDate,
             'sub_status' => SubStatus::Active,
         ]);
+
+        return [$sub, $tier, $startDate, $endDate];
+    }
+
+    private function createSubscriptionWithCompletedPayment(string $subscriberName, string $creatorName, string $tierName): void
+    {
+        $created = $this->createRandomActiveSubscription($subscriberName, $creatorName, $tierName);
+        if ($created === null) {
+            return;
+        }
+        [$sub, $tier, $startDate, $endDate] = $created;
 
         $daysBetween = (int) $startDate->diffInDays($endDate);
         $checkoutDate = $startDate->copy()->addDays(rand(0, min(3, max(0, $daysBetween - 1))));
@@ -288,23 +299,11 @@ class SubscriptionSeeder extends Seeder
 
     private function createExtraSubscriptionWithPayment(string $subscriberName, string $creatorName, string $tierName, PaymentStatus $status): void
     {
-        $user = $this->usersByName[$subscriberName] ?? null;
-        $tier = $this->tiersByCreatorAndName[$creatorName . '|' . $tierName] ?? null;
-        if (! $user || ! $tier) {
+        $created = $this->createRandomActiveSubscription($subscriberName, $creatorName, $tierName);
+        if ($created === null) {
             return;
         }
-
-        $year = $this->pickRandomYear();
-        $startDate = $this->randomDateTimeInYear($year);
-        $endDate = $startDate->copy()->addMonth();
-
-        $sub = Subscription::create([
-            'user_id' => $user->id,
-            'tier_id' => $tier->id,
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-            'sub_status' => SubStatus::Active,
-        ]);
+        [$sub, $tier, $startDate] = $created;
 
         $checkoutDate = $startDate->copy()->addDays(rand(0, 3));
         $checkoutDate->setTime(rand(0, 23), rand(0, 59), rand(0, 59));

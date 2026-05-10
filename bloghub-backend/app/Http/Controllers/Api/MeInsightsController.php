@@ -10,7 +10,7 @@ use App\Models\Payment;
 use App\Models\PostLike;
 use App\Models\PostView;
 use App\Models\Subscription;
-use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -62,7 +62,7 @@ class MeInsightsController extends Controller
         ];
     }
 
-    private function parsePeriod(string $period): ?Carbon
+    private function parsePeriod(string $period): ?CarbonInterface
     {
         return match ($period) {
             'overall' => null,

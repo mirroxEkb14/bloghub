@@ -88,7 +88,7 @@ class UsersSeeder extends Seeder
         }
 
         $seedPassword = Hash::make('app');
-        foreach (self::SEED_USERS as $index => $data) {
+        foreach (self::SEED_USERS as $data) {
             $password = isset($data['password']) ? Hash::make($data['password']) : $seedPassword;
             $user = User::firstOrCreate(
                 ['email' => $data['email']],

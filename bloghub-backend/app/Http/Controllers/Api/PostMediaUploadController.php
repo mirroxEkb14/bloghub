@@ -5,14 +5,17 @@ namespace App\Http\Controllers\Api;
 use App\Enums\MediaType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\UploadPostMediaRequest;
+use App\Services\PublicDiskUploadService;
 use App\Support\StorageUrlSupport;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class PostMediaUploadController extends Controller
 {
     private const POST_MEDIA_DIRECTORY = 'posts/media';
+
+    public function __construct(
+        private PublicDiskUploadService $publicDiskUpload,
+    ) {}
 
     public function upload(UploadPostMediaRequest $request): JsonResponse
     {
@@ -24,7 +27,7 @@ class PostMediaUploadController extends Controller
             return response()->json(['message' => 'Unsupported file type'], 422);
         }
 
-        $path = $this->storeFile($file);
+        $path = $this->publicDiskUpload->storeUploadedFile($file, self::POST_MEDIA_DIRECTORY, 'bin');
         if ($path === false || $path === '') {
             return response()->json([
                 'message' => 'Failed to store media. Check storage permissions',
@@ -47,22 +50,5 @@ class PostMediaUploadController extends Controller
             str_starts_with($mime, 'audio/') => MediaType::Audio,
             default => null,
         };
-    }
-
-    private function storeFile($file): string|false
-    {
-        $disk = Storage::disk('public');
-        $root = storage_path('app/public');
-        if (! is_dir($root)) {
-            @mkdir($root, 0755, true);
-        }
-        if (! $disk->exists(self::POST_MEDIA_DIRECTORY)) {
-            $disk->makeDirectory(self::POST_MEDIA_DIRECTORY);
-        }
-
-        $extension = $file->getClientOriginalExtension() ?: $file->guessExtension();
-        $name = Str::uuid().'.'.($extension ?? 'bin');
-
-        return $file->storeAs(self::POST_MEDIA_DIRECTORY, $name, ['disk' => 'public']);
     }
 }

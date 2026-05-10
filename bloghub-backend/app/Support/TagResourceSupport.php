@@ -14,9 +14,7 @@ class TagResourceSupport
     public const SLUG_MAX_LENGTH = 50;
     public const NAME_MAX_LENGTH = 50;
 
-    private function __construct()
-    {
-    }
+    private function __construct() { }
 
     public static function setSlugFromName(): Closure
     {

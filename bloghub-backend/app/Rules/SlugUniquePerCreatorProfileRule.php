@@ -9,9 +9,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 readonly class SlugUniquePerCreatorProfileRule implements ValidationRule
 {
-    public function __construct(private mixed $get)
-    {
-    }
+    public function __construct(private mixed $get) { }
 
     public static function fromGet(callable $get): self
     {

@@ -9,6 +9,7 @@ use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\Api\UpdateUserProfileRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -111,11 +112,11 @@ class AuthController extends Controller
         ]);
     }
 
-    public function verifyEmail(Request $request, string $id, string $hash): JsonResponse|\Illuminate\Http\RedirectResponse
+    public function verifyEmail(Request $request, string $id, string $hash): JsonResponse|RedirectResponse
     {
         $user = User::findOrFail((int) $id);
 
-        if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+        if (! hash_equals($hash, sha1($user->getEmailForVerification()))) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Invalid verification link'], 403);
             }

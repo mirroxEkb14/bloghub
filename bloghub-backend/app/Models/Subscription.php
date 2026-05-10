@@ -47,4 +47,17 @@ class Subscription extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    public function adminSummaryLabel(): string
+    {
+        $parts = ['#'.$this->id];
+        if ($this->user?->name) {
+            $parts[] = $this->user->name;
+        }
+        if ($this->tier?->tier_name) {
+            $parts[] = $this->tier->tier_name;
+        }
+
+        return implode(' · ', $parts);
+    }
 }

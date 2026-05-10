@@ -12,9 +12,7 @@ class SubscriptionResourceSupport
 {
     public const SUB_STATUS_MAX_LENGTH = 20;
 
-    private function __construct()
-    {
-    }
+    private function __construct() { }
 
     public static function subStatusOptions(): array
     {

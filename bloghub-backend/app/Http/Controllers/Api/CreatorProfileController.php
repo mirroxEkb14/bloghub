@@ -116,35 +116,12 @@ class CreatorProfileController extends Controller
 
     public function update(UpdateCreatorProfileRequest $request, CreatorProfile $creatorProfile): CreatorProfileResource
     {
-        $data = $request->validated();
-        $tagIds = $data['tag_ids'] ?? null;
-        unset($data['tag_ids']);
-
-        $creatorProfile->update($data);
-        if ($tagIds !== null) {
-            $creatorProfile->tags()->sync($tagIds);
-        }
-
-        $creatorProfile->load(['user:id,name,username', 'tags'])->loadCount(['posts', 'subscriptions']);
-
-        return new CreatorProfileResource($creatorProfile);
+        return $this->applyCreatorProfileUpdate($creatorProfile, $request->validated());
     }
 
     public function updateMe(UpdateMyCreatorProfileRequest $request): CreatorProfileResource
     {
-        $profile = $request->user()->creatorProfile;
-        $data = $request->validated();
-        $tagIds = $data['tag_ids'] ?? null;
-        unset($data['tag_ids']);
-
-        $profile->update($data);
-        if ($tagIds !== null) {
-            $profile->tags()->sync($tagIds);
-        }
-
-        $profile->load(['user:id,name,username', 'tags'])->loadCount(['posts', 'subscriptions']);
-
-        return new CreatorProfileResource($profile);
+        return $this->applyCreatorProfileUpdate($request->user()->creatorProfile, $request->validated());
     }
 
     public function destroyMe(Request $request, NotificationService $notificationService): JsonResponse
@@ -158,5 +135,20 @@ class CreatorProfileController extends Controller
         $profile->delete();
 
         return response()->json(['message' => __('Creator profile removed')]);
+    }
+
+    private function applyCreatorProfileUpdate(CreatorProfile $profile, array $data): CreatorProfileResource
+    {
+        $tagIds = $data['tag_ids'] ?? null;
+        unset($data['tag_ids']);
+
+        $profile->update($data);
+        if ($tagIds !== null) {
+            $profile->tags()->sync($tagIds);
+        }
+
+        $profile->load(['user:id,name,username', 'tags'])->loadCount(['posts', 'subscriptions']);
+
+        return new CreatorProfileResource($profile);
     }
 }

@@ -41,17 +41,6 @@ class Payment extends Model
 
     public function getSubscriptionLabelAttribute(): string
     {
-        $subscription = $this->subscription;
-        if (! $subscription) {
-            return '–';
-        }
-        $parts = ['#'.$subscription->id];
-        if ($subscription->user?->name) {
-            $parts[] = $subscription->user->name;
-        }
-        if ($subscription->tier?->tier_name) {
-            $parts[] = $subscription->tier->tier_name;
-        }
-        return implode(' · ', $parts);
+        return $this->subscription?->adminSummaryLabel() ?? '–';
     }
 }

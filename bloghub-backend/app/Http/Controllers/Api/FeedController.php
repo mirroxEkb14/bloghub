@@ -7,8 +7,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Models\Subscription;
+use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Collection;
 
 class FeedController extends Controller
 {
@@ -63,23 +67,9 @@ class FeedController extends Controller
             }
         }
 
-        $this->applyCreatorSearch($query, $request);
+        $posts = $this->paginateFeedQuery($query, $request, $user, eagerRequiredTier: false);
 
-        $query
-            ->with('creatorProfile:id,slug,display_name,profile_avatar_path')
-            ->withCount('comments')
-            ->withCount('likes')
-            ->withCount(['postViews as views_count'])
-            ->withCount(['postViews as user_has_viewed' => fn ($q) => $q->where('user_id', $user->id)])
-            ->withCount(['likes as user_has_liked' => fn ($q) => $q->where('user_id', $user->id)])
-            ->orderByDesc('created_at');
-
-        $perPage = min((int) $request->input('per_page', 15), 50);
-        $posts = $query->paginate($perPage);
-
-        $request->attributes->set('creator_profile_is_owner', false);
-        $request->attributes->set('creator_profile_is_super_admin', $user->hasRole('super_admin'));
-        $request->attributes->set('creator_profile_user_tier_level', null);
+        $this->setFeedRequestResourceContext($request, $user, unlimitedTierForResource: false);
 
         return PostResource::collection($posts);
     }
@@ -91,26 +81,8 @@ class FeedController extends Controller
         if ($user->hasRole('super_admin')) {
             $query = Post::query()->whereNotNull('required_tier_id');
             $creatorLevels = [];
-            $followedProfileIds = [];
         } else {
-            $subscriptions = Subscription::query()
-                ->where('user_id', $user->id)
-                ->whereIn('sub_status', [SubStatus::Active, SubStatus::Canceled])
-                ->where(function ($q) {
-                    $q->whereNull('end_date')->orWhere('end_date', '>', now());
-                })
-                ->with('tier:id,creator_profile_id,level')
-                ->whereHas('tier')
-                ->get();
-
-            $creatorLevels = $subscriptions
-                ->pluck('tier')
-                ->filter()
-                ->groupBy('creator_profile_id')
-                ->map(fn ($tiers) => $tiers->max('level'))
-                ->all();
-
-            $followedProfileIds = $user->followingCreatorProfiles()->get()->pluck('id')->all();
+            [$creatorLevels, $followedProfileIds] = $this->subscribedTierLevelsAndFollowedProfileIds($user);
             $subscribedProfileIds = array_keys($creatorLevels);
 
             if (count($subscribedProfileIds) === 0 && count($followedProfileIds) === 0) {
@@ -140,41 +112,16 @@ class FeedController extends Controller
             }
         }
 
-        $this->applyCreatorSearch($query, $request);
+        $posts = $this->paginateFeedQuery($query, $request, $user, eagerRequiredTier: true);
 
-        $query
-            ->with('creatorProfile:id,slug,display_name,profile_avatar_path')
-            ->with('requiredTier:id,creator_profile_id,level,tier_name')
-            ->withCount('comments')
-            ->withCount('likes')
-            ->withCount(['postViews as views_count'])
-            ->withCount(['postViews as user_has_viewed' => fn ($q) => $q->where('user_id', $user->id)])
-            ->withCount(['likes as user_has_liked' => fn ($q) => $q->where('user_id', $user->id)])
-            ->orderByDesc('created_at');
+        $this->applyUserHasAccessToFeedPosts(
+            $posts->getCollection(),
+            $user,
+            $creatorLevels,
+            grantAccessWhenNoTierRequired: false,
+        );
 
-        $perPage = min((int) $request->input('per_page', 15), 50);
-        $posts = $query->paginate($perPage);
-
-        $isSuperAdmin = $user->hasRole('super_admin');
-        $userCreatorProfileId = $user->creatorProfile?->id;
-
-        $posts->getCollection()->each(function (Post $post) use ($user, $isSuperAdmin, $userCreatorProfileId, $creatorLevels) {
-            if ($isSuperAdmin) {
-                $post->user_has_access = true;
-                return;
-            }
-            if ($userCreatorProfileId !== null && $post->creator_profile_id === $userCreatorProfileId) {
-                $post->user_has_access = true;
-                return;
-            }
-            $userLevel = $creatorLevels[$post->creator_profile_id] ?? null;
-            $requiredLevel = $post->requiredTier?->level ?? 0;
-            $post->user_has_access = $userLevel !== null && $userLevel >= $requiredLevel;
-        });
-
-        $request->attributes->set('creator_profile_is_owner', false);
-        $request->attributes->set('creator_profile_is_super_admin', $isSuperAdmin);
-        $request->attributes->set('creator_profile_user_tier_level', PHP_INT_MAX);
+        $this->setFeedRequestResourceContext($request, $user, unlimitedTierForResource: true);
 
         return PostResource::collection($posts);
     }
@@ -185,42 +132,10 @@ class FeedController extends Controller
 
         if ($user->hasRole('super_admin')) {
             $query = Post::query();
-            $subscribedProfileIds = [];
             $creatorLevels = [];
-            $followedProfileIds = [];
         } else {
-            $subscribedProfileIds = Subscription::query()
-                ->where('user_id', $user->id)
-                ->whereIn('sub_status', [SubStatus::Active, SubStatus::Canceled])
-                ->where(function ($q) {
-                    $q->whereNull('end_date')->orWhere('end_date', '>', now());
-                })
-                ->with('tier:id,creator_profile_id')
-                ->whereHas('tier')
-                ->get()
-                ->pluck('tier.creator_profile_id')
-                ->filter()
-                ->unique()
-                ->values()
-                ->all();
-
-            $subscriptions = Subscription::query()
-                ->where('user_id', $user->id)
-                ->whereIn('sub_status', [SubStatus::Active, SubStatus::Canceled])
-                ->where(function ($q) {
-                    $q->whereNull('end_date')->orWhere('end_date', '>', now());
-                })
-                ->with('tier:id,creator_profile_id,level')
-                ->whereHas('tier')
-                ->get();
-            $creatorLevels = $subscriptions
-                ->pluck('tier')
-                ->filter()
-                ->groupBy('creator_profile_id')
-                ->map(fn ($tiers) => $tiers->max('level'))
-                ->all();
-
-            $followedProfileIds = $user->followingCreatorProfiles()->get()->pluck('id')->all();
+            [$creatorLevels, $followedProfileIds] = $this->subscribedTierLevelsAndFollowedProfileIds($user);
+            $subscribedProfileIds = array_keys($creatorLevels);
             $subscribedOrFollowedIds = array_values(array_unique(array_merge($subscribedProfileIds, $followedProfileIds)));
             $profileIds = array_keys($creatorLevels);
 
@@ -257,11 +172,29 @@ class FeedController extends Controller
             }
         }
 
+        $posts = $this->paginateFeedQuery($query, $request, $user, eagerRequiredTier: true);
+
+        $this->applyUserHasAccessToFeedPosts(
+            $posts->getCollection(),
+            $user,
+            $creatorLevels,
+            grantAccessWhenNoTierRequired: true,
+        );
+
+        $this->setFeedRequestResourceContext($request, $user, unlimitedTierForResource: true);
+
+        return PostResource::collection($posts);
+    }
+
+    private function paginateFeedQuery(Builder $query, Request $request, User $user, bool $eagerRequiredTier): LengthAwarePaginator
+    {
         $this->applyCreatorSearch($query, $request);
 
+        $query->with('creatorProfile:id,slug,display_name,profile_avatar_path');
+        if ($eagerRequiredTier) {
+            $query->with('requiredTier:id,creator_profile_id,level,tier_name');
+        }
         $query
-            ->with('creatorProfile:id,slug,display_name,profile_avatar_path')
-            ->with('requiredTier:id,creator_profile_id,level,tier_name')
             ->withCount('comments')
             ->withCount('likes')
             ->withCount(['postViews as views_count'])
@@ -270,33 +203,69 @@ class FeedController extends Controller
             ->orderByDesc('created_at');
 
         $perPage = min((int) $request->input('per_page', 15), 50);
-        $posts = $query->paginate($perPage);
 
+        return $query->paginate($perPage);
+    }
+
+    private function setFeedRequestResourceContext(Request $request, User $user, bool $unlimitedTierForResource): void
+    {
+        $request->attributes->set('creator_profile_is_owner', false);
+        $request->attributes->set('creator_profile_is_super_admin', $user->hasRole('super_admin'));
+        $request->attributes->set('creator_profile_user_tier_level', $unlimitedTierForResource ? PHP_INT_MAX : null);
+    }
+
+    private function applyUserHasAccessToFeedPosts(
+        Collection $posts,
+        User $user,
+        array $creatorLevels,
+        bool $grantAccessWhenNoTierRequired,
+    ): void {
         $isSuperAdmin = $user->hasRole('super_admin');
         $userCreatorProfileId = $user->creatorProfile?->id;
 
-        $posts->getCollection()->each(function (Post $post) use ($user, $isSuperAdmin, $userCreatorProfileId, $creatorLevels, $followedProfileIds) {
-            if ($post->required_tier_id === null) {
+        foreach ($posts as $post) {
+            if ($grantAccessWhenNoTierRequired && $post->required_tier_id === null) {
                 $post->user_has_access = true;
-                return;
+
+                continue;
             }
             if ($isSuperAdmin) {
                 $post->user_has_access = true;
-                return;
+
+                continue;
             }
             if ($userCreatorProfileId !== null && $post->creator_profile_id === $userCreatorProfileId) {
                 $post->user_has_access = true;
-                return;
+
+                continue;
             }
             $userLevel = $creatorLevels[$post->creator_profile_id] ?? null;
             $requiredLevel = $post->requiredTier?->level ?? 0;
             $post->user_has_access = $userLevel !== null && $userLevel >= $requiredLevel;
-        });
+        }
+    }
 
-        $request->attributes->set('creator_profile_is_owner', false);
-        $request->attributes->set('creator_profile_is_super_admin', $isSuperAdmin);
-        $request->attributes->set('creator_profile_user_tier_level', PHP_INT_MAX);
+    private function subscribedTierLevelsAndFollowedProfileIds(User $user): array
+    {
+        $subscriptions = Subscription::query()
+            ->where('user_id', $user->id)
+            ->whereIn('sub_status', [SubStatus::Active, SubStatus::Canceled])
+            ->where(function ($q) {
+                $q->whereNull('end_date')->orWhere('end_date', '>', now());
+            })
+            ->with('tier:id,creator_profile_id,level')
+            ->whereHas('tier')
+            ->get();
 
-        return PostResource::collection($posts);
+        $creatorLevels = $subscriptions
+            ->pluck('tier')
+            ->filter()
+            ->groupBy('creator_profile_id')
+            ->map(fn ($tiers) => $tiers->max('level'))
+            ->all();
+
+        $followedProfileIds = $user->followingCreatorProfiles()->get()->pluck('id')->all();
+
+        return [$creatorLevels, $followedProfileIds];
     }
 }

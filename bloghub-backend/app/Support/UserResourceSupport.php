@@ -15,9 +15,7 @@ class UserResourceSupport
     public const PASSWORD_MAX_LENGTH = 255;
     public const PASSWORD_MIN_LENGTH = 8;
 
-    private function __construct()
-    {
-    }
+    private function __construct() { }
 
     public static function recordViewUrl(User $record): string
     {

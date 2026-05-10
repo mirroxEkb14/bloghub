@@ -22,13 +22,11 @@ class PostResourceSupport
         MediaType::Video->value => 64 * 1024,
     ];
 
+    private function __construct() { }
+
     public static function maxFileSizeKbForMediaType(MediaType $mediaType): int
     {
         return self::MEDIA_MAX_SIZE_KB[$mediaType->value] ?? 5 * 1024;
-    }
-
-    private function __construct()
-    {
     }
 
     public static function slugUniqueRules(int $creatorProfileId, ?int $ignorePostId = null): array
