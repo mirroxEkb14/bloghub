@@ -8,7 +8,6 @@ use App\Filament\Resources\PaymentResource\PaymentResource;
 use App\Models\Payment;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 
 class PaymentResourceSupport
 {
@@ -49,27 +48,6 @@ class PaymentResourceSupport
     {
         return static function (Builder $query): Builder {
             return $query->with(['subscription.user', 'subscription.tier']);
-        };
-    }
-
-    public static function formatSubscriptionForTable(): Closure
-    {
-        return static function (mixed $state, ?Model $record): string {
-            if (! $record instanceof Payment) {
-                return '–';
-            }
-            $subscription = $record->subscription;
-            if (! $subscription) {
-                return '–';
-            }
-            $parts = ['#'.$subscription->id];
-            if ($subscription->user?->name) {
-                $parts[] = $subscription->user->name;
-            }
-            if ($subscription->tier?->tier_name) {
-                $parts[] = $subscription->tier->tier_name;
-            }
-            return implode(' · ', $parts);
         };
     }
 

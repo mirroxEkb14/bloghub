@@ -1,10 +1,11 @@
 .app-with-sidebar {
+  --app-sidebar-width: 260px;
   display: flex;
   min-height: 100vh;
 }
 
 .app-sidebar {
-  width: 260px;
+  width: var(--app-sidebar-width);
   flex-shrink: 0;
   align-self: flex-start;
   position: sticky;
@@ -17,11 +18,27 @@
 }
 
 .sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
   font-weight: 700;
   font-size: 1.25rem;
   color: var(--text);
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border);
+  text-decoration: none;
+}
+
+.sidebar-logo-mark {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.sidebar-logo-text {
+  line-height: 1.2;
 }
 
 .sidebar-nav {

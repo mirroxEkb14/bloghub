@@ -18,9 +18,7 @@ class CreatorProfileResourceSupport
     public const AVATAR_DIRECTORY = 'creator-profiles/avatars';
     public const COVER_DIRECTORY = 'creator-profiles/covers';
 
-    private function __construct()
-    {
-    }
+    private function __construct() { }
 
     public static function acceptedImageMimeTypes(): array
     {

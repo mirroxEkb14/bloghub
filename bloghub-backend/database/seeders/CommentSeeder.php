@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Comment;
-use App\Models\CreatorProfile;
 use App\Models\Post;
 use App\Models\User;
 use Carbon\Carbon;

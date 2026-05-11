@@ -319,7 +319,7 @@ export default function SubscriptionsPage() {
               <strong>{confirmCancelSub.creator?.display_name ?? confirmCancelSub.creator?.slug ?? 'Creator'}</strong>
               {' – '}
               <strong>{confirmCancelSub.tier?.tier_name ?? 'Tier'}</strong>.
-              You can end access right away or keep it until the current period ends ({formatDate(confirmCancelSub.end_date)}). No refunds.
+              You can end access right away or keep it until the current period ends ({formatDate(confirmCancelSub.end_date)}). No refunds
             </p>
             <div className="membership-confirm-actions">
               <button

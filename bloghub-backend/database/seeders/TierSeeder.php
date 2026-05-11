@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Storage;
 class TierSeeder extends Seeder
 {
     private const FIXTURES_COVERS = 'database/seeders/fixtures/tiers/covers';
-
     private const COVER_EXTENSIONS = ['png', 'jpg', 'jpeg', 'webp'];
 
     private const TIERS_BY_USER = [

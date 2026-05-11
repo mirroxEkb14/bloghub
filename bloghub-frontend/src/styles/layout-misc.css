@@ -10,7 +10,6 @@
   font-size: 0.95rem;
 }
 
-/* Home welcome card */
 .home-card {
   min-width: 0;
 }
@@ -76,7 +75,6 @@
   margin-bottom: 1rem;
 }
 
-/* Toast container */
 .toast-container {
   position: fixed;
   top: 1rem;
@@ -174,7 +172,6 @@
   pointer-events: none;
 }
 
-/* Field-level validation error */
 .field-error {
   margin: 0.35rem 0 0 0;
   font-size: 0.85rem;
@@ -197,7 +194,6 @@ input.has-error:focus,
   border-color: rgba(239, 68, 68, 0.8);
 }
 
-/* Checkbox (terms / privacy) */
 .checkbox-label {
   display: flex;
   align-items: flex-start;

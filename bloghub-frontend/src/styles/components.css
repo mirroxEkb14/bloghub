@@ -1,4 +1,3 @@
-/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -29,7 +28,6 @@
   border-color: var(--text-muted);
 }
 
-/* Card */
 .card {
   background: var(--bg-card);
   border-radius: var(--radius);
@@ -39,7 +37,6 @@
   width: 100%;
 }
 
-/* Accept legal modal */
 .accept-legal-overlay {
   position: fixed;
   inset: 0;

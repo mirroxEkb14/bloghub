@@ -23,6 +23,10 @@ if [ ! -f "vendor/autoload.php" ]; then
   composer install --no-interaction
 fi
 
+if ! grep -qE '^APP_KEY=[^[:space:]]+' .env 2>/dev/null; then
+  php artisan key:generate --no-interaction
+fi
+
 php-fpm -D
 
 (

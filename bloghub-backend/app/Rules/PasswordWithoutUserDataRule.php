@@ -8,9 +8,7 @@ use Filament\Schemas\Components\Utilities\Get;
 
 readonly class PasswordWithoutUserDataRule implements ValidationRule
 {
-    public function __construct(private array $fields)
-    {
-    }
+    public function __construct(private array $fields) { }
 
     public static function fromGet(Get $get): self
     {

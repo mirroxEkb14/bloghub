@@ -19,7 +19,7 @@ class ExploreController extends Controller
     private const TRENDING_POSTS_LIMIT = 12;
     private const TRENDING_DAYS = 30;
 
-    public function popularCreators(Request $request): AnonymousResourceCollection
+    public function popularCreators(): AnonymousResourceCollection
     {
         $query = CreatorProfile::query()
             ->with(['user:id,name,username', 'tags'])

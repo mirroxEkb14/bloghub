@@ -19,9 +19,7 @@ class TierResourceSupport
     public const COVER_MAX_HEIGHT = 1920;
     public const COVER_DIRECTORY = 'tiers/covers';
 
-    private function __construct()
-    {
-    }
+    private function __construct() { }
 
     public static function acceptedCoverImageMimeTypes(): array
     {
