@@ -96,8 +96,9 @@ php-fpm -D
   fi
   if [ "$NEED_SEED" = "1" ]; then
     php artisan db:seed --force || true
+    echo "   INFO  Database seeding finished."
   else
-    echo "   INFO  Nothing to seed."
+    echo "   INFO  Database seeding skipped (users already exist)."
   fi
   [ -e public/storage ] || php artisan storage:link || true
 ) &

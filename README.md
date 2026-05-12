@@ -29,19 +29,6 @@ Projekt je rozdělen na backend (**MySQL** + **Laravel** + **Filament**) a front
 ![Git](https://img.shields.io/badge/Git-2.47-F05032?logo=git&logoColor=white)
 ![Docker Desktop](https://img.shields.io/badge/Docker%20Desktop-4.58-2496ED?logo=docker&logoColor=white)
 
----
-
-## ⚠️ Disclaimer k seedovaným datům
-
-Veškerá **demoverzní data** v projektu (profilové a titulkové obrázky, videa, GIFy, ukázkové příspěvky a komentáře) byla **vygenerována pomocí nástrojů Google Gemini** a slouží pouze k demonstraci a vývoji:
-
-- **Obrázky:** generovány pomocí **Nano Banana 2**.
-- **Videa a GIFy:** generovány pomocí **Veo**.
-
-Tato data nejsou reálným obsahem ani duševním vlastnictvím třetích stran a v produkčním nasazení by měla být nahrazena skutečným obsahem nebo odstraněna.
-
----
-
 ## 📁 Adresářová struktura
 
 ```
@@ -176,7 +163,7 @@ Pro simulaci procesu plateb projekt používá platební bránu  <a href='https:
 - Zaregistrovat se na stránkách Stripu a přejít do <a href='https://dashboard.stripe.com/'>Dashboardu</a>.
 - Zkopírovat <b>Publishable key</b> a <b>Secret key</b> do `.env` souboru a uložit do příslušných proměnných prostředí (<b>STRIPE_KEY</b> a <b>STRIPE_SECRET</b>):
     - (kdyby klíče nebyly dostupné na dashboard stránce, tak v záložce <b>Developers</b> -> <b>API keys</b>),
-    - z dashboardu přejít do <b>Develoeprs</b> -> <b>Webhooks</b> -> <b>Add destination</b>:
+    - z dashboardu přejít do <b>Developers</b> -> <b>Webhooks</b> -> <b>Add destination</b>:
         - API version: `.clover`,
         - Events: `checkout.session.completed`,
     - <b>Webhook endpoint</b>:
@@ -217,7 +204,7 @@ V současné (07.03.2026) implementaci projekt využívá e-mailové verifikace.
 
 ## 🔐 Přístup do admin panelu
 
-Výchozí účty (z `.env`):
+Výchozí účty (z `/config/seed.php`):
 
 | Role        | Email                  | Heslo         |
 |-------------|------------------------|---------------|
@@ -230,7 +217,7 @@ Výchozí účty (z `.env`):
 
 Testy běží v odděleném testovacím prostředí definovaném v souboru `.env.testing`. Používá se samostatná databáze `app_test`.
 
-Testy lze spustit z kořenového adresáře `bloghub-backend/` uvnitř konteknerů:
+Testy lze spustit z kořenového adresáře `bloghub/` uvnitř konteknerů:
 ```bash
 > docker compose exec backend-php php artisan test
 ```
