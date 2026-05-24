@@ -234,6 +234,12 @@ Testy lze spustit z kořenového adresáře `bloghub-backend/` uvnitř kontekner
 ```bash
 > docker compose exec backend-php php artisan test
 ```
+```bash
+> docker compose exec backend-php php artisan test --testsuite=Feature
+```
+```bash
+> docker compose exec backend-php php artisan test --testsuite=Unit
+```
 
 **Poznámka**: `APP_KEY` v `.env.testing` musí být identický hodnotě tohoto atributu v `.env` (který se generuje automaticky při instalaci kontejnerů).
 

@@ -149,7 +149,10 @@ class StripePaymentService
             $currency = $tier->tier_currency ?? Currency::USD;
             $cardLast4 = '';
 
-            $paymentIntentId = is_string($session->payment_intent) ? $session->payment_intent : null;
+            $sessionValues = $session->toArray();
+            $paymentIntentId = isset($sessionValues['payment_intent']) && is_string($sessionValues['payment_intent'])
+                ? $sessionValues['payment_intent']
+                : null;
             if ($paymentIntentId) {
                 $pi = $this->stripe->paymentIntents->retrieve($paymentIntentId, [
                     'expand' => ['payment_method.card', 'charges.data.payment_method_details'],

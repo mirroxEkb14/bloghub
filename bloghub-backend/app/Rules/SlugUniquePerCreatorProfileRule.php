@@ -23,7 +23,8 @@ readonly class SlugUniquePerCreatorProfileRule implements ValidationRule
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $creatorProfileId = $this->get('creator_profile_id');
+        $get = $this->get;
+        $creatorProfileId = $get('creator_profile_id');
         if ($creatorProfileId === null || $creatorProfileId === '') {
             return;
         }
@@ -32,7 +33,7 @@ readonly class SlugUniquePerCreatorProfileRule implements ValidationRule
             ->where('creator_profile_id', $creatorProfileId)
             ->where('slug', $value);
 
-        $recordId = $this->get('id');
+        $recordId = $get('id');
         if ($recordId !== null && $recordId !== '') {
             $query->whereKeyNot($recordId);
         }
